@@ -192,6 +192,8 @@
         .rpg-btn:active { transform: scale(0.9); }
         #btn-atk { background: radial-gradient(circle, #FF4444, #880000); border-color: #FF8888; width: 80px; height: 80px; font-size: 1.1rem; }
         #btn-skill { background: radial-gradient(circle, #00D9FF, #0056b3); border-color: #88FFFF; }
+        /* NEW DASH BUTTON STYLE */
+        #btn-dash { background: radial-gradient(circle, #888, #444); border-color: #AAA; width: 60px; height: 60px; font-size: 0.8rem; }
         
         .cooldown { filter: grayscale(1); opacity: 0.6; pointer-events: none; border-color: #555 !important; color: #aaa; background: #333 !important; box-shadow: none !important; }
 
@@ -368,6 +370,7 @@
 
     <!-- RPG Controls (BOSS BATTLE) -->
     <div id="rpg-controls">
+        <div class="rpg-btn" id="btn-dash" onclick="app.currentChapter.dash()">DASH</div>
         <div class="rpg-btn" id="btn-skill" onclick="app.currentChapter.skill()">SKILL</div>
         <div class="rpg-btn" id="btn-atk" onclick="app.currentChapter.attack()">ATK</div>
     </div>
@@ -3607,11 +3610,18 @@ class ChapterBossBattle {
         // Player stats for Action RPG
         this.playerX = 100;
         this.playerY = 300;
-        this.playerSpeed = 5;
+        this.playerSpeed = 8; // UPDATED: Increased from 5 to 8 for better feel
         this.playerHp = 100;
         this.maxPlayerHp = 100;
         this.playerCooldown = 0; // Cooldown serangan (frames)
         
+        // DASH MECHANIC VARS
+        this.isDashing = false;
+        this.dashTimer = 0;
+        this.dashCooldown = 0;
+        this.dashDuration = 10; // Frames duration
+        this.invincible = false; // I-Frames status
+
         this.hero = new CharacterSprite(idle, frames, this.playerX, this.playerY, 96); 
         
         // Boss Stats
@@ -3648,6 +3658,7 @@ class ChapterBossBattle {
                 `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
                 <strong>🎮 KONTROL:</strong><br>
                 🏃 WASD / ARAH = Hindari Serangan<br>
+                💨 <strong>SHIFT / DASH</strong> = Dodge Roll (Kebal Sesaat)<br>
                 ⚔️ SPASI / TOMBOL ATK = Serang Boss<br>
                 ⚡ Z / TOMBOL SKILL = Serangan Kuat (Butuh Energi)<br><br>
                 <strong>🎯 MISI:</strong><br>
@@ -3661,6 +3672,32 @@ class ChapterBossBattle {
     // Helper functions for external calls (Buttons)
     attack() { this.spawnPlayerProjectile(false); }
     skill() { this.spawnPlayerProjectile(true); }
+    
+    // NEW DASH FUNCTION
+    dash() {
+        if (this.dashCooldown <= 0 && !this.isDashing) {
+            this.isDashing = true;
+            this.dashTimer = this.dashDuration;
+            this.dashCooldown = 40; // Cooldown frames (~0.7s)
+            this.invincible = true;
+            
+            // Visual & Audio
+            // AudioMgr.playSFX('sfx-click'); // Optional sound
+            
+            // Burst Particles for visual feedback
+            for(let i=0; i<8; i++) {
+                this.particles.push({
+                    x: this.playerX + 40, y: this.playerY + 40,
+                    vx: -5 + Math.random()*10, vy: -5 + Math.random()*10,
+                    life: 0.5, color: '#FFF', size: 4
+                });
+            }
+            
+            // UI Feedback
+            const btn = document.getElementById('btn-dash');
+            if(btn) btn.classList.add('cooldown');
+        }
+    }
 
     // ... rest of ChapterBossBattle unchanged ...
     spawnPlayerProjectile(isSkill) {
@@ -3733,12 +3770,48 @@ class ChapterBossBattle {
     update(dt) {
         if(!this.active) return;
         
+        // 0. Handle Dash Inputs & Logic
+        if ((this.keys['Shift'] || this.keys['Control']) && !this.isDashing) {
+            this.dash();
+        }
+
+        // Manage Dash Cooldown UI
+        if(this.dashCooldown > 0) {
+            this.dashCooldown--;
+            if(this.dashCooldown <= 0) {
+                const btn = document.getElementById('btn-dash');
+                if(btn) btn.classList.remove('cooldown');
+            }
+        }
+
+        let currentSpeed = this.playerSpeed;
+        
+        // Apply Dash Effect
+        if (this.isDashing) {
+            currentSpeed = 20; // Burst Speed
+            this.dashTimer--;
+            
+            // Create afterimage/ghost effect
+            if (this.dashTimer % 2 === 0) {
+                 this.particles.push({
+                    x: this.playerX + 40, y: this.playerY + 40,
+                    vx: 0, vy: 0,
+                    life: 0.2, color: 'rgba(255, 255, 255, 0.4)', size: 35
+                });
+            }
+
+            if (this.dashTimer <= 0) {
+                this.isDashing = false;
+                this.invincible = false;
+            }
+        }
+
         // 1. Player Movement (Real-Time)
         let moved = false;
-        if(this.keys['ArrowUp'] || this.keys['w']) { this.playerY -= this.playerSpeed; moved = true; }
-        if(this.keys['ArrowDown'] || this.keys['s']) { this.playerY += this.playerSpeed; moved = true; }
-        if(this.keys['ArrowLeft'] || this.keys['a']) { this.playerX -= this.playerSpeed; moved = true; }
-        if(this.keys['ArrowRight'] || this.keys['d']) { this.playerX += this.playerSpeed; moved = true; }
+        if(this.keys['ArrowUp'] || this.keys['w']) { this.playerY -= currentSpeed; moved = true; }
+        if(this.keys['ArrowDown'] || this.keys['s']) { this.playerY += currentSpeed; moved = true; }
+        if(this.keys['ArrowLeft'] || this.keys['a']) { this.playerX -= currentSpeed; moved = true; }
+        if(this.keys['ArrowRight'] || this.keys['d']) { this.playerX += currentSpeed; moved = true; }
         
         // Attack Keys
         if(this.keys[' ']) { this.attack(); } // Space to attack
@@ -3796,8 +3869,8 @@ class ChapterBossBattle {
                 m.y += (dy/dist) * m.speed;
             }
 
-            // Collide with Player
-            if(dist < 30) {
+            // Collide with Player (Check Invincible)
+            if(!this.invincible && dist < 30) {
                 this.playerHp -= 0.5; // Damage over time contact
                 this.game.gameStats.damageTaken += 0.5;
                 this.spawnDamage(this.playerX, this.playerY, "-1", "red");
@@ -3847,8 +3920,8 @@ class ChapterBossBattle {
                     }
                 }
             } else if (p.type === 'boss') {
-                // Check Player Hit
-                if(Math.hypot(p.x - this.playerX, p.y - this.playerY) < 30) {
+                // Check Player Hit (Check Invincible)
+                if(!this.invincible && Math.hypot(p.x - this.playerX, p.y - this.playerY) < 30) {
                     this.playerHp -= p.damage;
                     this.game.gameStats.damageTaken += p.damage;
                     this.game.screenShake = 20; // Player Hit Shake (Hard)
@@ -3897,6 +3970,17 @@ class ChapterBossBattle {
         // Draw Player
         this.hero.draw(ctx);
         
+        // --- VISUAL EFFECT FOR DASH (GLOW) ---
+        if(this.isDashing) {
+            ctx.save();
+            ctx.globalCompositeOperation = 'lighter';
+            ctx.beginPath();
+            ctx.arc(this.playerX + 40, this.playerY + 40, 50, 0, Math.PI*2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fill();
+            ctx.restore();
+        }
+
         // --- DRAW PLAYER HUD HP (NEW) ---
         // Bar HP Statis di Pojok Kiri Atas
         const playerHpPct = Math.max(0, this.playerHp / this.maxPlayerHp);
@@ -3974,7 +4058,7 @@ class ChapterBossBattle {
         // Draw Controls Hint
         ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0, 550, 800, 50);
         ctx.fillStyle = "white"; ctx.font = "16px Rajdhani"; ctx.textAlign="left";
-        ctx.fillText("WASD / ARAH: Gerak | SPASI: Attack | Z: Skill", 20, 580);
+        ctx.fillText("WASD: Gerak | SHIFT: Dash | SPASI: Attack | Z: Skill", 20, 580);
     }
 
     spawnDamage(x, y, val, color) {
