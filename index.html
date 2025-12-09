@@ -275,6 +275,20 @@
             animation: slideUpFade 0.6s ease-out;
         }
 
+        /* --- NEW: PLAYER INFO IN RESULT --- */
+        .player-result-info {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid rgba(0, 217, 255, 0.2);
+        }
+        .p-name { color: var(--accent-gold); font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 2px; }
+        .p-school { color: #ccc; font-size: 0.9rem; margin-bottom: 2px; }
+        .p-loc { color: #888; font-size: 0.8rem; font-style: italic; }
+
         @keyframes slideUpFade {
             from { opacity: 0; transform: translateY(50px) scale(0.9); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -609,6 +623,13 @@
             <div class="rank-circle">
                 <div id="end-rank">S</div>
             </div>
+
+            <!-- NEW: PLAYER DETAIL SECTION -->
+            <div class="player-result-info">
+                <div id="res-name" class="p-name">GUARDIAN NAME</div>
+                <div id="res-school" class="p-school">SCHOOL NAME</div>
+                <div id="res-loc" class="p-loc">CITY, PROVINCE</div>
+            </div>
             
             <div class="score-box">
                 <div class="score-label">TOTAL SKOR AKHIR</div>
@@ -616,17 +637,23 @@
             </div>
             
             <!-- NEW STATISTICS SECTION -->
-            <div class="stats-container">
-                <div class="stat-item"><span>Enemies:</span> <span id="stat-kills" class="stat-val">0</span></div>
-                <div class="stat-item"><span>Max Combo:</span> <span id="stat-combo" class="stat-val">0</span></div>
-                <div class="stat-item"><span>Dmg Taken:</span> <span id="stat-dmg" class="stat-val">0</span></div>
-                <div class="stat-item"><span>Play Time:</span> <span id="stat-time" class="stat-val">0m</span></div>
-            </div>
-
-            <p id="end-msg">Energi Toya Berhasil Dimurnikan!</p>
-            <div id="save-status">Menyimpan data...</div>
-            
-            <button id="btn-victory-action" class="btn-ml btn-anim" style="width:100%" onclick="location.reload()">RE-DEPLOY</button>
+    <!-- ABOUT SCREEN -->
+    <div id="screen-about" class="ui-screen" style="z-index: 200; background: rgba(0,0,0,0.9);">
+        <div class="panel" style="text-align:center;">
+            <div class="close-btn" onclick="app.toggleAbout()">X</div>
+            <h2 style="color:var(--accent-gold); font-family: 'Orbitron';">TENTANG PENGEMBANG</h2>
+            <img src="images/logo_main.png" style="width:150px; margin-bottom:10px;" onerror="this.style.display='none'">
+            <h3 style="color:var(--tech-cyan); margin:0;">TOYA GUARDIANS</h3>
+            <p style="color:#aaa; font-size:0.9rem; margin-top:5px;">Tirtatelaga Defense System</p>
+            <p style="border-top:1px solid #333; border-bottom:1px solid #333; padding:10px 0; margin:15px 0;">
+                Versi: 20.0 (ARPG Update)<br>
+                <span style="font-size:0.8rem; color:var(--success-green);">Real-Time Action Battle</span>
+            </p>
+            <p style="font-size:0.8rem; color:#888;">Dikembangkan oleh:</p>
+            <h3 style="color:white; margin:5px 0;">TIM GELOMBANG UTARA</h3>
+            <p style="font-size:0.8rem; color:#888;">SMK Negeri 1 Brondong</p>
+            <br>
+            <!-- REMOVED GEMINI CREDIT AS REQUESTED -->
         </div>
     </div>
 
@@ -1629,11 +1656,11 @@ class GameApp {
         this.currentChapter = new Chapter3Bomber(this);
     }
 
-    // --- FIX: FUNGSI BARU UNTUK NARASI TRANSISI ---
+    // --- NEW: FUNGSI NARASI JEMBATAN (BOMBER -> QUIZ) ---
     triggerForensicNarrative() {
         AudioMgr.playSFX('sfx-click');
         this.state = AppState.STORY;
-        this.switchScreen('screen-story'); // Pindah ke layar dialog
+        this.switchScreen('screen-story');
         
         story.start([
             { speaker: "System AI", text: "Pemindaian Selesai. Seluruh Keylogger berhasil dinetralkan.", char: 'androidtoya', bg: 'bg_server' },
@@ -1641,14 +1668,16 @@ class GameApp {
             { speaker: "MASTER REX", text: "Akhirnya posisi Boss ditemukan! Dia bersembunyi di balik enkripsi tingkat tinggi.", char: 'rex', bg: 'bg_server' },
             { speaker: "MASTER REX", text: "Kita perlu melakukan Forensik Digital untuk mendekripsi koordinatnya. Lakukan sekarang!", char: 'rex', bg: 'bg_monitor' }
         ], () => {
-            // Setelah dialog selesai, baru mulai Quiz
+            // Lanjut ke Quiz setelah narasi
             this.startChapter3Quiz();
         });
     }
-    // ---------------------------------------------
+    // -----------------------------------------------------
 
     startChapter3Quiz() {
         AudioMgr.playMusic('bgm-player');
+        // FIX: Hapus showMessage awal agar tidak konflik dengan Tutorial Quiz yang muncul otomatis
+        // showMessage("INVESTIGASI LANJUTAN", "IP Penyerang Ditemukan! Analisis paket data untuk mendapatkan kode dekripsi.");
         
         this.switchScreen('screen-quiz');
         document.getElementById('hud').style.display = 'flex'; 
@@ -1744,6 +1773,17 @@ class GameApp {
 
         document.getElementById('end-score').innerText = Math.floor(this.player.score); 
         
+        // --- NEW: INJECT PLAYER INFO ---
+        document.getElementById('res-name').innerText = this.player.name || "GUARDIAN";
+        document.getElementById('res-school').innerText = this.player.school || "-";
+        
+        // Format Lokasi
+        const loc = [];
+        if(this.player.city && this.player.city !== '-') loc.push(this.player.city);
+        if(this.player.prov) loc.push(this.player.prov);
+        document.getElementById('res-loc').innerText = loc.join(", ") || "INDONESIA";
+        // --------------------------------
+
         // --- POPULATE STATISTICS ---
         document.getElementById('stat-kills').innerText = this.gameStats.totalKills;
         document.getElementById('stat-combo').innerText = this.gameStats.maxCombo + "x";
@@ -2321,7 +2361,7 @@ class ChapterCredits {
             { t: "TERIMA KASIH TELAH BERMAIN", size: "30px", color: "#00FF88", bold: true },
             { t: "Sampai Jumpa di Misi Selanjutnya!", size: "20px", color: "#aaa" },
             { t: "", size: "60px" },
-            // --- UPDATED: BADGE DI AKHIR ---
+            // --- ADDED: BADGE MADE WITH GEMINI ---
             { t: "POWERED BY", size: "16px", color: "#888" },
             { t: "✦ Made with Gemini", size: "24px", color: "#4285F4", bold: true }
         ];
@@ -3357,6 +3397,10 @@ class Chapter3Bomber {
         this.exitRevealed = false;
         this.transitioning = false; // Reset transition flag
         
+        // FIX: RESET WAKTU TIAP LANTAI
+        this.timeLeft = 120;
+        document.getElementById('hud-timer').innerText = this.timeLeft;
+
         if(lvl > 1) spawnFloatingScore(`LEVEL ${lvl} START!`);
         
         for(let r=0; r<this.rows; r++) {
@@ -3515,7 +3559,7 @@ class Chapter3Bomber {
                     () => {
                         // Callback saat tombol OK ditekan
                         this.cleanup(); 
-                        // FIX: Panggil fungsi narasi transisi, BUKAN langsung startChapter3Quiz
+                        // FIX: Panggil fungsi narasi transisi
                         this.game.triggerForensicNarrative(); 
                     }
                 );
