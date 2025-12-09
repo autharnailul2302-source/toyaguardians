@@ -166,9 +166,33 @@
 
         #hud { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; display: none; justify-content: space-between; pointer-events: none; z-index: 20; }
         .hud-top-left { display:flex; gap:10px; flex-direction: column; align-items: flex-start; }
-        .hud-panel { background: rgba(5, 20, 40, 0.85); border: 1px solid var(--tech-cyan); padding: 5px 15px; border-radius: 6px; color: white; font-family: 'Orbitron'; font-size: 1rem; display: flex; flex-direction: column; align-items: center; min-width: 80px; box-shadow: 0 0 10px rgba(0, 168, 255, 0.2); }
-        .hud-val { font-size: 1.2rem; font-weight: bold; }
-        .purity-container { width: 150px; height: 10px; background: #333; border: 1px solid #555; margin-top: 5px; position: relative; }
+        
+        /* UPDATED: Compact HUD Panel for Purity */
+        .hud-panel { 
+            background: rgba(5, 20, 40, 0.85); 
+            border: 1px solid var(--tech-cyan); 
+            padding: 5px 10px; /* Reduced padding */
+            border-radius: 6px; 
+            color: white; 
+            font-family: 'Orbitron'; 
+            font-size: 0.9rem; /* Slightly smaller font */
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-width: 60px; /* Reduced min-width */
+            box-shadow: 0 0 10px rgba(0, 168, 255, 0.2); 
+        }
+        .hud-val { font-size: 1.1rem; font-weight: bold; }
+        
+        /* UPDATED: Smaller Purity Bar */
+        .purity-container { 
+            width: 120px; /* Reduced from 150px */
+            height: 8px; /* Reduced from 10px */
+            background: #333; 
+            border: 1px solid #555; 
+            margin-top: 3px; 
+            position: relative; 
+        }
         .purity-fill { height: 100%; width: 100%; transition: width 0.3s, background-color 0.5s; box-shadow: 0 0 5px var(--tech-cyan); }
         
         #mission-overlay { 
@@ -1625,7 +1649,9 @@ class GameApp {
 
     startChapter3Quiz() {
         AudioMgr.playMusic('bgm-player');
-        showMessage("INVESTIGASI LANJUTAN", "IP Penyerang Ditemukan! Analisis paket data untuk mendapatkan kode dekripsi.");
+        // FIX: Hapus showMessage awal agar tidak konflik dengan Tutorial Quiz yang muncul otomatis
+        // showMessage("INVESTIGASI LANJUTAN", "IP Penyerang Ditemukan! Analisis paket data untuk mendapatkan kode dekripsi.");
+        
         this.switchScreen('screen-quiz');
         document.getElementById('hud').style.display = 'flex'; 
         document.getElementById('quiz-title-text').innerText = "FORENSIK DIGITAL";
@@ -3246,6 +3272,7 @@ class Chapter3Bomber {
         this.level = 1;
         this.maxLevels = 3;
         this.facingRight = true; 
+        this.transitioning = false; // FIX: Flag untuk mencegah trigger ganda saat di pintu keluar
 
         this.timeLeft = 120; 
         document.getElementById('hud-timer').innerText = this.timeLeft;
@@ -3330,6 +3357,7 @@ class Chapter3Bomber {
         this.enemies = [];
         this.bombs = [];
         this.exitRevealed = false;
+        this.transitioning = false; // Reset transition flag
         
         if(lvl > 1) spawnFloatingScore(`LEVEL ${lvl} START!`);
         
@@ -3462,13 +3490,19 @@ class Chapter3Bomber {
                 if(this.logsCollected >= this.logsRequired) { this.exitRevealed = true; spawnFloatingScore("IP DETECTED!"); }
             }
         });
-        if(this.exitRevealed && this.playerPos.r === this.exitPos.r && this.playerPos.c === this.exitPos.c) {
+        
+        // FIX: Tambahkan flag transitioning agar tidak terpanggil berkali-kali saat berdiri di pintu
+        if(this.exitRevealed && this.playerPos.r === this.exitPos.r && this.playerPos.c === this.exitPos.c && !this.transitioning) {
+            this.transitioning = true; // Lock transition
             AudioMgr.playSFX('sfx-correct');
+            
             if(this.level < this.maxLevels) {
                 this.level++;
-                this.initLevel(this.level);
+                setTimeout(() => this.initLevel(this.level), 500); // Delay sedikit untuk efek smooth
             } else {
-                this.active = false; this.cleanup(); this.game.startChapter3Quiz();
+                this.active = false; 
+                this.cleanup(); 
+                this.game.startChapter3Quiz();
             }
         }
     }
@@ -3566,20 +3600,20 @@ class Chapter3Bomber {
         if(pImg && pImg.complete) { ctx.drawImage(pImg, -20, -25, 40, 50); } else { ctx.fillStyle = "#00A8FF"; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill(); }
         ctx.restore();
 
-        // --- FIX (Poin 4): UI OVERLAY JELAS ---
-        // Latar belakang panel UI agar lebih jelas di bawah Purity
+        // --- FIX (Poin 1): UI PANEL DIPINDAH KE ATAS TENGAH ---
+        // Pindahkan dari (10, 80) ke (260, 15) agar tidak menutupi tile game
         ctx.fillStyle = "rgba(0,0,0,0.85)"; 
-        ctx.fillRect(10, 80, 280, 80);
+        ctx.fillRect(260, 15, 280, 70); // Posisi baru
         ctx.strokeStyle = "#00D9FF";
-        ctx.strokeRect(10, 80, 280, 80);
+        ctx.strokeRect(260, 15, 280, 70);
 
         ctx.fillStyle = "#FFD700"; 
         ctx.font = "bold 22px Orbitron";
-        ctx.fillText(`LANTAI ${this.level} / ${this.maxLevels}`, 20, 110);
+        ctx.fillText(`LANTAI ${this.level} / ${this.maxLevels}`, 280, 45); // Adjust Text Pos
         
         ctx.fillStyle = "white"; 
         ctx.font = "18px Rajdhani";
-        ctx.fillText(`KEYLOGGERS: ${this.logsCollected}/${this.logsRequired}`, 20, 140);
+        ctx.fillText(`KEYLOGGERS: ${this.logsCollected}/${this.logsRequired}`, 280, 70); // Adjust Text Pos
         
         // --- NEW: MISSION TEXT OVERLAY (BAWAH LAYAR) ---
         // Kotak Misi yang jelas
