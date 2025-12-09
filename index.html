@@ -2241,11 +2241,14 @@ class ChapterEndingCinematic {
             
             // Main Text with Glow
             ctx.fillStyle = "#00D9FF";
-            ctx.font = "24px 'Orbitron', sans-serif";
+            // FIX: Ukuran font diperkecil dari 24px ke 19px agar teks panjang muat dalam layar
+            ctx.font = "19px 'Orbitron', sans-serif";
             ctx.textAlign = "center";
             ctx.shadowColor = "#00A8FF";
             ctx.shadowBlur = 10;
-            ctx.fillText(this.captions[this.slideIdx], 400, 545);
+            
+            // Menggunakan maxWidth (760px) untuk memastikan browser mengecilkan teks jika masih terlalu panjang
+            ctx.fillText(this.captions[this.slideIdx], 400, 545, 760);
             
             ctx.restore();
         }
