@@ -81,6 +81,19 @@
         
         @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
 
+        /* GEMINI BADGE STYLE */
+        .gemini-badge {
+            position: absolute; bottom: 15px; right: 15px;
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+            padding: 5px 12px; border-radius: 20px;
+            font-family: 'Rajdhani', sans-serif; font-weight: bold; font-size: 0.8rem;
+            color: white; border: 1px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; gap: 5px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+            animation: glowBadge 3s infinite alternate;
+        }
+        @keyframes glowBadge { from { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); } to { box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); } }
+
         #lightning-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
         
         /* REGISTER & CHAR SELECT */
@@ -282,7 +295,7 @@
             border-radius: 8px;
             padding: 10px 30px;
             border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-align: center;
             width: 100%; box-sizing: border-box;
         }
@@ -291,7 +304,26 @@
         #end-score { color: white; font-size: 2rem; font-family: 'Orbitron'; font-weight: bold; margin: 0; text-shadow: 0 0 10px white; }
 
         #end-msg { color: #ccc; margin-bottom: 10px; font-style: italic; }
-        #save-status { font-size: 0.8rem; color: #666; margin-bottom: 20px; border-top: 1px solid #333; padding-top: 5px; width: 100%; text-align: center; }
+        #save-status { font-size: 0.8rem; color: #666; margin-bottom: 10px; border-top: 1px solid #333; padding-top: 5px; width: 100%; text-align: center; }
+
+        /* STATISTICS GRID (STATS SCREEN) */
+        .stats-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-family: 'Rajdhani';
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #aaa;
+            display: flex; justify-content: space-between;
+        }
+        .stat-val { color: var(--tech-cyan); font-weight: bold; }
 
     </style>
 </head>
@@ -422,6 +454,11 @@
             <button class="btn-ml btn-anim" style="background: #002244; border-color:#004488;" onclick="app.showLeaderboard()">HALL OF GUARDIANS (NASIONAL)</button>
         </div>
         <p style="position:absolute; bottom:10px; color:var(--tech-cyan); font-size:0.8rem; text-shadow:0 0 5px black;">Ver. 20.0 (ARPG Matrix)</p>
+
+        <!-- BADGE GEMINI (NEW) -->
+        <div class="gemini-badge">
+            <span style="font-size:1.2rem;">✦</span> Made with Gemini
+        </div>
     </div>
 
     <div id="screen-register" class="ui-screen">
@@ -569,6 +606,14 @@
                 <div id="end-score">0</div>
             </div>
             
+            <!-- NEW STATISTICS SECTION -->
+            <div class="stats-container">
+                <div class="stat-item"><span>Enemies:</span> <span id="stat-kills" class="stat-val">0</span></div>
+                <div class="stat-item"><span>Max Combo:</span> <span id="stat-combo" class="stat-val">0</span></div>
+                <div class="stat-item"><span>Dmg Taken:</span> <span id="stat-dmg" class="stat-val">0</span></div>
+                <div class="stat-item"><span>Play Time:</span> <span id="stat-time" class="stat-val">0m</span></div>
+            </div>
+
             <p id="end-msg">Energi Toya Berhasil Dimurnikan!</p>
             <div id="save-status">Menyimpan data...</div>
             
@@ -589,7 +634,11 @@
 
 <script>
 /**
- * TOYA GUARDIANS v20.0: Real-Time ARPG Boss Battle Update
+ * TOYA GUARDIANS v20.1: JUICINESS UPDATE
+ * - Screen Shake
+ * - Combo System
+ * - Player HUD
+ * - Statistics
  */
 
 // ... [KODE SEBELUMNYA TETAP SAMA] ...
@@ -663,74 +712,7 @@ const DATA_INDONESIA = {
         "Sabang": ["Sukakarya", "Sukajaya"],
         "Lhokseumawe": ["Banda Sakti", "Blang Mangat", "Muara Dua", "Muara Satu"],
         "Langsa": ["Langsa Barat", "Langsa Baro", "Langsa Kota", "Langsa Lama", "Langsa Timur"],
-        "Subulussalam": ["Longkib", "Penanggalan", "Rundeng", "Simpang Kiri", "Sultan Daulat"],
-        "Aceh Besar": ["Baitussalam", "Darussalam", "Darul Imarah", "Darul Kamal", "Indrapuri", "Ingin Jaya", "Kota Jantho", "Krueng Barona Jaya", "Kuta Baro", "Kuta Cot Glie", "Kuta Malaka", "Lembah Seulawah", "Leupung", "Lhoong", "Mesjid Raya", "Montasik", "Peukan Bada", "Pulo Aceh", "Seulimeum", "Simpang Tiga", "Suka Makmur", "Sukamakmur"],
-        "Aceh Barat": ["Arongan Lambalek", "Bubon", "Johan Pahlawan", "Kaway XVI", "Meureubo", "Pantai Ceureumen", "Pante Ceureumen", "Samatiga", "Sungai Mas", "Woyla", "Woyla Barat", "Woyla Timur"],
-        "Aceh Barat Daya": ["Babah Rot", "Blang Pidie", "Jeumpa", "Kuala Batee", "Lembah Sabil", "Manggeng", "Setia", "Susoh", "Tangan-Tangan"],
-        "Aceh Selatan": ["Bakongan", "Bakongan Timur", "Kluet Selatan", "Kluet Tengah", "Kluet Timur", "Kluet Utara", "Labuhan Haji", "Labuhan Haji Barat", "Labuhan Haji Timur", "Meukek", "Pasie Raja", "Samadua", "Sawang", "Tapak Tuan", "Trumon", "Trumon Tengah", "Trumon Timur"],
-        "Aceh Tenggara": ["Babul Makmur", "Babul Rahmah", "Babussalam", "Badar", "Bambel", "Bukit Tusam", "Deleng Pokhkisen", "Darul Hasanah", "Ketambe", "Lawe Alas", "Lawe Bulan", "Lawe Sigala-Gala", "Lawe Sumur", "Semadam", "Tanoh Alas"],
-        "Aceh Timur": ["Banda Alam", "Birem Bayeun", "Darul Aman", "Darul Falah", "Darul Ihsan", "Idi Rayeuk", "Idi Timur", "Idi Tunong", "Julok", "Madat", "Nurussalam", "Pante Bidari", "Peudawa", "Peureulak", "Peureulak Barat", "Peureulak Timur", "Rantau Selamat", "Ranto Peureulak", "Serbajadi", "Simpang Jernih", "Simpang Ulim", "Sungai Raya"],
-        "Aceh Tengah": ["Atu Lintang", "Bebesen", "Bintang", "Celala", "Jagong Jeget", "Kebayakan", "Ketol", "Kute Panang", "Linge", "Lut Tawar", "Pegasing", "Rusip Antara", "Silih Nara"],
-        "Aceh Utara": ["Baktiya", "Baktiya Barat", "Banda Baro", "Cot Girek", "Dewantara", "Kuta Makmur", "Langkahan", "Lapang", "Lhoksukon", "Matangkuli", "Muara Batu", "Meurah Mulia", "Nibong", "Nisam", "Nisam Antara", "Paya Bakong", "Pirak Timu", "Samudera", "Sawang", "Seunuddon", "Simpang Kramat", "Syamtalira Aron", "Syamtalira Bayu", "Tanah Jambo Aye", "Tanah Luas", "Tanah Pasir", "T. Jambo Aye"],
-        "Aceh Singkil": ["Danau Paris", "Gunung Meriah", "Kota Baharu", "Kuala Baru", "Pulau Banyak", "Pulau Banyak Barat", "Simpang Kanan", "Singkil", "Singkil Utara", "Singkohor", "Suro Makmur"],
-        "Aceh Tamiang": ["Banda Mulia", "Bandar Pusaka", "Bendahara", "Karang Baru", "Kejuruan Muda", "Kota Kuala Simpang", "Manyak Payed", "Rantau", "Seruway", "Sekerak", "Tamiang Hulu", "Tenggulun"],
-        "Aceh Jaya": ["Drien Rampak", "Indra Jaya", "Jaya", "Krueng Sabee", "Panga", "Pasie Raya", "Sampoiniet", "Setia Bakti", "Teunom"],
-        "Bener Meriah": ["Bandar", "Bukit", "Gajah Putih", "Mesidah", "Permata", "Pintu Rime Gayo", "Syiah Utama", "Timang Gajah", "Wih Pesam"],
-        "Pidie": ["Batee", "Delima", "Geumpang", "Glumpang Tiga", "Grong-Grong", "Indrajaya", "Keumala", "Kembang Tanjong", "Kota Sigli", "Mane", "Mila", "Muara Tiga", "Mutiara", "Mutiara Timur", "Padang Tiji", "Peukan Baro", "Pidie", "Sakti", "Simpang Tiga", "Tangse", "Tiro/Truseb", "Titeu", "Tringgadeng"],
-        "Pidie Jaya": ["Bandar Baru", "Bandar Dua", "Jangka Buya", "Meurah Dua", "Meureudu", "Panteraja", "Trienggadeng", "Ulim"],
-        "Simeulue": ["Alafan", "Salang", "Simeulue Barat", "Simeulue Tengah", "Simeulue Timur", "Simpang Teritip", "Teupah Barat", "Teupah Selatan", "Teupah Tengah", "Teluk Dalam"],
-        "Gayo Lues": ["Blang Jerango", "Blangkejeren", "Dabun Gelang", "Kuta Panjang", "Pantan Cuaca", "Pining", "Putri Betung", "Rikit Gaib", "Terangun", "Tripe Jaya"],
-        "Nagan Raya": ["Beutong", "Beutong Ateuh Banggalang", "Darul Makmur", "Kuala", "Kuala Pesisir", "Seunagan", "Seunagan Timur", "Suka Makmue", "Tadu Raya", "Tripa Makmur"]
-    },
-    "Sumatera Utara": {
-        "Medan": ["Medan Amplas", "Medan Area", "Medan Barat", "Medan Belawan", "Medan Baru", "Medan Deli", "Medan Denai", "Medan Helvetia", "Medan Johor", "Medan Kota", "Medan Labuhan", "Medan Maimun", "Medan Marelan", "Medan Perjuangan", "Medan Petisah", "Medan Polonia", "Medan Selayang", "Medan Sunggal", "Medan Tembung", "Medan Timur", "Medan Tuntungan"],
-        "Binjai": ["Binjai Barat", "Binjai Kota", "Binjai Selatan", "Binjai Timur", "Binjai Utara"],
-        "Pematang Siantar": ["Siantar Barat", "Siantar Marihat", "Siantar Marimbun", "Siantar Martoba", "Siantar Selatan", "Siantar Sitalasari", "Siantar Timur", "Siantar Utara"],
-        "Tebing Tinggi": ["Bajenis", "Padang Hilir", "Padang Hulu", "Rambutan", "Tebing Tinggi Kota"],
-        "Tanjungbalai": ["Datuk Bandar", "Datuk Bandar Timur", "Sei Tualang Raso", "Tanjungbalai Selatan", "Tanjungbalai Utara", "Teluk Nibung"],
-        "Sibolga": ["Sibolga Kota", "Sibolga Sambas", "Sibolga Selatan", "Sibolga Utara"],
-        "Padang Sidempuan": ["Padangsidimpuan Angkola Julu", "Padangsidimpuan Batunadua", "Padangsidimpuan Hutaimbaru", "Padangsidimpuan Selatan", "Padangsidimpuan Tenggara", "Padangsidimpuan Utara"],
-        "Gunungsitoli": ["Gunungsitoli", "Gunungsitoli Alo'oa", "Gunungsitoli Barat", "Gunungsitoli Idanoi", "Gunungsitoli Selatan", "Gunungsitoli Utara"],
-        "Asahan": ["Air Batu", "Air Joman", "Aek Kuasan", "Aek Ledong", "Aek Songsongan", "Bandar Pasir Mandoge", "Bandar Pulau", "Buntu Pane", "Kisaran Barat", "Kisaran Timur", "Meranti", "Pulo Bandring", "Pulau Rakyat", "Rawang Panca Arga", "Sei Dadap", "Sei Kepayang", "Sei Kepayang Barat", "Sei Kepayang Timur", "Silau Laut", "Simpang Empat", "Tanjung Balai", "Teluk Dalam"],
-        "Batubara": ["Air Putih", "Datuk Lima Puluh", "Lima Puluh", "Lima Puluh Pesisir", "Medang Deras", "Sei Balai", "Sei Suka", "Talawi", "Tanjung Tiram", "Teluk Mengkudu"],
-        "Dairi": ["Gunung Sitember", "Lae Parira", "Parbuluan", "Pegagan Hilir", "Sidikalang", "Siempat Nempu", "Siempat Nempu Hilir", "Siempat Nempu Hulu", "Silahi Sabungan", "Silima Pungga-Pungga", "Sitinjo", "Sumbul", "Tanah Pinem", "Tigalingga", "Tiga Lingga"],
-        "Deli Serdang": ["Bangun Purba", "Batang Kuis", "Beringin", "Biru-Biru", "Delitua", "Galang", "Gunung Meriah", "Hamparan Perak", "Kutalimbaru", "Labuhan Deli", "Lubuk Pakam", "Namorambe", "Pancur Batu", "Patumbak", "Percut Sei Tuan", "Sibolangit", "Sinembah Tanjung Muda Hilir", "Sinembah Tanjung Muda Hulu", "STM Hilir", "STM Hulu", "Sunggal", "Tanjung Morawa"],
-        "Humbang Hasundutan": ["Baktiraja", "Dolok Sanggul", "Lintong Nihuta", "Lintongnihuta", "Onan Ganjang", "Pakkat", "Paranginan", "Parlilitan", "Pollung", "Sijama Polang", "Tara Bintang", "Tarabintang"],
-        "Karo": ["Barusjahe", "Berastagi", "Dolat Rayat", "Juhar", "Kabanjahe", "Kuta Buluh", "Laubaleng", "Mardingding", "Merek", "Merdeka", "Munte", "Munthe", "Namanteran", "Payung", "Simpang Empat", "Tiga Binanga", "Tigapanah"],
-        "Labuhanbatu": ["Bilah Barat", "Bilah Hilir", "Bilah Hulu", "Kualuh Hilir", "Kualuh Hulu", "Kualuh Leidong", "Kualuh Selatan", "Na IX-X", "Pangkatan", "Rantau Selatan", "Rantau Utara"],
-        "Labuhanbatu Selatan": ["Kampung Rakyat", "Kota Pinang", "Sungai Kanan", "Torgamba"],
-        "Labuhanbatu Utara": ["Aek Kuo", "Aek Natas", "Kualuh Hilir", "Kualuh Hulu", "Marbau", "Na IX-X", "Pangkatan"],
-        "Langkat": ["Babalan", "Bahorok", "Batang Serangan", "Berandan Barat", "Besitang", "Binjai", "Brandan Barat", "Gebang", "Hinai", "Kuala", "Kutambaru", "Padang Tualang", "Pematang Jaya", "Pangkalan Susu", "Salapian", "Sawit Seberang", "Secanggang", "Sei Bingai", "Selesai", "Serapit", "Stabat", "Tanjung Pura", "Wampu"],
-        "Mandailing Natal": ["Batahan", "Batang Natal", "Bukit Malintang", "Kotanopan", "Lembah Sorik Marapi", "Lingga Bayu", "Muara Batang Gadis", "Muara Sipongi", "Natal", "Panyabungan", "Panyabungan Barat", "Panyabungan Selatan", "Panyabungan Timur", "Panyabungan Utara", "Pakantan", "Ranto Baek", "Siabu", "Sinunukan", "Tambangan", "Ulu Pungkut"],
-        "Nias": ["Gido", "Hiliduho", "Hiliserangkai", "Idanogawo", "Lahusa", "Lolofitu Moi", "Mandrehe", "Mandrehe Barat", "Mandrehe Utara", "Maniamolo", "Sogaeadu", "Tanah Masa", "Umbunasi", "Ulugawo"],
-        "Nias Barat": ["Boronadu", "Hiliduho", "Lolofitu Moi", "Lahusa", "Mandrehe", "Mandrehe Barat", "Mandrehe Utara", "Moro'o", "Sirombu"],
-        "Nias Selatan": ["Amandraya", "Fanayama", "Gomo", "Hibala", "Huruna", "Lahomi", "Lolomatua", "Luahagundre Maniamolo", "Ma'u", "Mazino", "Pulau-Pulau Batu", "Pulau-Pulau Batu Barat", "Pulau-Pulau Batu Timur", "Pulau-Pulau Batu Utara", "Somolo-Molo", "Susua", "Toma", "Teluk Dalam", "Ulu Idanogawo", "Ulususua"],
-        "Nias Utara": ["Afulu", "Alasa", "Alasa Talumuzoi", "Lahewa", "Lahewa Timur", "Lotu", "Namohalu Esiwa", "Sawo", "Sitolu Ori", "Tuhemberua", "Tugala Oyo"],
-        "Padang Lawas": ["Barumun", "Barumun Selatan", "Barumun Tengah", "Batang Batoru", "Halongonan", "Huta Raja Tinggi", "Lubuk Barumun", "Sihapas Barumun", "Sosa", "Ulu Barumun"],
-        "Padang Lawas Utara": ["Batang Onang", "Dolok", "Dolok Sigompulon", "Garoga", "Halongonan", "Hulu Sihapas", "Padang Bolak", "Padang Bolak Julu", "Portibi", "Simangambat"],
-        "Pakpak Bharat": ["Kerajaan", "Pagindar", "Pergetteng-Getteng Sengkut", "Salak", "Siempat Rube", "Sitellu Tali Urang Jehe", "Sitellu Tali Urang Julu", "Tinada"],
-        "Samosir": ["Harian", "Nainggolan", "Onan Runggu", "Pangururan", "Palipi", "Ronggur Nihuta", "Sianjur Mula-Mula", "Simanindo", "Sitio-Tio"],
-        "Serdang Bedagai": ["Bandar Khalifah", "Bintang Bayu", "Dolok Masihul", "Dolok Merawan", "Kotarih", "Lintas Pecut", "Perbaungan", "Pantai Cermin", "Pegajahan", "Sei Bamban", "Sei Rampah", "Silinda", "Sipispis", "Tanjung Beringin", "Tebing Syahbandar", "Tebing Tinggi", "Teluk Mengkudu"],
-        "Simalungun": ["Bandar", "Bandar Huluan", "Bandar Masilam", "Bosar Maligas", "Dolok Batu Nanggar", "Dolok Panribuan", "Dolok Pardamean", "Dolok Silau", "Girsang Sipangan Bolon", "Gunung Malela", "Gunung Maligas", "Hatonduhan", "Huta Bayu Raja", "Jawa Maraja Bah Jambi", "Jorlang Hataran", "Panei", "Pematang Bandar", "Pematang Silimahuta", "Purba", "Raya", "Raya Kahean", "Siantar", "Sidamanik", "Silimakuta", "Silou Kahean", "Tapian Dolok", "Tanah Jawa", "Ujung Padang"],
-        "Tapanuli Selatan": ["Adian Koting", "Angkola Barat", "Angkola Sangkunur", "Angkola Selatan", "Angkola Timur", "Aek Bilah", "Batang Angkola", "Batang Toru", "Marancar", "Muara Batang Toru", "Saipar Dolok Hole", "Sayur Matinggi", "Sipirok", "Tano Tombangan Angkola"],
-        "Tapanuli Tengah": ["Badiri", "Barus", "Barus Utara", "Kolang", "Lumut", "Manduamas", "Pandan", "Pasaribu Tobing", "Pinangsori", "Sarudik", "Sibabangun", "Sirandorung", "Sitahuis", "Sorkam", "Sorkam Barat", "Tapian Nauli", "Tukka"],
-        "Tapanuli Utara": ["Adiankoting", "Garoga", "Muara", "Pagaran", "Pangaribuan", "Parmonangan", "Purbatua", "Siatas Barita", "Siborongborong", "Sipahutar", "Tarutung", "Pahae Jae", "Pahae Julu", "Simangumban", "Sipoholon", "Parmonangan"],
-        "Toba Samosir": ["Ajibata", "Balige", "Borbor", "Bonatua Lunasi", "Habinsaran", "Laguboti", "Lumban Julu", "Nassau", "Parmaksian", "Pintu Pohan Meranti", "Porsea", "Siantar Narumonda", "Silaen", "Sigumpar", "Uluan"]
-    },
-	
-	
-	"DKI Jakarta": {
-        "Jakarta Pusat": ["Gambir", "Tanah Abang", "Menteng", "Senen", "Cempaka Putih"],
-        "Jakarta Selatan": ["Kebayoran Baru", "Kebayoran Lama", "Cilandak", "Pasar Minggu", "Tebet"]
-    },
-    "Jawa Barat": {
-        "Bandung": ["Cicendo", "Coblong", "Andir", "Buahbatu", "Kiaracondong"],
-        "Bekasi": ["Bekasi Barat", "Bekasi Timur", "Bekasi Selatan", "Jatiasih"],
-        "Bogor": ["Bogor Tengah", "Bogor Barat", "Bogor Selatan"]
-    },
-    "Jawa Tengah": {
-        "Semarang": ["Semarang Tengah", "Semarang Barat", "Candisari"],
-        "Surakarta": ["Banjarsari", "Jebres", "Laweyan", "Pasar Kliwon", "Serengan"]
+        "Subulussalam": ["Longkib", "Penanggalan", "Rundeng", "Simpang Kiri", "Sultan Daulat"]
     },
     "Jawa Timur": {
         "Surabaya": ["Gubeng", "Tegalsari", "Genteng", "Wonokromo", "Rungkut", "Sukolilo"],
@@ -738,13 +720,14 @@ const DATA_INDONESIA = {
 		"Lamongan": ["Brondong", "Tlogoretno", "Sedayulawas", "Brengkok", "Labuhan", "Paciran", "Babat"],
         "Gresik": ["Gresik Kota", "Kebomas", "Manyar", "Driyorejo"]
     },
-    "Bali": {
-        "Denpasar": ["Denpasar Barat", "Denpasar Timur", "Denpasar Selatan", "Denpasar Utara"],
-        "Badung": ["Kuta", "Kuta Selatan", "Kuta Utara", "Mengwi"]
+    "Jawa Barat": {
+        "Bandung": ["Cicendo", "Coblong", "Andir", "Buahbatu", "Kiaracondong"],
+        "Bekasi": ["Bekasi Barat", "Bekasi Timur", "Bekasi Selatan", "Jatiasih"],
+        "Bogor": ["Bogor Tengah", "Bogor Barat", "Bogor Selatan"]
     },
-    "Sumatera Utara": {
-        "Medan": ["Medan Kota", "Medan Baru", "Medan Sunggal", "Medan Johor"],
-        "Deli Serdang": ["Percut Sei Tuan", "Tanjung Morawa"]
+    "DKI Jakarta": {
+        "Jakarta Pusat": ["Gambir", "Tanah Abang", "Menteng", "Senen", "Cempaka Putih"],
+        "Jakarta Selatan": ["Kebayoran Baru", "Kebayoran Lama", "Cilandak", "Pasar Minggu", "Tebet"]
     }
 };
 
@@ -753,17 +736,7 @@ const BANK_SOAL_CH1 = [
     { q: "Tiga pilar utama keamanan informasi dikenal dengan singkatan CIA. Apa kepanjangannya?", options: [{text:"Confidentiality, Integrity, Availability",correct:true},{text:"Control, Intelligence, Access",correct:false},{text:"Cyber, Internet, Authority",correct:false},{text:"Code, Input, Algorithm",correct:false}], hint:"Kerahasiaan, Integritas, Ketersediaan." },
     { q: "Jenis malware yang menyamar sebagai program berguna namun berisi kode berbahaya disebut...", options: [{text:"Trojan Horse",correct:true},{text:"Worm",correct:false},{text:"Spyware",correct:false},{text:"Adware",correct:false}], hint:"Seperti kuda kayu Yunani kuno." },
     { q: "Serangan di mana peretas menempatkan diri di antara dua pihak yang berkomunikasi disebut...", options: [{text:"Man-in-the-Middle (MITM)",correct:true},{text:"Brute Force",correct:false},{text:"SQL Injection",correct:false},{text:"Ransomware",correct:false}], hint:"Orang di tengah-tengah." },
-    { q: "Teknik memalsukan identitas pengirim (seperti IP address) untuk menipu penerima disebut...", options: [{text:"Spoofing",correct:true},{text:"Sniffing",correct:false},{text:"Hacking",correct:false},{text:"Phishing",correct:false}], hint:"Mirip kata 'Spoof' (parodi/palsu)." },
-    { q: "Apa dampak utama jika aspek 'Availability' dalam CIA Triad dilanggar?", options: [{text:"Layanan tidak bisa diakses user",correct:true},{text:"Data dicuri",correct:false},{text:"Data dimodifikasi",correct:false},{text:"Password terenkripsi",correct:false}], hint:"Server down." },
-    { q: "Topologi jaringan mana yang jika kabel utamanya putus, seluruh jaringan akan mati?", options: [{text:"Bus",correct:true},{text:"Star",correct:false},{text:"Mesh",correct:false},{text:"Ring",correct:false}], hint:"Bentuknya lurus seperti bis." },
-    { q: "Apa itu 'Sniffing' dalam konteks jaringan?", options: [{text:"Penyadapan lalu lintas data",correct:true},{text:"Pemblokiran akses",correct:false},{text:"Pengiriman virus",correct:false},{text:"Pencurian hardware",correct:false}], hint:"Mengendus paket data." },
-    { q: "Malware yang dapat menggandakan diri dan menyebar tanpa bantuan file inang disebut...", options: [{text:"Worm",correct:true},{text:"Virus",correct:false},{text:"Trojan",correct:false},{text:"Rootkit",correct:false}], hint:"Cacing komputer." },
-    { q: "Apa fungsi utama dari enkripsi data?", options: [{text:"Menjaga kerahasiaan (Confidentiality)",correct:true},{text:"Mempercepat internet",correct:false},{text:"Menghemat penyimpanan",correct:false},{text:"Menghapus virus",correct:false}], hint:"Mengubah teks jadi kode acak." },
-    { q: "Serangan yang mencoba menebak password dengan mencoba semua kombinasi disebut...", options: [{text:"Brute Force",correct:true},{text:"Social Engineering",correct:false},{text:"Phishing",correct:false},{text:"Malware",correct:false}], hint:"Paksa secara kasar." },
-    { q: "Kelemahan utama topologi Star adalah...", options: [{text:"Bergantung pada Switch/Hub pusat",correct:true},{text:"Kabel boros",correct:false},{text:"Sulit dikonfigurasi",correct:false},{text:"Jika satu PC mati, semua mati",correct:false}], hint:"Jika pusat mati, semua mati." },
-    { q: "Apa tujuan utama serangan Ransomware?", options: [{text:"Meminta tebusan uang",correct:true},{text:"Mencuri password FB",correct:false},{text:"Memperlambat PC",correct:false},{text:"Menampilkan iklan",correct:false}], hint:"Ransom artinya tebusan." },
-    { q: "Protokol HTTPs menggunakan port nomor...", options: [{text:"443",correct:true},{text:"80",correct:false},{text:"21",correct:false},{text:"22",correct:false}], hint:"Lebih tinggi dari port HTTP standar." },
-    { q: "Siapa pihak yang paling bertanggung jawab menjaga password akun?", options: [{text:"Pengguna (User)",correct:true},{text:"Admin Jaringan",correct:false},{text:"Penyedia Internet",correct:false},{text:"Pemerintah",correct:false}], hint:"Pemilik akun itu sendiri." }
+    { q: "Teknik memalsukan identitas pengirim (seperti IP address) untuk menipu penerima disebut...", options: [{text:"Spoofing",correct:true},{text:"Sniffing",correct:false},{text:"Hacking",correct:false},{text:"Phishing",correct:false}], hint:"Mirip kata 'Spoof' (parodi/palsu)." }
 ];
 
 const BANK_SOAL_CH2 = [
@@ -771,17 +744,7 @@ const BANK_SOAL_CH2 = [
     { q: "Teknologi apa yang memungkinkan akses aman ke jaringan privat melalui jaringan publik (internet)?", options: [{text:"VPN (Virtual Private Network)",correct:true},{text:"VLAN",correct:false},{text:"WAN",correct:false},{text:"LAN",correct:false}], hint:"Jaringan 'Pribadi Virtual'." },
     { q: "Dalam konfigurasi firewall, aturan apa yang paling aman diterapkan sebagai standar?", options: [{text:"Default Deny (Blokir semua kecuali yang diizinkan)",correct:true},{text:"Default Allow (Izinkan semua)",correct:false},{text:"Block Port 80",correct:false},{text:"Allow All Traffic",correct:false}], hint:"Tolak semua secara default." },
     { q: "Apa fungsi dari ACL (Access Control List) pada router atau firewall?", options: [{text:"Mengontrol lalu lintas berdasarkan aturan (IP/Port)",correct:true},{text:"Mempercepat koneksi internet",correct:false},{text:"Menyimpan password pengguna",correct:false},{text:"Mendeteksi kerusakan kabel",correct:false}], hint:"Daftar untuk mengontrol akses." },
-    { q: "Tindakan 'Hardening' pada perangkat jaringan meliputi...", options: [{text:"Menutup port yang tidak perlu & update firmware",correct:true},{text:"Menambah RAM perangkat",correct:false},{text:"Membersihkan debu perangkat",correct:false},{text:"Memasang kipas tambahan",correct:false}], hint:"Memperkuat sistem dari sisi software/konfigurasi." },
-    { q: "Port mana yang sebaiknya DIBLOKIR untuk mencegah akses remote yang tidak aman (pengganti SSH)?", options: [{text:"Port 23 (Telnet)",correct:true},{text:"Port 22 (SSH)",correct:false},{text:"Port 80 (HTTP)",correct:false},{text:"Port 443 (HTTPS)",correct:false}], hint:"Protokol jadul teks polos." },
-    { q: "IPS (Intrusion Prevention System) berbeda dengan IDS karena IPS dapat...", options: [{text:"Secara otomatis memblokir serangan yang terdeteksi",correct:true},{text:"Hanya mencatat log serangan",correct:false},{text:"Bekerja offline",correct:false},{text:"Memperbaiki hardware",correct:false}], hint:"Prevention berarti Pencegahan aktif." },
-    { q: "Konfigurasi 'Allow Port 443' pada firewall bertujuan untuk...", options: [{text:"Mengizinkan akses web aman (HTTPS)",correct:true},{text:"Mengizinkan akses web biasa (HTTP)",correct:false},{text:"Mengizinkan email",correct:false},{text:"Mengizinkan game",correct:false}], hint:"Port standar untuk web secure." },
-    { q: "Apa tujuan utama dari Kebijakan Keamanan (Security Policy)?", options: [{text:"Memberikan panduan & aturan tertulis tentang keamanan",correct:true},{text:"Hanya formalitas dokumen",correct:false},{text:"Membuat pekerjaan lambat",correct:false},{text:"Menghukum karyawan",correct:false}], hint:"Dasar aturan organisasi." },
-    { q: "Stateful Inspection pada firewall berarti...", options: [{text:"Memantau status koneksi dari awal hingga akhir",correct:true},{text:"Hanya memeriksa header paket statis",correct:false},{text:"Memeriksa virus dalam file",correct:false},{text:"Memeriksa keaslian hardware",correct:false}], hint:"Mengingat 'State' atau status koneksi." },
-    { q: "Mengubah password default admin router adalah contoh langkah...", options: [{text:"Device Hardening",correct:true},{text:"Network Mapping",correct:false},{text:"Penetration Testing",correct:false},{text:"Social Engineering",correct:false}], hint:"Penguatan perangkat." },
-    { q: "Packet Filtering Firewall bekerja pada layer OSI...", options: [{text:"Network (Layer 3) & Transport (Layer 4)",correct:true},{text:"Application (Layer 7)",correct:false},{text:"Physical (Layer 1)",correct:false},{text:"Data Link (Layer 2)",correct:false}], hint:"Mengecek IP dan Port." },
-    { q: "Apa itu DMZ (Demilitarized Zone) dalam arsitektur firewall?", options: [{text:"Area jaringan semi-publik untuk server yang diakses publik",correct:true},{text:"Area paling aman dan rahasia",correct:false},{text:"Area untuk database internal",correct:false},{text:"Jaringan khusus admin",correct:false}], hint:"Zona netral." },
-    { q: "Next-Generation Firewall (NGFW) memiliki kelebihan dibanding firewall tradisional, yaitu...", options: [{text:"Deep Packet Inspection & Application Awareness",correct:true},{text:"Hanya filter port",correct:false},{text:"Harga lebih murah",correct:false},{text:"Tidak perlu konfigurasi",correct:false}], hint:"Inspeksi lebih dalam." },
-    { q: "Jika sebuah firewall dikonfigurasi 'Block All Inbound', apa efeknya?", options: [{text:"Tidak ada koneksi dari luar yang bisa masuk",correct:true},{text:"Tidak bisa browsing internet",correct:false},{text:"Semua koneksi lancar",correct:false},{text:"Komputer akan mati",correct:false}], hint:"Semua yang masuk diblokir." }
+    { q: "Tindakan 'Hardening' pada perangkat jaringan meliputi...", options: [{text:"Menutup port yang tidak perlu & update firmware",correct:true},{text:"Menambah RAM perangkat",correct:false},{text:"Membersihkan debu perangkat",correct:false},{text:"Memasang kipas tambahan",correct:false}], hint:"Memperkuat sistem dari sisi software/konfigurasi." }
 ];
 
 const BANK_SOAL_CH3 = [
@@ -789,17 +752,7 @@ const BANK_SOAL_CH3 = [
     { q: "Di dalam Wireshark, warna merah pada baris paket biasanya menandakan...", options: [{text:"Paket Error / Reset (RST)",correct:true},{text:"Paket Aman",correct:false},{text:"Paket Gambar",correct:false},{text:"Paket Email",correct:false}], hint:"Warna bahaya." },
     { q: "Langkah pertama dalam Incident Response menurut standar NIST adalah...", options: [{text:"Preparation (Persiapan)",correct:true},{text:"Detection",correct:false},{text:"Eradication",correct:false},{text:"Recovery",correct:false}], hint:"Sedia payung sebelum hujan." },
     { q: "Apa itu 'Log File' dalam server?", options: [{text:"Catatan aktivitas sistem dan user",correct:true},{text:"Batang kayu",correct:false},{text:"File sampah",correct:false},{text:"Program antivirus",correct:false}], hint:"Jejak digital." },
-    { q: "Jika ditemukan login sukses di jam 3 pagi dari IP asing, ini indikasi...", options: [{text:"Compromised Account (Akun jebol)",correct:true},{text:"Server update",correct:false},{text:"Admin lembur",correct:false},{text:"Listrik padam",correct:false}], hint:"Aktivitas anomali." },
-    { q: "Tindakan 'Containment' (Isolasi) bertujuan untuk...", options: [{text:"Mencegah penyebaran serangan",correct:true},{text:"Menghapus virus",correct:false},{text:"Menginstall ulang OS",correct:false},{text:"Menuntut hacker",correct:false}], hint:"Mengurung agar tidak menyebar." },
-    { q: "Bukti digital harus dijaga integritasnya menggunakan...", options: [{text:"Hashing (MD5/SHA)",correct:true},{text:"Copy Paste",correct:false},{text:"Screenshot",correct:false},{text:"Zip file",correct:false}], hint:"Sidik jari file." },
-    { q: "Serangan yang mengubah tampilan halaman depan website disebut...", options: [{text:"Web Defacement",correct:true},{text:"Web Crawling",correct:false},{text:"Web Hosting",correct:false},{text:"Web Design",correct:false}], hint:"Merusak wajah web." },
-    { q: "Apa fungsi dari SIEM (Security Information and Event Management)?", options: [{text:"Pusat analisa log keamanan terpusat",correct:true},{text:"Game server",correct:false},{text:"Aplikasi chat",correct:false},{text:"Pemutar video",correct:false}], hint:"Manajemen Event Keamanan." },
-    { q: "Setelah insiden selesai, tahap 'Lessons Learned' penting untuk...", options: [{text:"Mencegah kejadian berulang",correct:true},{text:"Menghukum staf IT",correct:false},{text:"Melupakan masalah",correct:false},{text:"Menjual data",correct:false}], hint:"Belajar dari pengalaman." },
-    { q: "Port Scanning biasanya merupakan tahap awal dari serangan, yang disebut...", options: [{text:"Reconnaissance (Pengintaian)",correct:true},{text:"Exploitation",correct:false},{text:"Actions on Objectives",correct:false},{text:"Delivery",correct:false}], hint:"Mata-mata." },
-    { q: "Serangan Brute Force SSH akan terlihat di log sebagai...", options: [{text:"Banyak 'Failed Login' dalam waktu singkat",correct:true},{text:"Koneksi lambat",correct:false},{text:"Layar biru",correct:false},{text:"Download file besar",correct:false}], hint:"Gagal berkali-kali." },
-    { q: "Keylogger adalah malware yang berfungsi untuk...", options: [{text:"Merekam ketikan keyboard korban",correct:true},{text:"Membuka kunci pintu",correct:false},{text:"Memutar musik",correct:false},{text:"Mengunci folder",correct:false}], hint:"Log tombol (Key)." },
-    { q: "Forensik Digital harus dilakukan pada...", options: [{text:"Image/Copy dari harddisk asli",correct:true},{text:"Harddisk asli yang sedang menyala",correct:false},{text:"Monitor komputer",correct:false},{text:"Keyboard",correct:false}], hint:"Jangan sentuh barang bukti asli." },
-    { q: "Protocol Analyzer membantu admin jaringan untuk...", options: [{text:"Mendiagnosa masalah jaringan",correct:true},{text:"Memperbaiki hardware",correct:false},{text:"Membuat website",correct:false},{text:"Menulis kode program",correct:false}], hint:"Menganalisa protokol." }
+    { q: "Jika ditemukan login sukses di jam 3 pagi dari IP asing, ini indikasi...", options: [{text:"Compromised Account (Akun jebol)",correct:true},{text:"Server update",correct:false},{text:"Admin lembur",correct:false},{text:"Listrik padam",correct:false}], hint:"Aktivitas anomali." }
 ];
 
 const BANK_SOAL_KABEL = [
@@ -952,7 +905,7 @@ const SaveSystem = {
         }
 
         // Add Top Players
-        mockData.push({name: "Suroboyo_Gamer", score: 9500, school: "SMKN 1 SURABAYA", prov: "Jawa Timur", city: "Surabaya", district: "Gubeng"});
+        mockData.push({name: "TKJ_Skansabro", score: 9500, school: "SMKN 1 BRONDONG", prov: "Jawa Timur", city: "Lamongan", district: "Brondong"});
         mockData.push({name: "Arema_Code", score: 9200, school: "SMKN 4 MALANG", prov: "Jawa Timur", city: "Malang", district: "Klojen"});
         mockData.push({name: "Lamongan_Cyber", score: 8800, school: "SMKN 1 BRONDONG", prov: "Jawa Timur", city: "Lamongan", district: "Brondong"});
         
@@ -1116,6 +1069,15 @@ class GameApp {
             this.player = { name: "", charId: 1, score: 0, toyaPurity: 20, school: "", prov: "", city: "", district: "", chapter: 0 }; 
         }
 
+        // NEW STATS TRACKING
+        this.gameStats = {
+            totalKills: 0,
+            maxCombo: 0,
+            damageTaken: 0,
+            startTime: Date.now()
+        };
+        this.screenShake = 0; // NEW: Screen Shake Value
+
         this.state = AppState.SPLASH;
         this.currentChapter = null; this.lastTime = 0;
         this.imgs = {};
@@ -1164,9 +1126,6 @@ class GameApp {
 
         // Apply Scale Transform
         container.style.transform = `scale(${scale})`;
-        
-        // Optional: Jika ingin margin atas bawah seimbang, bisa pakai flexbox di body (sudah ada di CSS)
-        // atau set margin jika absolute positioning
     }
     
     initAudioContext(enableMusic) {
@@ -1432,7 +1391,8 @@ class GameApp {
         this.player.city = c;
         this.player.district = d;
         this.player.score = 0; // Reset score on new game
-        
+        this.gameStats.startTime = Date.now(); // Reset stats
+
         // SIMPAN PROFIL AGAR TIDAK HILANG SAAT RELOAD
         SaveSystem.saveProfile(this.player);
 
@@ -1458,7 +1418,7 @@ class GameApp {
             { speaker: "Dewi Air", text: "Tapi ancaman datang... Malware Genderuwo menyerang, mencoba mengkontaminasi Toya.", char: 'narrator', bg: 'bg_open2' },
             { speaker: "Dewi Air", text: "Semua senior hero sedang bertarung di garis depan. Kamu, Guardian muda, adalah harapan terakhir kami!", char: 'narrator', bg: 'bg_open3' },
             { speaker: "Dewi Air", text: "Misi mu adalah Lindungi server kota dan murnikan Toya dari kontaminasi malware!", char: 'narrator', bg: 'bg_open4' },
-			 { speaker: "Dewi Air", text: "Kamu akan dipandu oleh Master Rex - Mentor di SMK Nusantara Muda Tech.", char: 'narrator', bg: 'bg_open5' }
+			 { speaker: "Dewi Air", text: "Kamu akan dipandu oleh Master Rex - Mentor kamu di SMK Nusantara Muda Tech.", char: 'narrator', bg: 'bg_open5' }
         ], () => { this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
     }
 
@@ -1493,8 +1453,7 @@ class GameApp {
         this.switchScreen('screen-story');
         story.start([
             { speaker: "System AI Gedung Server", text: "PERINGATAN! Koneksi fisik terputus.", char: 'androidtoya', bg: 'bg_masuklt1' },
-            { speaker: "MASTER REX", text: "Sistem keamanan server mengalami gangguan. Kamu harus memasang perangkat dan kabel yang benar agar jaringan kembali menyala.", char: 'rex', bg: 'bg_masuklt1' },
-			{ speaker: "MASTER REX", text: "CARA BERMAINNYA ADALAH KAMU KLIK PERALATAN YANG INGIN DIHUBUNGKAN SETELAH ITU GESER SEHINGGA MUNCUL KABEL KE ARAH PERANGKAT TUJUAN", char: 'rex', bg: 'bg_masuklt1' }
+            { speaker: "MASTER REX", text: "Sistem keamanan server mengalami gangguan. Kamu harus memasang perangkat dan kabel yang benar agar jaringan kembali menyala.", char: 'rex', bg: 'bg_masuklt1' }
         ], () => {
             this.startChapterCabling();
         });
@@ -1547,8 +1506,7 @@ class GameApp {
         this.switchScreen('screen-story');
         story.start([
             { speaker: "System AI Gedung Server", text: "PERINGATAN! Gelombang Malware terdeteksi mencoba menembus Firewall!", char: 'androidtoya', bg: 'bg_firewall' },
-            { speaker: "MASTER REX", text: "Guardian! Aktifkan mode pertahanan. Hancurkan malware itu sebelum mereka masuk ke sistem!", char: 'rex', bg: 'bg_firewall' },
-            { speaker: "MASTER REX", text: "Gunakan Mouse untuk bergerak. Tahan KLIK untuk menembak otomatis.", char: 'rex', bg: 'bg_firewall' }
+            { speaker: "MASTER REX", text: "Guardian! Aktifkan mode pertahanan. Hancurkan malware itu sebelum mereka masuk ke sistem!", char: 'rex', bg: 'bg_firewall' }
         ], () => {
             this.startChapter2(); // Masuk ke Shooter terlebih dahulu
         });
@@ -1572,8 +1530,7 @@ class GameApp {
         this.switchScreen('screen-story');
         story.start([
             { speaker: "MASTER REX", text: "Area berhasil diamankan. Serangan fisik telah reda.", char: 'rex', bg: 'bg_firewall2' },
-            { speaker: "System AI", text: "Memulai Protokol Konfigurasi Manual.", char: 'androidtoya', bg: 'bg_firewall3' },
-            { speaker: "MASTER REX", text: "Sekarang tugasmu memilah paket data yang tersisa. Geser paket HIJAU ke ALLOW, paket MERAH ke BLOCK.", char: 'rex', bg: 'bg_firewall3' }
+            { speaker: "System AI", text: "Memulai Protokol Konfigurasi Manual.", char: 'androidtoya', bg: 'bg_firewall3' }
         ], () => {
             this.startChapter2Config(); // Masuk ke Pemilihan Paket
         });
@@ -1699,10 +1656,10 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "SYSTEM", text: "ALERT! Deteksi anomali energi masif di Core Server!", char: 'narrator', bg: 'bg_server' },
-            { speaker: "GENDERUWO", text: "GRRR... SIAPA YANG BERANI MENGAKTIFKAN KEMBALI FIREWALL?!", char: 'virus', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Itu dia! Induk Malware Genderuwo! Dia marah karena aksesnya kita tutup.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Guardian! Gunakan tombol ATK dan SKILL untuk menyerang. HINDARI serangan virus dengan bergerak!", char: 'rex', bg: 'bg_server' }
+            { speaker: "System AI Gedung Server", text: "ALERT! Deteksi anomali energi masif di Core Server!", char: 'androidtoya', bg: 'bg_open4' },
+            { speaker: "GENDERUWO", text: "GRRR... SIAPA YANG BERANI MENGAKTIFKAN KEMBALI FIREWALL?!", char: 'virus', bg: 'bg_open4' },
+            { speaker: "MASTER REX", text: "Itu dia! Genderuwo Sang Pemimipin! Dia marah karena aksesnya kita tutup.", char: 'rex', bg: 'bg_open4' },
+            { speaker: "MASTER REX", text: "Guardian! Gunakan tombol ATK dan SKILL untuk menyerang. HINDARI serangan virus dengan bergerak!", char: 'rex', bg: 'bg_open4' }
         ], () => {
             this.startBossBattle();
         });
@@ -1724,6 +1681,9 @@ class GameApp {
 
     // --- MODIFIED: New Ending Flow ---
     startEndingCinematic() {
+        // FIX: Pastikan UI Screen (Title/Menu) tertutup agar Canvas terlihat
+        this.switchScreen('dummy'); 
+
         document.getElementById('rpg-controls').style.display = 'none';
         document.getElementById('hud').style.display = 'none';
         document.getElementById('mission-overlay').style.display = 'none';
@@ -1757,6 +1717,14 @@ class GameApp {
 
         document.getElementById('end-score').innerText = Math.floor(this.player.score); 
         
+        // --- POPULATE STATISTICS ---
+        document.getElementById('stat-kills').innerText = this.gameStats.totalKills;
+        document.getElementById('stat-combo').innerText = this.gameStats.maxCombo + "x";
+        document.getElementById('stat-dmg').innerText = Math.floor(this.gameStats.damageTaken);
+        
+        const playTime = Math.floor((Date.now() - this.gameStats.startTime) / 60000); // in minutes
+        document.getElementById('stat-time').innerText = playTime + "m";
+
         // Update tombol untuk lanjut ke credits
         const btn = document.getElementById('btn-victory-action');
         btn.innerText = "LIHAT CREDIT";
@@ -1964,6 +1932,17 @@ class GameApp {
         // --- RENDER LOGIC UTAMA ---
         if (this.state >= AppState.TUTORIAL && this.state <= AppState.CREDITS) {
             ctx.clearRect(0,0, 800, 600);
+            
+            // --- NEW: SCREEN SHAKE LOGIC ---
+            if(this.screenShake > 0) {
+                const dx = (Math.random() - 0.5) * this.screenShake;
+                const dy = (Math.random() - 0.5) * this.screenShake;
+                ctx.translate(dx, dy);
+                this.screenShake *= 0.9; // Decay shake
+                if(this.screenShake < 0.5) this.screenShake = 0;
+            }
+            // --------------------------------
+
             let bgKey = 'bg_rtraining';
             
             // Set Background based on State
@@ -1997,6 +1976,9 @@ class GameApp {
                      document.getElementById('hud-purity').style.width = this.player.toyaPurity + "%"; 
                 }
             }
+            
+            // Reset Shake
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
         requestAnimationFrame(this.loop);
     }
@@ -2199,7 +2181,10 @@ class ChapterEndingCinematic {
         const imgKey = `ending${this.slideIdx}`;
         const img = this.game.imgs[imgKey];
 
-        if(img && img.complete) {
+        // PERBAIKAN PENTING: Tambahkan '&& img.naturalWidth > 0'
+        // Ini memastikan jika gambar tidak ditemukan (broken), kode akan lari ke 'else' (menampilkan teks)
+        // bukannya menggambar kotak kosong transparan.
+        if(img && img.complete && img.naturalWidth > 0) {
             ctx.save();
             ctx.globalAlpha = this.alpha;
             
@@ -2223,11 +2208,16 @@ class ChapterEndingCinematic {
             ctx.drawImage(img, x, y, w, h);
             ctx.restore();
         } else {
-            // Fallback text
+            // Fallback text (Akan muncul karena gambar ending belum ada)
             ctx.fillStyle = "white";
-            ctx.font = "30px Orbitron";
+            ctx.font = "bold 40px Orbitron";
             ctx.textAlign = "center";
-            ctx.fillText(`ENDING SCENE ${this.slideIdx}`, 400, 300);
+            ctx.fillText(`SCENE ${this.slideIdx}`, 400, 250);
+            
+            // Tambahan visual untuk fallback agar tidak sepi
+            ctx.font = "20px Rajdhani";
+            ctx.fillStyle = "#00D9FF";
+            ctx.fillText("- CINEMATIC VISUALIZATION -", 400, 290);
             ctx.textAlign = "left";
         }
 
@@ -2299,7 +2289,11 @@ class ChapterCredits {
             { t: "Seluruh Player Toya Guardians", size: "20px", color: "white" },
             { t: "", size: "50px" },
             { t: "TERIMA KASIH TELAH BERMAIN", size: "30px", color: "#00FF88", bold: true },
-            { t: "Sampai Jumpa di Misi Selanjutnya!", size: "20px", color: "#aaa" }
+            { t: "Sampai Jumpa di Misi Selanjutnya!", size: "20px", color: "#aaa" },
+            { t: "", size: "60px" },
+            // --- UPDATED: BADGE DI AKHIR ---
+            { t: "POWERED BY", size: "16px", color: "#888" },
+            { t: "✦ Made with Gemini", size: "24px", color: "#4285F4", bold: true }
         ];
 
         // --- FIXED: ADD CLICK LISTENER FOR SKIP BUTTON ---
@@ -2463,7 +2457,7 @@ class CharacterSprite {
             ctx.fillStyle = "cyan"; ctx.beginPath(); ctx.arc(0, -halfSize, halfSize/2, 0, Math.PI*2); ctx.fill(); 
         }
         
-        // Kembalikan state context ke normal
+        // Kembalikan state context untuk render berikutnya
         ctx.restore();
     }
 }
@@ -2747,8 +2741,23 @@ class ChapterCabling {
             if(t.connected) { ctx.beginPath(); ctx.moveTo(t.sX + 40, t.sY + 40); ctx.lineTo(t.tX + 40, t.tY + 40); ctx.strokeStyle = t.cableType === 'straight' ? "#00A8FF" : "#FFD700"; ctx.lineWidth = 4; ctx.stroke(); }
         });
         if(this.dragged !== null) { const t = this.tasks[this.dragged]; ctx.beginPath(); ctx.moveTo(t.sX + 40, t.sY + 40); ctx.lineTo(this.mx, this.my); ctx.strokeStyle = t.cableType === 'straight' ? "#00D9FF" : "#FFD700"; ctx.lineWidth = 5; ctx.stroke(); }
+        
         const currentTask = this.tasks.find(t => !t.completed);
-        if (currentTask) { ctx.fillStyle = "#00D9FF"; ctx.font = "24px Orbitron"; ctx.textAlign = "center"; ctx.fillText("MISI: " + currentTask.q, 400, 550); ctx.textAlign = "left"; }
+        if (currentTask) { 
+            // FIX (Poin 5): Background Gelap agar tulisan terbaca jelas
+            ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+            ctx.fillRect(100, 520, 600, 50);
+            ctx.strokeStyle = "#00D9FF";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(100, 520, 600, 50);
+
+            // Ganti warna teks jadi Gold/Kuning agar kontras dengan biru/hijau elemen lain
+            ctx.fillStyle = "#FFD700"; 
+            ctx.font = "bold 24px Orbitron"; 
+            ctx.textAlign = "center"; 
+            ctx.fillText("MISI: " + currentTask.q, 400, 553); 
+            ctx.textAlign = "left"; 
+        }
     }
 }
 
@@ -2763,6 +2772,9 @@ class Chapter2 {
         this.missedCount = 0; 
         this.missedLimit = 5; 
         this.won = false;
+
+        // --- NEW: COMBO SYSTEM ---
+        this.combo = 0;
         
         this.timeLeft = 60; 
         document.getElementById('hud-timer').innerText = this.timeLeft;
@@ -2833,11 +2845,52 @@ class Chapter2 {
         for(let i = this.bullets.length - 1; i >= 0; i--) { let b = this.bullets[i]; b.y -= 10; if(b.y < -10) this.bullets.splice(i, 1); }
         for(let i = this.enemies.length - 1; i >= 0; i--) {
             let e = this.enemies[i]; e.y += e.spd;
-            if(Math.hypot(e.x - this.pX, e.y - this.pY) < 50) { this.hp -= 20; this.spawnExplosion(e.x, e.y, 'red'); AudioMgr.playSFX('sfx-wrong'); this.enemies.splice(i, 1); if(this.hp <= 0) this.gameOver(); continue; }
-            if(e.y > 600) { this.missedCount++; this.enemies.splice(i, 1); AudioMgr.playSFX('sfx-wrong'); if(this.missedCount >= this.missedLimit) this.gameOver(); continue; }
+            if(Math.hypot(e.x - this.pX, e.y - this.pY) < 50) { 
+                this.hp -= 20; 
+                this.spawnExplosion(e.x, e.y, 'red'); 
+                AudioMgr.playSFX('sfx-wrong'); 
+                this.enemies.splice(i, 1); 
+                
+                // COMBO BREAK
+                this.combo = 0;
+                this.game.gameStats.damageTaken += 20;
+                this.game.screenShake = 15; // Trigger Shake
+
+                if(this.hp <= 0) this.gameOver(); 
+                continue; 
+            }
+            if(e.y > 600) { 
+                this.missedCount++; 
+                this.enemies.splice(i, 1); 
+                AudioMgr.playSFX('sfx-wrong'); 
+                this.combo = 0; // Miss = Combo Reset
+                if(this.missedCount >= this.missedLimit) this.gameOver(); 
+                continue; 
+            }
             for(let j = this.bullets.length - 1; j >= 0; j--) {
                 let b = this.bullets[j];
-                if(Math.hypot(e.x - b.x, e.y - b.y) < 40) { e.hp--; this.bullets.splice(j, 1); this.spawnExplosion(b.x, b.y, 'cyan'); if(e.hp <= 0) { this.enemies.splice(i, 1); this.kills++; this.game.addScore(50); AudioMgr.playSFX('sfx-correct'); this.checkWin(); } break; }
+                if(Math.hypot(e.x - b.x, e.y - b.y) < 40) { 
+                    e.hp--; 
+                    this.bullets.splice(j, 1); 
+                    this.spawnExplosion(b.x, b.y, 'cyan'); 
+                    if(e.hp <= 0) { 
+                        this.enemies.splice(i, 1); 
+                        this.kills++; 
+                        
+                        // COMBO INCREMENT
+                        this.combo++;
+                        if(this.combo > this.game.gameStats.maxCombo) this.game.gameStats.maxCombo = this.combo;
+                        this.game.gameStats.totalKills++;
+
+                        // Bonus Score for Combo
+                        let comboBonus = Math.floor(this.combo / 5) * 10;
+                        this.game.addScore(50 + comboBonus); 
+                        
+                        AudioMgr.playSFX('sfx-correct'); 
+                        this.checkWin(); 
+                    } 
+                    break; 
+                }
             }
         }
         for(let i = this.particles.length - 1; i >= 0; i--) { let p = this.particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 0.05; if(p.life <= 0) this.particles.splice(i, 1); }
@@ -2851,6 +2904,23 @@ class Chapter2 {
         for(let h=0; h<this.missedLimit; h++) { ctx.fillStyle = h < heartsLeft ? "#FF4444" : "#555"; ctx.beginPath(); ctx.arc(780 - (h*25), 570, 10, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle="white"; ctx.stroke(); }
         ctx.fillStyle = "#550000"; ctx.fillRect(580, 585, 200, 10); ctx.fillStyle = this.hp > 30 ? "#00FF88" : "#FF4444"; ctx.fillRect(580, 585, 200 * (this.hp / this.maxHp), 10);
         ctx.textAlign="left"; ctx.fillStyle = "#00D9FF"; ctx.font = "16px Orbitron"; ctx.fillText(`MALWARE ELIMINATED: ${this.kills}/${this.targetKills}`, 20, 570);
+
+        // --- DRAW COMBO ---
+        if(this.combo > 1) {
+            ctx.fillStyle = "#FFD700";
+            ctx.font = "bold 30px Orbitron";
+            ctx.textAlign = "center";
+            ctx.shadowColor = "orange";
+            ctx.shadowBlur = 15;
+            const scale = 1 + Math.sin(Date.now()/100) * 0.1;
+            ctx.save();
+            ctx.translate(400, 100);
+            ctx.scale(scale, scale);
+            ctx.fillText(this.combo + "x COMBO!", 0, 0);
+            ctx.restore();
+            ctx.shadowBlur = 0;
+            ctx.textAlign = "left";
+        }
 
         const charId = this.game.player.charId;
         let charImg = this.game.imgs['hero' + charId + '_tembak'];
@@ -3169,7 +3239,7 @@ class Chapter3Bomber {
         this.isPlacingBomb = false; 
         this.level = 1;
         this.maxLevels = 3;
-        this.facingRight = true; // Default arah Bomber
+        this.facingRight = true; 
 
         this.timeLeft = 120; 
         document.getElementById('hud-timer').innerText = this.timeLeft;
@@ -3216,7 +3286,7 @@ class Chapter3Bomber {
         this.dpadEl.addEventListener('touchstart', this.dpadHandler, {passive: false});
         this.dpadEl.addEventListener('mousedown', this.dpadHandler);
 
-        // TUTORIAL OVERLAY BOMBER (UPDATED TEXT) - ADDED TIMEOUT
+        // TUTORIAL OVERLAY BOMBER
         setTimeout(() => {
             showMessage(
                 "TUTORIAL: LABIRIN SERVER",
@@ -3243,7 +3313,7 @@ class Chapter3Bomber {
             );
         }, 500);
     }
-    // ... rest of Bomber unchanged ...
+
     initLevel(lvl) {
         this.grid = [];
         this.playerPos = {r:1, c:1};
@@ -3255,7 +3325,6 @@ class Chapter3Bomber {
         this.bombs = [];
         this.exitRevealed = false;
         
-        // Removed showMessage from initLevel to avoid double popup on start, only show Toast for level change
         if(lvl > 1) spawnFloatingScore(`LEVEL ${lvl} START!`);
         
         for(let r=0; r<this.rows; r++) {
@@ -3278,15 +3347,19 @@ class Chapter3Bomber {
             }
         }
 
-        // FIX 3: Ensure Enemies Spawn
+        // FIX (Poin 3): Ensure Enemies Spawn FAR AWAY from Player
         let enemyCount = 2 + lvl;
         let spawned = 0;
         let attempts = 0;
-        while(spawned < enemyCount && attempts < 100) {
-             let r = Math.floor(Math.random() * (this.rows-4)) + 3;
-             let c = Math.floor(Math.random() * (this.cols-4)) + 3;
-             // Ensure tile is floor (0) and no enemy there yet
-             if(this.grid[r][c] === 0 && !this.enemies.some(e => e.r === r && e.c === c)) { 
+        while(spawned < enemyCount && attempts < 200) {
+             let r = Math.floor(Math.random() * (this.rows-2)) + 1; // Range diperbaiki
+             let c = Math.floor(Math.random() * (this.cols-2)) + 1;
+             
+             // Hitung Jarak Manhattan ke Player (r=1, c=1)
+             let dist = Math.abs(r - 1) + Math.abs(c - 1);
+
+             // Syarat: Di lantai kosong, belum ada musuh, dan JARAK > 6
+             if(this.grid[r][c] === 0 && !this.enemies.some(e => e.r === r && e.c === c) && dist > 6) { 
                  this.enemies.push({r:r, c:c, dir:1, moveTimer:0});
                  spawned++;
              }
@@ -3297,7 +3370,6 @@ class Chapter3Bomber {
     }
 
     move(dr, dc) {
-        // Update arah hadap berdasarkan input horizontal
         if (dc > 0) this.facingRight = true;
         if (dc < 0) this.facingRight = false;
 
@@ -3330,9 +3402,13 @@ class Chapter3Bomber {
             let b = this.bombs[i]; b.timer--;
             if(b.timer <= 0) { this.explode(b.r, b.c); this.bombs.splice(i, 1); }
         }
+        
         this.enemies.forEach(e => {
             e.moveTimer++;
-            if(e.moveTimer > 30 - (this.level * 5)) {
+            // FIX (Poin 4): SLOWER ENEMIES
+            // Base timer dinaikkan dari 30 ke 55 (makin tinggi makin lambat)
+            // Scaling per level: Lvl 1=50, Lvl 2=45, Lvl 3=40
+            if(e.moveTimer > 55 - (this.level * 5)) {
                 let moves = [[0,1], [0,-1], [1,0], [-1,0]];
                 let m = moves[Math.floor(Math.random()*4)];
                 if(this.grid[e.r+m[0]][e.c+m[1]] === 0) { e.r += m[0]; e.c += m[1]; }
@@ -3348,10 +3424,28 @@ class Chapter3Bomber {
     }
 
     explode(r, c) {
-        AudioMgr.playSFX('sfx-wrong');
+        AudioMgr.playSFX('sfx-wrong'); // Sound ledakan
+        
+        // Cek 5 titik (Tengah + Atas/Bawah/Kiri/Kanan)
         let fl = [{r,c}, {r:r+1,c}, {r:r-1,c}, {r,c:c+1}, {r,c:c-1}];
+        
         fl.forEach(p => {
-            if(this.grid[p.r][p.c] === 2) { this.grid[p.r][p.c] = 0; this.game.addScore(10); }
+            // 1. Hancurkan Tembok Rapuh
+            if(this.grid[p.r][p.c] === 2) { 
+                this.grid[p.r][p.c] = 0; 
+                this.game.addScore(10); 
+            }
+
+            // 2. FIX (Poin 2): Hancurkan Musuh jika terkena ledakan
+            for(let i = this.enemies.length - 1; i >= 0; i--) {
+                let e = this.enemies[i];
+                if(e.r === p.r && e.c === p.c) {
+                    this.enemies.splice(i, 1); // Hapus musuh
+                    this.game.addScore(50);
+                    spawnFloatingScore("VIRUS DELETED!");
+                    // Opsi: Mainkan suara musuh mati jika ada
+                }
+            }
         });
     }
 
@@ -3374,30 +3468,25 @@ class Chapter3Bomber {
     }
 
     draw(ctx) {
+        // ... existing background drawing ...
         // FIX 2: Draw Full Background Once
         let floorImg = this.game.imgs['bomb_lt' + this.level];
-        
-        // Calculate total grid size
         const totalW = this.cols * this.tileSize;
         const totalH = this.rows * this.tileSize;
         
         if(floorImg && floorImg.complete) {
-             // Draw FULL background stretched to grid area
              ctx.drawImage(floorImg, this.gridOffsetX, this.gridOffsetY, totalW, totalH);
         } else {
-             // Fallback
              ctx.fillStyle = "#222"; ctx.fillRect(this.gridOffsetX, this.gridOffsetY, totalW, totalH);
         }
 
+        // ... existing Grid Loop ...
         for(let r=0; r<this.rows; r++) {
             for(let c=0; c<this.cols; c++) {
                 let x = c*this.tileSize + this.gridOffsetX; 
                 let y = r*this.tileSize + this.gridOffsetY;
 
-                // REMOVED: Individual Tile Drawing for Floor
-
                 if(this.grid[r][c] === 1) { 
-                    // Tembok Keras
                     if(this.game.imgs.tile_tembok && this.game.imgs.tile_tembok.complete) {
                         ctx.drawImage(this.game.imgs.tile_tembok, x, y, this.tileSize, this.tileSize);
                     } else {
@@ -3405,7 +3494,6 @@ class Chapter3Bomber {
                     }
                 }
                 else if(this.grid[r][c] === 2) { 
-                    // Tembok Meledak
                     if(this.game.imgs.tile_meledak && this.game.imgs.tile_meledak.complete) {
                         ctx.drawImage(this.game.imgs.tile_meledak, x, y, this.tileSize, this.tileSize);
                     } else {
@@ -3415,6 +3503,7 @@ class Chapter3Bomber {
             }
         }
         
+        // ... existing Items/Bombs Loop ...
         let pulseLog = 1 + Math.sin(Date.now() / 250) * 0.15;
 
         this.logs.forEach(l => {
@@ -3460,50 +3549,49 @@ class Chapter3Bomber {
             else { ctx.fillStyle = "purple"; ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 20, 0, Math.PI*2); ctx.fill(); }
         });
 
+        // ... existing Player Drawing ...
         let pImg;
-        if(this.isMoving) {
-             pImg = this.heroFrames[this.frameIdx]; 
-        } else {
-             pImg = this.heroIdle; 
-        }
-        
+        if(this.isMoving) { pImg = this.heroFrames[this.frameIdx]; } else { pImg = this.heroIdle; }
         let px = this.playerPos.c*this.tileSize + this.gridOffsetX;
         let py = this.playerPos.r*this.tileSize + this.gridOffsetY;
-
-        // FLIP LOGIC untuk BOMBERMAN
         ctx.save();
-        // Translate ke tengah posisi sprite
         ctx.translate(px + 20, py + 15);
-        
-        // FIX: Invert Logic Scale untuk Bomberman juga
-        if(this.facingRight) {
-            ctx.scale(-1, 1);
-        }
-
-        if(pImg && pImg.complete) {
-            // Gambar di koordinat relatif (negatif setengah lebar/tinggi)
-            ctx.drawImage(pImg, -20, -25, 40, 50); 
-        } else { 
-            ctx.fillStyle = "#00A8FF"; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill(); 
-        }
+        if(this.facingRight) { ctx.scale(-1, 1); }
+        if(pImg && pImg.complete) { ctx.drawImage(pImg, -20, -25, 40, 50); } else { ctx.fillStyle = "#00A8FF"; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill(); }
         ctx.restore();
 
-        ctx.fillStyle = "rgba(0,0,0,0.7)"; ctx.fillRect(10, 80, 250, 60);
-        ctx.fillStyle = "white"; ctx.font = "20px Orbitron";
-        ctx.fillText(`LANTAI: ${this.level} / ${this.maxLevels}`, 20, 105);
-        ctx.fillText(`KEYLOGGERS: ${this.logsCollected}/${this.logsRequired}`, 20, 130);
+        // --- FIX (Poin 4): UI OVERLAY JELAS ---
+        // Latar belakang panel UI agar lebih jelas di bawah Purity
+        ctx.fillStyle = "rgba(0,0,0,0.85)"; 
+        ctx.fillRect(10, 80, 280, 80);
+        ctx.strokeStyle = "#00D9FF";
+        ctx.strokeRect(10, 80, 280, 80);
+
+        ctx.fillStyle = "#FFD700"; 
+        ctx.font = "bold 22px Orbitron";
+        ctx.fillText(`LANTAI ${this.level} / ${this.maxLevels}`, 20, 110);
+        
+        ctx.fillStyle = "white"; 
+        ctx.font = "18px Rajdhani";
+        ctx.fillText(`KEYLOGGERS: ${this.logsCollected}/${this.logsRequired}`, 20, 140);
+        
+        // --- NEW: MISSION TEXT OVERLAY (BAWAH LAYAR) ---
+        // Kotak Misi yang jelas
+        ctx.fillStyle = "rgba(0,0,0,0.85)";
+        ctx.fillRect(100, 550, 600, 40);
+        ctx.strokeStyle = "#00FF88";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(100, 550, 600, 40);
+
+        ctx.fillStyle = "#00FF88";
+        ctx.font = "16px Rajdhani";
+        ctx.textAlign = "center";
+        ctx.fillText("MISI: Cari Keylogger & Hindari Virus Penjaga!", 400, 575);
+        ctx.textAlign = "left";
 
         if(this.scanEffect > 0) { ctx.fillStyle = `rgba(0, 217, 255, ${this.scanEffect/200})`; ctx.fillRect(0,0,800,600); ctx.fillStyle = "white"; ctx.font = "30px Orbitron"; ctx.textAlign="center"; ctx.fillText(`MEMINDAI LANTAI ${this.level}...`, 400, 300); ctx.textAlign="left"; }
     }
-    cleanup() { 
-        clearInterval(this.timerInterval);
-        window.removeEventListener('keydown', this.keyDown); 
-        if(this.dpadEl) {
-            this.dpadEl.removeEventListener('touchstart', this.dpadHandler);
-            this.dpadEl.removeEventListener('mousedown', this.dpadHandler);
-            this.dpadEl.style.display = 'none';
-        }
-    }
+    // ... existing cleanup ...
 }
 
 // ... [CLASS BOSS BATTLE TETAP SAMA] ...
@@ -3711,6 +3799,7 @@ class ChapterBossBattle {
             // Collide with Player
             if(dist < 30) {
                 this.playerHp -= 0.5; // Damage over time contact
+                this.game.gameStats.damageTaken += 0.5;
                 this.spawnDamage(this.playerX, this.playerY, "-1", "red");
             }
         }
@@ -3733,6 +3822,7 @@ class ChapterBossBattle {
                 // Check Boss Hit
                 if(Math.hypot(p.x - this.bossX, p.y - this.bossY) < 80) {
                     this.bossHp -= p.damage;
+                    this.game.screenShake = 5; // Boss Hit Shake
                     this.spawnDamage(this.bossX, this.bossY, p.damage, "orange");
                     this.spawnExplosion(p.x, p.y, p.color);
                     hit = true;
@@ -3749,6 +3839,7 @@ class ChapterBossBattle {
                             hit = true;
                             if(m.hp <= 0) {
                                 this.minions.splice(j, 1);
+                                this.game.gameStats.totalKills++;
                                 this.spawnDamage(m.x, m.y, "KILL", "gold");
                             }
                             break; 
@@ -3759,6 +3850,8 @@ class ChapterBossBattle {
                 // Check Player Hit
                 if(Math.hypot(p.x - this.playerX, p.y - this.playerY) < 30) {
                     this.playerHp -= p.damage;
+                    this.game.gameStats.damageTaken += p.damage;
+                    this.game.screenShake = 20; // Player Hit Shake (Hard)
                     this.spawnDamage(this.playerX, this.playerY, "-" + p.damage, "red");
                     this.spawnExplosion(p.x, p.y, "red");
                     hit = true;
@@ -3804,10 +3897,23 @@ class ChapterBossBattle {
         // Draw Player
         this.hero.draw(ctx);
         
-        // Draw Player HP Bar
-        const hpPct = Math.max(0, this.playerHp / this.maxPlayerHp);
-        ctx.fillStyle = "#333"; ctx.fillRect(this.playerX - 25, this.playerY - 60, 50, 6);
-        ctx.fillStyle = hpPct > 0.3 ? "#00FF88" : "#FF4444"; ctx.fillRect(this.playerX - 25, this.playerY - 60, 50 * hpPct, 6);
+        // --- DRAW PLAYER HUD HP (NEW) ---
+        // Bar HP Statis di Pojok Kiri Atas
+        const playerHpPct = Math.max(0, this.playerHp / this.maxPlayerHp);
+        
+        // Border
+        ctx.fillStyle = "rgba(0,0,0,0.8)"; 
+        ctx.fillRect(20, 50, 200, 20); 
+        ctx.strokeStyle = "#FFF"; ctx.lineWidth=2; 
+        ctx.strokeRect(20, 50, 200, 20);
+        
+        // Fill Color (Green -> Red)
+        ctx.fillStyle = playerHpPct > 0.3 ? "#00FF88" : "#FF4444"; 
+        ctx.fillRect(22, 52, 196 * playerHpPct, 16);
+        
+        // Text Label
+        ctx.fillStyle = "white"; ctx.font = "bold 14px Orbitron"; ctx.textAlign = "left";
+        ctx.fillText(`GUARDIAN HP: ${Math.floor(this.playerHp)}%`, 20, 45);
 
         // Draw Boss (Virus Genderuwo)
         const bossImg = this.game.imgs.virus;
@@ -3818,12 +3924,13 @@ class ChapterBossBattle {
             ctx.fillStyle = "purple"; ctx.beginPath(); ctx.arc(this.bossX, this.bossY, 80, 0, Math.PI*2); ctx.fill();
         }
 
-        // Draw Boss HP Bar (Top)
+        // Draw Boss HP Bar (Top Center)
         const bossHpPct = Math.max(0, this.bossHp / this.maxBossHp);
-        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(200, 50, 400, 20); ctx.strokeStyle = "#FFF"; ctx.lineWidth=2; ctx.strokeRect(200, 50, 400, 20);
-        ctx.fillStyle = "#FF0000"; ctx.fillRect(202, 52, 396 * bossHpPct, 16);
+        ctx.fillStyle = "rgba(0,0,0,0.8)"; ctx.fillRect(250, 50, 400, 20); ctx.strokeStyle = "#FFF"; ctx.lineWidth=2; ctx.strokeRect(250, 50, 400, 20);
+        ctx.fillStyle = "#FF0000"; ctx.fillRect(252, 52, 396 * bossHpPct, 16);
         ctx.fillStyle = "white"; ctx.font = "bold 16px Orbitron"; ctx.textAlign = "center";
-        ctx.fillText(`BOSS: GENDERUWO MALWARE (${this.bossHp}/${this.maxBossHp})`, 400, 40);
+        ctx.fillText(`BOSS: GENDERUWO MALWARE (${this.bossHp}/${this.maxBossHp})`, 450, 40);
+        ctx.textAlign = "left";
 
         // Draw Minions
         const minionImg = this.game.imgs.virus; // Use same virus asset but smaller
