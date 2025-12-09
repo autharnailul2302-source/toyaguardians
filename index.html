@@ -154,27 +154,25 @@
         #hud { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; display: none; justify-content: space-between; pointer-events: none; z-index: 20; }
         .hud-top-left { display:flex; gap:10px; flex-direction: column; align-items: flex-start; }
         
-        /* UPDATED: Compact HUD Panel for Purity */
         .hud-panel { 
             background: rgba(5, 20, 40, 0.85); 
             border: 1px solid var(--tech-cyan); 
-            padding: 5px 10px; /* Reduced padding */
+            padding: 5px 10px; 
             border-radius: 6px; 
             color: white; 
             font-family: 'Orbitron'; 
-            font-size: 0.9rem; /* Slightly smaller font */
+            font-size: 0.9rem; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            min-width: 60px; /* Reduced min-width */
+            min-width: 60px; 
             box-shadow: 0 0 10px rgba(0, 168, 255, 0.2); 
         }
         .hud-val { font-size: 1.1rem; font-weight: bold; }
         
-        /* UPDATED: Smaller Purity Bar */
         .purity-container { 
-            width: 120px; /* Reduced from 150px */
-            height: 8px; /* Reduced from 10px */
+            width: 120px; 
+            height: 8px; 
             background: #333; 
             border: 1px solid #555; 
             margin-top: 3px; 
@@ -211,7 +209,7 @@
         .float-score { position: absolute; color: var(--accent-gold); font-family: 'Orbitron'; font-weight: bold; font-size: 1.5rem; text-shadow: 0 0 10px black; animation: floatUp 1s forwards; pointer-events: none; z-index: 50; }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-50px); } }
 
-        /* CUSTOM MESSAGE BOX - UPDATED CSS */
+        /* CUSTOM MESSAGE BOX */
         #custom-message-box { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             background: linear-gradient(135deg, rgba(5, 20, 40, 0.98), rgba(10, 30, 60, 0.98)); 
@@ -253,11 +251,11 @@
         #quiz-code-display span { margin: 0 5px; }
         .quiz-option-btn { width: 100%; text-align: left; }
 
-        /* --- UPDATED RESULT SCREEN STYLES --- */
+        /* RESULT SCREEN STYLES */
         #screen-ending { 
-            background-color: rgba(5, 10, 20, 0.92); /* Background gelap transparan */
-            backdrop-filter: blur(8px); /* Efek blur pada game di belakangnya */
-            z-index: 200; /* Pastikan di atas segalanya */
+            background-color: rgba(5, 10, 20, 0.92); 
+            backdrop-filter: blur(8px);
+            z-index: 200; 
         }
 
         .result-panel {
@@ -275,7 +273,6 @@
             animation: slideUpFade 0.6s ease-out;
         }
 
-        /* --- NEW: PLAYER INFO IN RESULT --- */
         .player-result-info {
             width: 100%;
             background: rgba(255, 255, 255, 0.05);
@@ -333,7 +330,6 @@
         #end-msg { color: #ccc; margin-bottom: 10px; font-style: italic; }
         #save-status { font-size: 0.8rem; color: #666; margin-bottom: 10px; border-top: 1px solid #333; padding-top: 5px; width: 100%; text-align: center; }
 
-        /* STATISTICS GRID (STATS SCREEN) */
         .stats-container {
             width: 100%;
             display: grid;
@@ -351,6 +347,110 @@
             display: flex; justify-content: space-between;
         }
         .stat-val { color: var(--tech-cyan); font-weight: bold; }
+
+        /* --- NEW: MODE SELECT SCREEN STYLES --- */
+        #screen-mode-select {
+            background-color: var(--dark-base);
+            /* display controlled by JS class .active */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .mode-container {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            height: 70%;
+            gap: 20px;
+        }
+
+        .mode-card {
+            flex: 1;
+            border: 3px solid #445;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            filter: grayscale(0.9) brightness(0.6); /* Default gelap/mati */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mode-card-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            transition: transform 0.5s;
+        }
+
+        .mode-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            background: rgba(0,0,0,0.7); /* Lebih gelap agar teks terbaca */
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px);
+            width: 60%;
+            transition: all 0.3s;
+        }
+
+        .mode-title {
+            font-family: 'Orbitron';
+            font-size: 2.2rem;
+            margin: 0;
+            color: #ccc;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .mode-desc {
+            font-family: 'Rajdhani';
+            color: #888;
+            margin-top: 5px;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* HOVER EFFECTS - LIGHT UP */
+        .mode-card:hover {
+            filter: grayscale(0) brightness(1.2); /* Menyala */
+            transform: scale(1.02);
+            border-width: 4px;
+        }
+
+        .mode-card:hover .mode-card-bg {
+            transform: scale(1.1);
+        }
+
+        /* Specific Styling for Story Mode (Gold/Blue) */
+        #mode-story:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+        }
+        #mode-story:hover .mode-title {
+            color: var(--accent-gold);
+            text-shadow: 0 0 15px var(--accent-gold);
+        }
+        #mode-story:hover .mode-desc { color: white; }
+
+        /* Specific Styling for Survival Mode (Red) */
+        #mode-survival:hover {
+            border-color: var(--danger-red);
+            box-shadow: 0 0 40px rgba(255, 68, 68, 0.6);
+        }
+        #mode-survival:hover .mode-title {
+            color: var(--danger-red);
+            text-shadow: 0 0 15px var(--danger-red);
+        }
+        #mode-survival:hover .mode-desc { color: white; }
 
     </style>
 </head>
@@ -443,6 +543,35 @@
         <p style="color:#aaa; font-family:'Rajdhani'">Menghubungkan ke Telaga Dunia</p>
     </div>
     
+    <!-- NEW: MODE SELECT SCREEN -->
+    <div id="screen-mode-select" class="ui-screen">
+        <h2 style="color:var(--tech-cyan); font-family:'Orbitron'; margin-bottom:10px; font-size: 2rem; text-shadow:0 0 10px var(--primary-blue);">PILIH MISI</h2>
+        
+        <div class="mode-container">
+            <!-- STORY MODE (TOP BOX) -->
+            <div id="mode-story" class="mode-card" onclick="app.chooseMode('story')">
+                <!-- Assets bg_story mapped in JS -->
+                <div class="mode-card-bg" id="bg-story-img"></div>
+                <div class="mode-content">
+                    <h3 class="mode-title">STORY MODE</h3>
+                    <p class="mode-desc">PETUALANGAN MENYELAMATKAN TOYA</p>
+                </div>
+            </div>
+
+            <!-- SURVIVAL MODE (BOTTOM BOX) -->
+            <div id="mode-survival" class="mode-card" onclick="app.chooseMode('survival')">
+                <!-- Assets bg_survival mapped in JS -->
+                <div class="mode-card-bg" id="bg-survival-img"></div>
+                <div class="mode-content">
+                    <h3 class="mode-title">SURVIVAL</h3>
+                    <p class="mode-desc">BERTAHAN HIDUP (ENDLESS)</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn-ml" style="width: 200px; margin-top: 20px; border-color: #555; background: #222;" onclick="app.switchScreen('screen-char')">KEMBALI</button>
+    </div>
+
     <!-- ABOUT SCREEN -->
     <div id="screen-about" class="ui-screen" style="z-index: 200; background: rgba(0,0,0,0.9);">
         <div class="panel" style="text-align:center;">
@@ -512,7 +641,8 @@
                     <img src="images/hero_female.png"><div style="font-size:0.8rem; margin-top:8px; font-weight:bold;">CYBER GIRL</div>
                 </div>
             </div>
-            <button class="btn-ml" onclick="app.startStory()">DEPLOY</button>
+            <!-- FIXED: Button now goes to Mode Select instead of directly to Story -->
+            <button class="btn-ml" onclick="app.goToModeSelect()">LANJUT KE MISI</button>
         </div>
     </div>
 
@@ -636,24 +766,17 @@
                 <div id="end-score">0</div>
             </div>
             
-            <!-- NEW STATISTICS SECTION -->
-    <!-- ABOUT SCREEN -->
-    <div id="screen-about" class="ui-screen" style="z-index: 200; background: rgba(0,0,0,0.9);">
-        <div class="panel" style="text-align:center;">
-            <div class="close-btn" onclick="app.toggleAbout()">X</div>
-            <h2 style="color:var(--accent-gold); font-family: 'Orbitron';">TENTANG PENGEMBANG</h2>
-            <img src="images/logo_main.png" style="width:150px; margin-bottom:10px;" onerror="this.style.display='none'">
-            <h3 style="color:var(--tech-cyan); margin:0;">TOYA GUARDIANS</h3>
-            <p style="color:#aaa; font-size:0.9rem; margin-top:5px;">Tirtatelaga Defense System</p>
-            <p style="border-top:1px solid #333; border-bottom:1px solid #333; padding:10px 0; margin:15px 0;">
-                Versi: 20.0 (ARPG Update)<br>
-                <span style="font-size:0.8rem; color:var(--success-green);">Real-Time Action Battle</span>
-            </p>
-            <p style="font-size:0.8rem; color:#888;">Dikembangkan oleh:</p>
-            <h3 style="color:white; margin:5px 0;">TIM GELOMBANG UTARA</h3>
-            <p style="font-size:0.8rem; color:#888;">SMK Negeri 1 Brondong</p>
-            <br>
-            <!-- REMOVED GEMINI CREDIT AS REQUESTED -->
+            <div class="stats-container">
+                <div class="stat-item"><span>VIRUS KILLS</span><span id="stat-kills" class="stat-val">0</span></div>
+                <div class="stat-item"><span>MAX COMBO</span><span id="stat-combo" class="stat-val">0</span></div>
+                <div class="stat-item"><span>DMG TAKEN</span><span id="stat-dmg" class="stat-val">0</span></div>
+                <div class="stat-item"><span>PLAY TIME</span><span id="stat-time" class="stat-val">0m</span></div>
+            </div>
+
+            <p id="end-msg">Energi Toya Berhasil Dimurnikan!</p>
+            <div id="save-status">Menyimpan data...</div>
+            
+            <button id="btn-victory-action" class="btn-ml btn-anim" style="width:100%" onclick="location.reload()">RE-DEPLOY</button>
         </div>
     </div>
 
@@ -677,7 +800,6 @@
  * - Statistics
  */
 
-// ... [KODE SEBELUMNYA TETAP SAMA] ...
 // --- GOOGLE SHEETS CONFIGURATION ---
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTFofoEEYIn0kMDqTbbjU9KghQA9Yre-ZrbEbxV9mpWsUlAkQ4nBdj0V6rqrZLVFRX/exec"; 
 
@@ -723,6 +845,15 @@ const ASSETS = {
     item_door: 'images/item_door.png',
     icon_http: 'images/icon_http.png', icon_ssh: 'images/icon_ssh.png', icon_email: 'images/icon_email.png',
     icon_sql: 'images/icon_sql.png', icon_ping: 'images/icon_ping.png', icon_telnet: 'images/icon_telnet.png', icon_exe: 'images/icon_exe.png',
+    
+    // --- POWER UP ICONS & WAVE BGs (Mapped to existing) ---
+    icon_firewall: 'images/item_firewall.png', // Slow Enemies
+    bg_wave1: 'survival/bg_survival1.png',
+    bg_wave2: 'survival/bg_survival2.png',
+    bg_wave3: 'survival/bg_survival3.png',
+    bg_wave4: 'survival/bg_survival4.png',
+    bg_wave5: 'survival/bg_survival5.png',
+
     subtitle: 'images/subtitle.png',
     zone_allow: 'images/zone_allow.png',
     zone_block: 'images/zone_block.png',
@@ -734,7 +865,11 @@ const ASSETS = {
     tile_meledak: 'images/tile_meledak.png',
     bomb_lt1: 'images/bomb_lt1.png',
     bomb_lt2: 'images/bomb_lt2.png',
-    bomb_lt3: 'images/bomb_lt3.png'
+    bomb_lt3: 'images/bomb_lt3.png',
+
+    // --- ADDED: MODE SELECT ASSETS (MAPPED TO EXISTING IMAGES) ---
+    bg_story: 'images/bg_story.png', 
+    bg_survival: 'images/bg_survival.png'
 };
 
 // --- TAMBAHAN ASSET ENDING ---
@@ -804,7 +939,6 @@ const BANK_SOAL_KABEL = [
     { q: "Hubungkan Switch ke Server (Straight)", srcType: 'item_switch', targetType: 'item_server', cableType: 'straight' }
 ];
 
-// ... [KODE SAVE SYSTEM & AUDIO MGR TETAP SAMA] ...
 // --- SAVE SYSTEM MODIFIED: PERSISTENT PROFILE & LEADERBOARD ---
 const SaveSystem = {
     LB_KEY: 'toya_lb', // Key untuk leaderboard lokal
@@ -929,6 +1063,9 @@ const SaveSystem = {
              const districts = DATA_INDONESIA["Jawa Timur"][city];
              const district = districts[Math.floor(Math.random() * districts.length)];
              
+             // Randomize Mode (Story vs Survival) for Mock Data
+             const isSurvival = Math.random() > 0.7;
+             
              mockData.push({
                 name: name,
                 score: Math.floor(Math.random() * 8000) + 1000,
@@ -936,14 +1073,16 @@ const SaveSystem = {
                 prov: "Jawa Timur",
                 city: city,
                 district: district,
-                charId: Math.floor(Math.random()*3)+1
+                charId: Math.floor(Math.random()*3)+1,
+                mode: isSurvival ? 'survival' : 'story',
+                wave: isSurvival ? Math.floor(Math.random() * 20) + 1 : 0
              });
         }
 
         // Add Top Players
-        mockData.push({name: "TKJ_Skansabro", score: 9500, school: "SMKN 1 BRONDONG", prov: "Jawa Timur", city: "Lamongan", district: "Brondong"});
-        mockData.push({name: "Arema_Code", score: 9200, school: "SMKN 4 MALANG", prov: "Jawa Timur", city: "Malang", district: "Klojen"});
-        mockData.push({name: "Lamongan_Cyber", score: 8800, school: "SMKN 1 BRONDONG", prov: "Jawa Timur", city: "Lamongan", district: "Brondong"});
+        mockData.push({name: "TKJ_Skansabro", score: 9500, school: "SMKN 1 BRONDONG", prov: "Jawa Timur", city: "Lamongan", district: "Brondong", mode: 'story'});
+        mockData.push({name: "Survival_King", score: 15000, school: "SMKN 1 BRONDONG", prov: "Jawa Timur", city: "Lamongan", district: "Brondong", mode: 'survival', wave: 35});
+        mockData.push({name: "Arema_Code", score: 9200, school: "SMKN 4 MALANG", prov: "Jawa Timur", city: "Malang", district: "Klojen", mode: 'story'});
         
         return mockData;
     }
@@ -994,7 +1133,7 @@ const AudioMgr = {
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5 };
+const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5, MODE_SELECT: 0.5, GAME_SURVIVAL: 7, GAME_SURVIVAL_QUIZ: 7.5 };
 
 // --- FIX 1: SIMPLIFIED & FORCED SHOW MESSAGE ---
 function showMessage(title, body, onCloseCallback) {
@@ -1093,8 +1232,6 @@ function triggerLightning() {
     //AudioMgr.playSFX('sfx-click');
 }
 
-// ... [CLASS GAME APP, CHAPTER 2, CHAPTER 3 BOMBER, ETC TETAP SAMA] ...
-
 class GameApp {
     constructor() {
         // LOAD SAVED PROFILE ON STARTUP
@@ -1183,13 +1320,22 @@ class GameApp {
     // --- REPLACED saveGame with submitHighscore ---
     submitHighscore() {
         // Update local leaderboard for instant feedback
-        SaveSystem.updateLocalLeaderboard(this.player);
+        // Tambahkan info mode saat ini
+        const dataToSave = { ...this.player };
+        if(this.state === AppState.GAME_SURVIVAL || this.currentChapter instanceof ChapterSurvival) {
+            dataToSave.mode = 'survival';
+            dataToSave.wave = this.currentChapter ? this.currentChapter.wave : 0;
+        } else {
+            dataToSave.mode = 'story';
+        }
+
+        SaveSystem.updateLocalLeaderboard(dataToSave);
 
         // Cloud Save (Fire and forget)
         const statusEl = document.getElementById('save-status');
         if(statusEl) statusEl.innerText = "Mengirim Skor ke Database...";
         
-        SaveSystem.saveCloud(this.player).then(success => {
+        SaveSystem.saveCloud(dataToSave).then(success => {
             if(statusEl) statusEl.innerText = success ? "Skor Tersimpan di Cloud." : "Offline Mode: Skor Disimpan Lokal.";
         });
     }
@@ -1226,6 +1372,9 @@ class GameApp {
 
     triggerGameOver() {
         this.active = false;
+        // Cek jika Survival Mode
+        const isSurvival = (this.state === AppState.GAME_SURVIVAL || this.state === AppState.GAME_SURVIVAL_QUIZ);
+        
         if(this.currentChapter && this.currentChapter.cleanup) this.currentChapter.cleanup();
         this.state = AppState.ENDING;
         this.switchScreen('screen-ending');
@@ -1235,14 +1384,14 @@ class GameApp {
         panel.className = "result-panel result-loss"; // Tambahkan class Merah
 
         const title = document.getElementById('end-title');
-        title.innerText = "MISSION FAILED";
+        title.innerText = isSurvival ? "SURVIVAL ENDED" : "MISSION FAILED";
         title.style.color = "var(--danger-red)";
         
         const rank = document.getElementById('end-rank');
-        rank.innerText = "F";
+        rank.innerText = isSurvival ? "W"+(this.player.lastWave||0) : "F";
         rank.style.color = "var(--danger-red)";
         
-        document.getElementById('end-msg').innerText = "Sistem Keamanan Telah Dikuasai Malware!";
+        document.getElementById('end-msg').innerText = isSurvival ? "Pertahanan Jebol. Sistem offline." : "Sistem Keamanan Telah Dikuasai Malware!";
         document.getElementById('end-score').innerText = Math.floor(this.player.score);
         
         // --- NEW: Submit score even on loss ---
@@ -1445,6 +1594,48 @@ class GameApp {
         this.player.charId = id; 
         document.querySelectorAll('.char-card').forEach(e => e.classList.remove('selected')); 
         document.getElementById('char-'+id).classList.add('selected'); 
+    }
+
+    // --- NEW FUNCTION: GO TO MODE SELECT (After Character) ---
+    goToModeSelect() {
+        AudioMgr.playSFX('sfx-click');
+        this.switchScreen('screen-mode-select');
+        this.state = AppState.MODE_SELECT;
+        
+        // Set Background Images dynamically from ASSETS
+        // Kita set CSS background via JS untuk memastikan aset terambil dari variabel ASSETS
+        const bgStory = document.getElementById('bg-story-img');
+        const bgSurv = document.getElementById('bg-survival-img');
+        if(this.imgs.bg_story) bgStory.style.backgroundImage = `url('${this.imgs.bg_story.src}')`;
+        if(this.imgs.bg_survival) bgSurv.style.backgroundImage = `url('${this.imgs.bg_survival.src}')`;
+    }
+
+    // --- NEW FUNCTION: HANDLE MODE CHOICE ---
+    chooseMode(mode) {
+        AudioMgr.playSFX('sfx-click');
+        if (mode === 'story') {
+            // Masuk ke alur cerita (Tutorial -> Chapter 1 dst)
+            this.startStory();
+        } else if (mode === 'survival') {
+            // Masuk ke mode survival
+            this.startSurvivalMode();
+        }
+    }
+
+    startSurvivalMode() {
+        AudioMgr.playSFX('sfx-click');
+        this.switchScreen('dummy');
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('mission-overlay').style.display = 'block';
+        document.getElementById('current-mission-text').innerText = "SURVIVAL: WAVE 1";
+        
+        // Reset player score for survival run
+        this.player.score = 0;
+        this.player.lastWave = 1;
+        
+        this.state = AppState.GAME_SURVIVAL;
+        AudioMgr.playMusic('bgm-shooter'); // Use shooter music
+        this.currentChapter = new ChapterSurvival(this);
     }
 
     startStory() {
@@ -1841,7 +2032,7 @@ class GameApp {
             // State 3: URL Belum Diset
             statusBadge.className = "sync-badge status-offline";
             statusBadge.innerText = "NO CONFIG";
-            statusText.innerText = "Server belum dikonfigurasi. Menampilkan data lokal.";
+            statusText.innerText = "Server belum dikonfigurasi. Data hanya lokal.";
             statusText.className = "sync-status sync-error";
             
             this.fallbackToLocalLeaderboard();
@@ -1983,7 +2174,14 @@ class GameApp {
                 
                 const loc = (d.district && d.district !== '-') ? d.district : (d.city || d.prov);
                 const school = d.school || '-';
-                tr.innerHTML = `<td>${i+1}</td><td>${d.name}</td><td style="font-size:0.8rem; color:#aaa">${school}</td><td style="font-size:0.8rem; color:#aaa">${loc}</td><td style="color:var(--accent-gold); font-weight:bold;">${d.score}</td>`;
+                
+                // Tampilkan Wave jika Survival
+                let scoreDisplay = d.score;
+                if(d.mode === 'survival' && d.wave) {
+                    scoreDisplay = `${d.score} <span style="font-size:0.7rem; color:#FF4444">(W${d.wave})</span>`;
+                }
+
+                tr.innerHTML = `<td>${i+1}</td><td>${d.name}</td><td style="font-size:0.8rem; color:#aaa">${school}</td><td style="font-size:0.8rem; color:#aaa">${loc}</td><td style="color:var(--accent-gold); font-weight:bold;">${scoreDisplay}</td>`;
                 lbBody.appendChild(tr);
             });
         }
@@ -1997,7 +2195,7 @@ class GameApp {
         }
 
         // --- RENDER LOGIC UTAMA ---
-        if (this.state >= AppState.TUTORIAL && this.state <= AppState.CREDITS) {
+        if (this.state >= AppState.TUTORIAL && this.state <= AppState.CREDITS || this.state >= 7) {
             ctx.clearRect(0,0, 800, 600);
             
             // --- NEW: SCREEN SHAKE LOGIC ---
@@ -2024,6 +2222,14 @@ class GameApp {
             else if(this.state === AppState.GAME_CH3_QUIZ || this.state === AppState.GAME_CH3_IR) bgKey = 'bg_rtraining';
             else if(this.state === AppState.ENDING_CINEMATIC || this.state === AppState.CREDITS) bgKey = 'bg_title'; // BG untuk ending/credits
             
+            // --- SURVIVAL BACKGROUND LOGIC ---
+            else if(this.state === AppState.GAME_SURVIVAL && this.currentChapter instanceof ChapterSurvival) {
+                // Background berubah dinamis dari dalam ChapterSurvival via getBackground()
+                bgKey = this.currentChapter.getBackgroundKey(); 
+            } else if (this.state === AppState.GAME_SURVIVAL_QUIZ) {
+                bgKey = 'bg_monitor';
+            }
+
             let bg = this.imgs[bgKey];
             // Khusus Bomberman, BG digambar sendiri oleh method draw-nya (untuk lantai spesifik)
             // Tapi untuk amannya kita tidak gambar BG global di sini jika bomberman aktif
@@ -2048,6 +2254,437 @@ class GameApp {
             ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
         requestAnimationFrame(this.loop);
+    }
+}
+
+// --- NEW CLASS: CHAPTER SURVIVAL (ENDLESS MODE) ---
+class ChapterSurvival {
+    constructor(game) {
+        this.game = game;
+        this.pX = 400; this.pY = 500;
+        this.bullets = [];
+        this.enemies = [];
+        this.particles = [];
+        this.powerups = []; // {x, y, type, vy}
+        
+        this.isShooting = false;
+        this.spawnTimer = 0;
+        this.shootTimer = 0;
+        this.active = false;
+        
+        // Stats
+        this.hp = 100; this.maxHp = 100;
+        this.wave = 1;
+        this.waveKills = 0;
+        this.killsToNextWave = 15; // Kills needed per wave
+        this.score = 0;
+        
+        // PowerUp Effects
+        this.effects = {
+            slow: 0,        // Timer for Firewall Boost (Slow Enemies)
+            shield: 0,      // Timer for SSH Shield (Invincible)
+            nuke: false     // Flag for Antivirus Nuke
+        };
+
+        // Quiz Logic
+        this.quizTriggerWave = 3; // Tiap 3 wave (3, 6, 9...)
+        
+        // Controls
+        this.handleMove = (e) => { 
+            if(!this.active) return; 
+            const r = canvas.getBoundingClientRect(); 
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX; 
+            this.pX = (clientX - r.left) * (800/r.width); 
+            this.pX = Math.max(30, Math.min(770, this.pX)); 
+        };
+        this.handleStart = (e) => { if(!this.active) return; this.isShooting = true; this.handleMove(e); };
+        this.handleEnd = (e) => { this.isShooting = false; };
+        
+        canvas.addEventListener('mousemove', this.handleMove);
+        canvas.addEventListener('mousedown', this.handleStart);
+        canvas.addEventListener('mouseup', this.handleEnd);
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this.handleMove(e); }, {passive: false});
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e); }, {passive: false});
+        canvas.addEventListener('touchend', (e) => { e.preventDefault(); this.handleEnd(e); }, {passive: false});
+
+        // Start Tutorial
+        showMessage(
+            "ENDLESS DEFENSE", 
+            `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
+            <strong>🛡️ MISI SURVIVAL:</strong><br>
+            Bertahan hidup selama mungkin dari gelombang malware!<br>
+            Setiap 3 Wave akan ada <strong>Kuis Bonus</strong>.<br><br>
+            <strong>🎁 POWER-UPS:</strong><br>
+            🧱 Firewall: Memperlambat Musuh<br>
+            🛡️ Encryption: Kebal Sementara<br>
+            ☢️ Antivirus: Hancurkan Semua<br>
+            </div>`,
+            () => { this.active = true; }
+        );
+    }
+
+    getBackgroundKey() {
+        if(this.wave <= 5) return 'bg_wave1';
+        if(this.wave <= 10) return 'bg_wave2';
+        if(this.wave <= 15) return 'bg_wave3';
+        if(this.wave <= 20) return 'bg_wave4';
+        return 'bg_wave5';
+    }
+
+    getWaveConfig() {
+        if(this.wave <= 5) return { spd: 0.8, hp: 2, spawn: 2000, ai: 'straight' }; // Tutorial
+        if(this.wave <= 10) return { spd: 1.0, hp: 3, spawn: 1500, ai: 'zigzag_light' }; // Learning
+        if(this.wave <= 15) return { spd: 1.3, hp: 4, spawn: 1200, ai: 'zigzag_hard' }; // Challenge
+        if(this.wave <= 20) return { spd: 1.6, hp: 5, spawn: 1000, ai: 'track' }; // Expert
+        return { spd: 1.8 + ((this.wave-20)*0.1), hp: 6 + Math.floor((this.wave-20)/5), spawn: 800, ai: 'mixed' }; // Master
+    }
+
+    spawnEnemy() {
+        const cfg = this.getWaveConfig();
+        let x = Math.random() * 700 + 50;
+        
+        let type = cfg.ai;
+        if(type === 'mixed') {
+            const types = ['straight', 'zigzag_hard', 'track'];
+            type = types[Math.floor(Math.random() * types.length)];
+        }
+
+        this.enemies.push({
+            x: x, y: -50,
+            initialX: x, // For zigzag ref
+            spd: cfg.spd,
+            hp: cfg.hp, maxHp: cfg.hp,
+            type: type,
+            timer: 0 // For AI calculations
+        });
+    }
+
+    dropPowerUp(x, y) {
+        // 10% Chance to drop powerup
+        if(Math.random() < 0.10) {
+            const types = [
+                { type: 'firewall_boost', icon: 'icon_firewall' },
+                { type: 'encryption_shield', icon: 'icon_ssh' },
+                { type: 'antivirus_nuke', icon: 'icon_exe' }
+            ];
+            const p = types[Math.floor(Math.random() * types.length)];
+            this.powerups.push({ x: x, y: y, vy: 2, ...p });
+        }
+    }
+
+    activatePowerUp(type) {
+        AudioMgr.playSFX('sfx-correct');
+        spawnFloatingScore(type.replace('_', ' ').toUpperCase() + "!");
+        
+        if(type === 'firewall_boost') {
+            this.effects.slow = 300; // 5 seconds (60fps)
+        } else if (type === 'encryption_shield') {
+            this.effects.shield = 300;
+        } else if (type === 'antivirus_nuke') {
+            // Kill all enemies
+            this.enemies.forEach(e => {
+                this.spawnExplosion(e.x, e.y, 'white');
+                this.game.addScore(50);
+            });
+            this.enemies = [];
+            this.game.screenShake = 20;
+        }
+    }
+
+    triggerQuiz() {
+        this.active = false;
+        this.isShooting = false;
+        this.game.state = AppState.GAME_SURVIVAL_QUIZ;
+        
+        // Show Quiz Screen
+        const questionBank = [...BANK_SOAL_CH1, ...BANK_SOAL_CH2, ...BANK_SOAL_CH3];
+        const q = questionBank[Math.floor(Math.random() * questionBank.length)];
+        
+        this.game.switchScreen('screen-quiz');
+        document.getElementById('quiz-title-text').innerText = "BONUS WAVE QUIZ";
+        document.getElementById('quiz-phase-num').innerText = "BONUS";
+        document.getElementById('quiz-question-text').innerText = q.q;
+        document.getElementById('quiz-code-display').style.display = 'none'; // Hide code lock
+        document.getElementById('quiz-feedback').innerText = "";
+        
+        const optionsContainer = document.getElementById('quiz-options-container'); 
+        optionsContainer.innerHTML = '';
+        
+        shuffleArray([...q.options]).forEach((opt, index) => {
+            const btn = document.createElement('button'); 
+            btn.className = 'btn-ml quiz-option-btn'; 
+            btn.style.marginTop = '10px';
+            btn.innerText = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+            
+            btn.onclick = () => {
+                // Disable all buttons
+                document.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = true);
+                
+                if(opt.correct) {
+                    AudioMgr.playSFX('sfx-correct');
+                    btn.style.background = 'var(--success-green)';
+                    showMessage("JAWABAN BENAR!", "Mendapatkan Random Power-Up!", () => {
+                        this.activatePowerUp(['firewall_boost', 'encryption_shield', 'antivirus_nuke'][Math.floor(Math.random()*3)]);
+                        this.resumeGame();
+                    });
+                } else {
+                    AudioMgr.playSFX('sfx-wrong');
+                    btn.style.background = 'var(--danger-red)';
+                    showMessage("JAWABAN SALAH", "Tidak ada pinalti. Lanjut berjuang!", () => {
+                        this.resumeGame();
+                    });
+                }
+            };
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    resumeGame() {
+        this.game.switchScreen('dummy');
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('mission-overlay').style.display = 'block';
+        this.game.state = AppState.GAME_SURVIVAL;
+        this.active = true;
+    }
+
+    update(dt) {
+        if(!this.active) return;
+
+        // Effect Timers
+        if(this.effects.slow > 0) this.effects.slow--;
+        if(this.effects.shield > 0) this.effects.shield--;
+
+        // Shooting
+        if(this.isShooting) { 
+            this.shootTimer += dt; 
+            if(this.shootTimer > 150) { 
+                this.bullets.push({ x: this.pX, y: this.pY - 40 }); 
+                this.shootTimer = 0; 
+            } 
+        }
+
+        // Spawning
+        this.spawnTimer += dt;
+        const cfg = this.getWaveConfig();
+        // Spawn rate modified by slow effect (active firewall slows spawn too?) -> Maybe just enemies move slow
+        if(this.spawnTimer > cfg.spawn) {
+            this.spawnEnemy();
+            this.spawnTimer = 0;
+        }
+
+        // Update Bullets
+        for(let i = this.bullets.length - 1; i >= 0; i--) { 
+            let b = this.bullets[i]; b.y -= 10; 
+            if(b.y < -10) this.bullets.splice(i, 1); 
+        }
+
+        // Update Powerups
+        for(let i = this.powerups.length - 1; i >= 0; i--) {
+            let p = this.powerups[i];
+            p.y += p.vy;
+            
+            // Collision Player
+            if(Math.hypot(p.x - this.pX, p.y - this.pY) < 40) {
+                this.activatePowerUp(p.type);
+                this.powerups.splice(i, 1);
+                continue;
+            }
+            if(p.y > 650) this.powerups.splice(i, 1);
+        }
+
+        // Update Enemies
+        for(let i = this.enemies.length - 1; i >= 0; i--) {
+            let e = this.enemies[i];
+            e.timer++;
+
+            // AI Movement Logic
+            let speed = e.spd;
+            if(this.effects.slow > 0) speed *= 0.5; // Slow Effect
+
+            e.y += speed;
+
+            // Horizontal Movement based on AI
+            if(e.type === 'zigzag_light') {
+                e.x = e.initialX + Math.sin(e.timer * 0.05) * 50;
+            } else if (e.type === 'zigzag_hard') {
+                e.x = e.initialX + Math.sin(e.timer * 0.1) * 100; // Wider and faster zigzag
+            } else if (e.type === 'track') {
+                const dx = this.pX - e.x;
+                e.x += dx * 0.02; // Slowly steer towards player
+            }
+
+            // Screen Bounds Check
+            if(e.x < 30) e.x = 30;
+            if(e.x > 770) e.x = 770;
+
+            // Player Collision
+            if(Math.hypot(e.x - this.pX, e.y - this.pY) < 50) {
+                if(this.effects.shield > 0) {
+                    // Shield kills enemy on contact
+                    this.spawnExplosion(e.x, e.y, 'blue');
+                    this.enemies.splice(i, 1);
+                    this.game.addScore(20);
+                } else {
+                    this.hp -= 20;
+                    this.spawnExplosion(e.x, e.y, 'red');
+                    AudioMgr.playSFX('sfx-wrong');
+                    this.enemies.splice(i, 1);
+                    this.game.gameStats.damageTaken += 20;
+                    this.game.screenShake = 15;
+                    if(this.hp <= 0) this.game.triggerGameOver();
+                }
+                continue;
+            }
+
+            // Missed Enemy
+            if(e.y > 600) {
+                this.enemies.splice(i, 1);
+                // No miss penalty in survival, just score potential lost?
+                // Or maybe small HP hit? "Endless" usually ends on death.
+                // Let's deduct HP lightly or just ignore based on prompt "Continue (no penalty in survival)".
+                // Let's assume passed enemies damage the "City Server" (HP)
+                this.hp -= 5; 
+                this.game.gameStats.damageTaken += 5;
+                if(this.hp <= 0) this.game.triggerGameOver();
+                continue;
+            }
+
+            // Bullet Collision
+            for(let j = this.bullets.length - 1; j >= 0; j--) {
+                let b = this.bullets[j];
+                if(Math.hypot(e.x - b.x, e.y - b.y) < 40) {
+                    e.hp--;
+                    this.bullets.splice(j, 1);
+                    this.spawnExplosion(b.x, b.y, 'cyan');
+                    
+                    if(e.hp <= 0) {
+                        this.enemies.splice(i, 1);
+                        this.game.addScore(10 * this.wave); // Scaling Score
+                        this.waveKills++;
+                        this.game.gameStats.totalKills++;
+                        this.dropPowerUp(e.x, e.y);
+                        AudioMgr.playSFX('sfx-correct');
+                        
+                        // Wave Progression
+                        if(this.waveKills >= this.killsToNextWave) {
+                            this.nextWave();
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        // Particle Update
+        for(let i = this.particles.length - 1; i >= 0; i--) { 
+            let p = this.particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 0.05; 
+            if(p.life <= 0) this.particles.splice(i, 1); 
+        }
+    }
+
+    nextWave() {
+        this.wave++;
+        this.game.player.lastWave = this.wave;
+        this.waveKills = 0;
+        this.killsToNextWave += 5; // Harder each wave
+        spawnFloatingScore(`WAVE ${this.wave} START!`);
+        document.getElementById('current-mission-text').innerText = `SURVIVAL: WAVE ${this.wave}`;
+        
+        // Trigger Quiz?
+        if(this.wave % this.quizTriggerWave === 1 && this.wave > 1) { // e.g., Wave 4 (after completing 3)
+             setTimeout(() => this.triggerQuiz(), 1000);
+        }
+    }
+
+    spawnExplosion(x, y, color) { 
+        for(let i=0; i<8; i++) 
+            this.particles.push({ 
+                x: x, y: y, 
+                vx: (Math.random() - 0.5) * 10, 
+                vy: (Math.random() - 0.5) * 10, 
+                life: 1.0, 
+                color: color 
+            }); 
+    }
+
+    draw(ctx) {
+        // HUD HP
+        ctx.fillStyle = "#550000"; ctx.fillRect(580, 585, 200, 10); 
+        ctx.fillStyle = this.hp > 30 ? "#00FF88" : "#FF4444"; 
+        ctx.fillRect(580, 585, 200 * (this.hp / this.maxHp), 10);
+        
+        // HUD Wave Info
+        ctx.textAlign="left"; ctx.fillStyle = "#00D9FF"; ctx.font = "16px Orbitron"; 
+        ctx.fillText(`WAVE: ${this.wave} | KILLS: ${this.waveKills}/${this.killsToNextWave}`, 20, 570);
+
+        // PowerUp Indicators (Status Effects)
+        if(this.effects.shield > 0) {
+            ctx.fillStyle = "rgba(0, 255, 255, 0.3)";
+            ctx.beginPath(); ctx.arc(this.pX, this.pY, 60, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = "cyan"; ctx.font="12px sans-serif";
+            ctx.fillText("SHIELD: " + Math.ceil(this.effects.shield/60) + "s", this.pX - 30, this.pY + 60);
+        }
+        if(this.effects.slow > 0) {
+            ctx.fillStyle = "rgba(255, 215, 0, 0.2)";
+            ctx.fillRect(0, 0, 800, 600); // Yellow tint screen
+            ctx.fillStyle = "gold"; ctx.font="20px Orbitron"; ctx.textAlign="center";
+            ctx.fillText("FIREWALL BOOST ACTIVE!", 400, 100);
+            ctx.textAlign="left";
+        }
+
+        // Draw Player
+        const charId = this.game.player.charId;
+        let charImg = this.game.imgs['hero' + charId + '_tembak'];
+        if (!charImg || !charImg.complete || charImg.naturalWidth === 0) charImg = this.game.getHeroIdle(charId);
+        
+        const breath = Math.sin(Date.now() / 200) * 2;
+        if(charImg && charImg.complete) { 
+            ctx.drawImage(charImg, this.pX - 32, this.pY - 40 + breath, 64, 64); 
+        } else { 
+            ctx.fillStyle = "blue"; ctx.beginPath(); ctx.arc(this.pX, this.pY, 20, 0, Math.PI*2); ctx.fill(); 
+        }
+
+        // Draw Enemies
+        const virusImg = this.game.imgs.virus;
+        const wobble = Math.sin(Date.now() / 200) * 0.1;
+        const pulse = 1 + Math.sin(Date.now() / 150) * 0.1;
+
+        this.enemies.forEach(e => {
+            if(virusImg && virusImg.complete) {
+                ctx.save();
+                ctx.translate(e.x, e.y);
+                ctx.rotate(wobble);
+                ctx.scale(pulse, pulse);
+                ctx.drawImage(virusImg, -30, -30, 60, 60);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = "red"; ctx.fillRect(e.x-20, e.y-20, 40, 40);
+            }
+            // Enemy HP Bar
+            ctx.fillStyle = "red"; ctx.fillRect(e.x - 20, e.y - 40, 40, 5);
+            ctx.fillStyle = "green"; ctx.fillRect(e.x - 20, e.y - 40, 40 * (e.hp / e.maxHp), 5);
+        });
+
+        // Draw PowerUps
+        this.powerups.forEach(p => {
+            const icon = this.game.imgs[p.icon];
+            const yOffset = Math.sin(Date.now() / 200) * 5;
+            if(icon && icon.complete) {
+                ctx.drawImage(icon, p.x - 20, p.y - 20 + yOffset, 40, 40);
+            } else {
+                ctx.fillStyle = "gold"; ctx.beginPath(); ctx.arc(p.x, p.y, 15, 0, Math.PI*2); ctx.fill();
+            }
+        });
+
+        // Draw Bullets & Particles
+        ctx.fillStyle = "#FFFF00"; this.bullets.forEach(b => { ctx.fillRect(b.x - 3, b.y - 10, 6, 20); });
+        this.particles.forEach(p => { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1.0; });
+    }
+
+    cleanup() {
+        canvas.removeEventListener('mousemove', this.handleMove);
+        canvas.removeEventListener('mousedown', this.handleStart);
+        canvas.removeEventListener('mouseup', this.handleEnd);
     }
 }
 
