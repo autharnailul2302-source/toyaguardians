@@ -81,19 +81,6 @@
         
         @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
 
-        /* GEMINI BADGE STYLE */
-        .gemini-badge {
-            position: absolute; bottom: 15px; right: 15px;
-            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
-            padding: 5px 12px; border-radius: 20px;
-            font-family: 'Rajdhani', sans-serif; font-weight: bold; font-size: 0.8rem;
-            color: white; border: 1px solid rgba(255,255,255,0.3);
-            display: flex; align-items: center; gap: 5px;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-            animation: glowBadge 3s infinite alternate;
-        }
-        @keyframes glowBadge { from { box-shadow: 0 0 5px rgba(59, 130, 246, 0.3); } to { box-shadow: 0 0 15px rgba(59, 130, 246, 0.8); } }
-
         #lightning-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
         
         /* REGISTER & CHAR SELECT */
@@ -481,11 +468,6 @@
             <button class="btn-ml btn-anim" style="background: #002244; border-color:#004488;" onclick="app.showLeaderboard()">HALL OF GUARDIANS (NASIONAL)</button>
         </div>
         <p style="position:absolute; bottom:10px; color:var(--tech-cyan); font-size:0.8rem; text-shadow:0 0 5px black;">Ver. 20.0 (ARPG Matrix)</p>
-
-        <!-- BADGE GEMINI (NEW) -->
-        <div class="gemini-badge">
-            <span style="font-size:1.2rem;">✦</span> Made with Gemini
-        </div>
     </div>
 
     <div id="screen-register" class="ui-screen">
@@ -1647,10 +1629,26 @@ class GameApp {
         this.currentChapter = new Chapter3Bomber(this);
     }
 
+    // --- FIX: FUNGSI BARU UNTUK NARASI TRANSISI ---
+    triggerForensicNarrative() {
+        AudioMgr.playSFX('sfx-click');
+        this.state = AppState.STORY;
+        this.switchScreen('screen-story'); // Pindah ke layar dialog
+        
+        story.start([
+            { speaker: "System AI", text: "Pemindaian Selesai. Seluruh Keylogger berhasil dinetralkan.", char: 'androidtoya', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Kerja bagus Guardian! Jejak digital mereka kini terlihat jelas.", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Akhirnya posisi Boss ditemukan! Dia bersembunyi di balik enkripsi tingkat tinggi.", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Kita perlu melakukan Forensik Digital untuk mendekripsi koordinatnya. Lakukan sekarang!", char: 'rex', bg: 'bg_monitor' }
+        ], () => {
+            // Setelah dialog selesai, baru mulai Quiz
+            this.startChapter3Quiz();
+        });
+    }
+    // ---------------------------------------------
+
     startChapter3Quiz() {
         AudioMgr.playMusic('bgm-player');
-        // FIX: Hapus showMessage awal agar tidak konflik dengan Tutorial Quiz yang muncul otomatis
-        // showMessage("INVESTIGASI LANJUTAN", "IP Penyerang Ditemukan! Analisis paket data untuk mendapatkan kode dekripsi.");
         
         this.switchScreen('screen-quiz');
         document.getElementById('hud').style.display = 'flex'; 
@@ -3491,18 +3489,36 @@ class Chapter3Bomber {
             }
         });
         
-        // FIX: Tambahkan flag transitioning agar tidak terpanggil berkali-kali saat berdiri di pintu
+        // FIX: Logika Transisi Antar Lantai & Akhir Level
         if(this.exitRevealed && this.playerPos.r === this.exitPos.r && this.playerPos.c === this.exitPos.c && !this.transitioning) {
-            this.transitioning = true; // Lock transition
+            this.transitioning = true; // Kunci agar tidak trigger berkali-kali
+            this.active = false; // Pause gameplay (musuh & input berhenti)
             AudioMgr.playSFX('sfx-correct');
             
             if(this.level < this.maxLevels) {
-                this.level++;
-                setTimeout(() => this.initLevel(this.level), 500); // Delay sedikit untuk efek smooth
+                // --- NARASI ANTAR LANTAI (1->2, 2->3) ---
+                showMessage(
+                    `LANTAI ${this.level} SELESAI`,
+                    "Data Keylogger berhasil diamankan! Pintu akses ke lantai berikutnya terbuka.",
+                    () => {
+                        // Callback saat tombol OK ditekan
+                        this.level++;
+                        this.initLevel(this.level); // Setup lantai baru
+                        this.active = true; // Lanjut main
+                    }
+                );
             } else {
-                this.active = false; 
-                this.cleanup(); 
-                this.game.startChapter3Quiz();
+                // --- NARASI SETELAH LANTAI 3 (KE NARASI FORENSIK) ---
+                showMessage(
+                    "SEMUA DATA DIAMANKAN",
+                    "Seluruh jejak virus berhasil ditemukan. Mengirim data ke markas...",
+                    () => {
+                        // Callback saat tombol OK ditekan
+                        this.cleanup(); 
+                        // FIX: Panggil fungsi narasi transisi, BUKAN langsung startChapter3Quiz
+                        this.game.triggerForensicNarrative(); 
+                    }
+                );
             }
         }
     }
