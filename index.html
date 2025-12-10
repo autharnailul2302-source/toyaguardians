@@ -1050,9 +1050,10 @@ const SaveSystem = {
         if(GOOGLE_SCRIPT_URL.includes("123456789")) return { status: 'config_error' };
         
         try {
-            // Kita gunakan abort controller untuk timeout jika koneksi lambat (3 detik)
+            // FIX: NAIKKAN TIMEOUT DARI 3000 JADI 15000 (15 DETIK)
+            // Google Apps Script sering lambat merespon (cold start), jadi kita beri waktu lebih lama.
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            const timeoutId = setTimeout(() => controller.abort(), 15000); 
 
             const url = `${GOOGLE_SCRIPT_URL}?action=getLeaderboard`;
             const response = await fetch(url, { signal: controller.signal });
@@ -1063,7 +1064,7 @@ const SaveSystem = {
             const data = await response.json();
             return data;
         } catch (e) {
-            console.warn("Gagal ambil data cloud:", e);
+            console.warn("Gagal ambil data cloud (Timeout/Error):", e);
             return { status: 'error', error: e };
         }
     },
