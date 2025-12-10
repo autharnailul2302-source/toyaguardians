@@ -925,11 +925,52 @@ const DATA_INDONESIA = {
         "Subulussalam": ["Longkib", "Penanggalan", "Rundeng", "Simpang Kiri", "Sultan Daulat"]
     },
     "Jawa Timur": {
-        "Surabaya": ["Gubeng", "Tegalsari", "Genteng", "Wonokromo", "Rungkut", "Sukolilo"],
-        "Malang": ["Klojen", "Blimbing", "Kedungkandang", "Lowokwaru", "Sukun"],
-		"Lamongan": ["Brondong", "Tlogoretno", "Sedayulawas", "Brengkok", "Labuhan", "Paciran", "Babat"],
-        "Gresik": ["Gresik Kota", "Kebomas", "Manyar", "Driyorejo"]
-    },
+    "Kabupaten Bangkalan": [
+      "Arosbaya", "Bangkalan", "Blega", "Burneh", "Galis",
+      "Geger", "Kamal", "Klampis", "Kokop", "Konang",
+      "Labang", "Modung", "Sepulu", "Socah", "Tanah Merah",
+      "Tanjung Bumi", "Tragah"
+    ],
+    "Kabupaten Banyuwangi": [
+      "Bangorejo", "Banyuwangi", "Blimbingsari", "Cluring",
+      "Gambiran", "Genteng", "Giri", "Glagah", "Glenmore",
+      "Kab. Kalibaru", "Kalipuro", "Licin", "Muncar", "Pesanggaran",
+      "Purwoharjo", "Rogojampi", "Sempu", "Siliragung",
+      "Singojuruh", "Songgon", "Srono", "Tegaldlimo",
+      "Tegalsari", "Wongsorejo"
+    ],
+    "Kabupaten Blitar": [
+      "Bakung", "Binangun", "Doko", "Gandusari", "Garum",
+      "Kademangan", "Kanigoro", "Kesamben", "Nglegok",
+      "Panggungrejo", "Ponggok", "Sanankulon",
+      "Sananwetan", "Selopuro", "Selorejo", "Srengat",
+      "Sutojayan", "Talun", "Udanawu", "Wates", "Wonodadi",
+      "Wonotirto"
+    ],
+    "Kabupaten Bojonegoro": [
+      "Balen", "Baureno", "Bojonegoro", "Bubulan", "Dander",
+      "Gayam", "Gondang", "Kapas", "Kasiman", "Kedewan",
+      "Kedungadem", "Kepohbaru", "Malo", "Margomulyo",
+      "Ngambon", "Ngasem", "Ngraho", "Padangan",
+      "Purwosari", "Sekar", "Sugihwaras", "Sukosewu",
+      "Sumberrejo", "Tambakrejo", "Temayang", "Trucuk"
+    ],
+    "Kabupaten Bondowoso": [
+      "Binakal", "Bondowoso", "Botolinggo", "Cermee",
+      "Curahdami", "Grujugan", "Jambe Sari Darus Sholah",
+      "Klabang", "Maesan", "Pakem", "Prajekan",
+      "Pujer", "Sempol", "Sukosari", "Sumber Wringin",
+      "Taman Krocok", "Tamanan", "Tapen", "Tenggarang",
+      "Tlogosari", "Wonosari", "Wringin"
+    ],
+    "Kabupaten Gresik": [
+      "Balongpanggang", "Benjeng", "Bungah", "Cerme",
+      "Driyorejo", "Duduk Sampeyan", "Dukun", "Gresik",
+      "Kedamean", "Kebomas", "Manyar", "Menganti",
+      "Panceng", "Sangkapura", "Sidayu", "Tambak",
+      "Ujungpangkah", "Wringinanom"
+    ]
+  },
     "Jawa Barat": {
         "Bandung": ["Cicendo", "Coblong", "Andir", "Buahbatu", "Kiaracondong"],
         "Bekasi": ["Bekasi Barat", "Bekasi Timur", "Bekasi Selatan", "Jatiasih"],
@@ -2379,19 +2420,34 @@ class ChapterSurvival {
         this.hp = 100; this.maxHp = 100;
         this.wave = 1;
         this.waveKills = 0;
-        this.killsToNextWave = 15; // Kills needed per wave
+        this.killsToNextWave = 15; 
         this.score = 0;
+        this.combo = 0; // NEW: Combo Counter
+        this.comboTimer = 0; // Visual Timer for combo text
         
         // PowerUp Effects
         this.effects = {
-            slow: 0,        // Timer for Firewall Boost (Slow Enemies)
-            shield: 0,      // Timer for SSH Shield (Invincible)
-            nuke: false     // Flag for Antivirus Nuke
+            slow: 0,        
+            shield: 0,      
+            nuke: false     
         };
 
-        // Quiz Logic
-        this.quizTriggerWave = 3; // Tiap 3 wave (3, 6, 9...)
+        this.quizTriggerWave = 3; 
         
+        // --- UI ADJUSTMENTS: HIDE UNUSED HUD ELEMENTS ---
+        // Sembunyikan Timer & Purity bawaan HTML karena tidak dipakai di survival
+        const timerEl = document.getElementById('hud-timer');
+        if(timerEl) timerEl.parentElement.style.display = 'none';
+        
+        const purityEl = document.getElementById('hud-purity');
+        if(purityEl) purityEl.parentElement.parentElement.style.display = 'none';
+
+        // Reset Stats Game untuk Result Screen
+        this.game.gameStats.startTime = Date.now();
+        this.game.gameStats.totalKills = 0;
+        this.game.gameStats.maxCombo = 0;
+        this.game.gameStats.damageTaken = 0;
+
         // Controls
         this.handleMove = (e) => { 
             if(!this.active) return; 
@@ -2415,8 +2471,8 @@ class ChapterSurvival {
             "ENDLESS DEFENSE", 
             `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
             <strong>🛡️ MISI SURVIVAL:</strong><br>
-            Bertahan hidup selama mungkin dari gelombang malware!<br>
-            Setiap 3 Wave akan ada <strong>Kuis Bonus</strong>.<br><br>
+            Bertahan hidup selama mungkin!<br>
+            Cetak <strong>COMBO</strong> tinggi untuk skor maksimal.<br><br>
             <strong>🎁 POWER-UPS:</strong><br>
             🧱 Firewall: Memperlambat Musuh<br>
             🛡️ Encryption: Kebal Sementara<br>
@@ -2435,11 +2491,11 @@ class ChapterSurvival {
     }
 
     getWaveConfig() {
-        if(this.wave <= 5) return { spd: 0.8, hp: 2, spawn: 2000, ai: 'straight' }; // Tutorial
-        if(this.wave <= 10) return { spd: 1.0, hp: 3, spawn: 1500, ai: 'zigzag_light' }; // Learning
-        if(this.wave <= 15) return { spd: 1.3, hp: 4, spawn: 1200, ai: 'zigzag_hard' }; // Challenge
-        if(this.wave <= 20) return { spd: 1.6, hp: 5, spawn: 1000, ai: 'track' }; // Expert
-        return { spd: 1.8 + ((this.wave-20)*0.1), hp: 6 + Math.floor((this.wave-20)/5), spawn: 800, ai: 'mixed' }; // Master
+        if(this.wave <= 5) return { spd: 0.8, hp: 2, spawn: 2000, ai: 'straight' }; 
+        if(this.wave <= 10) return { spd: 1.0, hp: 3, spawn: 1500, ai: 'zigzag_light' }; 
+        if(this.wave <= 15) return { spd: 1.3, hp: 4, spawn: 1200, ai: 'zigzag_hard' }; 
+        if(this.wave <= 20) return { spd: 1.6, hp: 5, spawn: 1000, ai: 'track' }; 
+        return { spd: 1.8 + ((this.wave-20)*0.1), hp: 6 + Math.floor((this.wave-20)/5), spawn: 800, ai: 'mixed' }; 
     }
 
     spawnEnemy() {
@@ -2454,21 +2510,20 @@ class ChapterSurvival {
 
         this.enemies.push({
             x: x, y: -50,
-            initialX: x, // For zigzag ref
+            initialX: x, 
             spd: cfg.spd,
             hp: cfg.hp, maxHp: cfg.hp,
             type: type,
-            timer: 0 // For AI calculations
+            timer: 0 
         });
     }
 
     dropPowerUp(x, y) {
-        // 10% Chance to drop powerup
         if(Math.random() < 0.10) {
             const types = [
-                { type: 'firewall_boost', icon: 'icon_firewall' },
-                { type: 'encryption_shield', icon: 'icon_ssh' },
-                { type: 'antivirus_nuke', icon: 'icon_exe' }
+                { type: 'firewall_boost', icon: 'icon_firewall', name: "FIREWALL" },
+                { type: 'encryption_shield', icon: 'icon_ssh', name: "SHIELD" },
+                { type: 'antivirus_nuke', icon: 'icon_exe', name: "NUKE" }
             ];
             const p = types[Math.floor(Math.random() * types.length)];
             this.powerups.push({ x: x, y: y, vy: 2, ...p });
@@ -2480,14 +2535,14 @@ class ChapterSurvival {
         spawnFloatingScore(type.replace('_', ' ').toUpperCase() + "!");
         
         if(type === 'firewall_boost') {
-            this.effects.slow = 300; // 5 seconds (60fps)
+            this.effects.slow = 300; 
         } else if (type === 'encryption_shield') {
             this.effects.shield = 300;
         } else if (type === 'antivirus_nuke') {
-            // Kill all enemies
             this.enemies.forEach(e => {
                 this.spawnExplosion(e.x, e.y, 'white');
                 this.game.addScore(50);
+                this.game.gameStats.totalKills++;
             });
             this.enemies = [];
             this.game.screenShake = 20;
@@ -2499,7 +2554,6 @@ class ChapterSurvival {
         this.isShooting = false;
         this.game.state = AppState.GAME_SURVIVAL_QUIZ;
         
-        // Show Quiz Screen
         const questionBank = [...BANK_SOAL_CH1, ...BANK_SOAL_CH2, ...BANK_SOAL_CH3];
         const q = questionBank[Math.floor(Math.random() * questionBank.length)];
         
@@ -2507,7 +2561,7 @@ class ChapterSurvival {
         document.getElementById('quiz-title-text').innerText = "BONUS WAVE QUIZ";
         document.getElementById('quiz-phase-num').innerText = "BONUS";
         document.getElementById('quiz-question-text').innerText = q.q;
-        document.getElementById('quiz-code-display').style.display = 'none'; // Hide code lock
+        document.getElementById('quiz-code-display').style.display = 'none'; 
         document.getElementById('quiz-feedback').innerText = "";
         
         const optionsContainer = document.getElementById('quiz-options-container'); 
@@ -2520,7 +2574,6 @@ class ChapterSurvival {
             btn.innerText = `${String.fromCharCode(65 + index)}. ${opt.text}`;
             
             btn.onclick = () => {
-                // Disable all buttons
                 document.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = true);
                 
                 if(opt.correct) {
@@ -2545,6 +2598,10 @@ class ChapterSurvival {
     resumeGame() {
         this.game.switchScreen('dummy');
         document.getElementById('hud').style.display = 'flex';
+        // Sembunyikan lagi elemen HUD timer/purity saat resume
+        document.getElementById('hud-timer').parentElement.style.display = 'none';
+        document.getElementById('hud-purity').parentElement.parentElement.style.display = 'none';
+        
         document.getElementById('mission-overlay').style.display = 'block';
         this.game.state = AppState.GAME_SURVIVAL;
         this.active = true;
@@ -2556,6 +2613,7 @@ class ChapterSurvival {
         // Effect Timers
         if(this.effects.slow > 0) this.effects.slow--;
         if(this.effects.shield > 0) this.effects.shield--;
+        if(this.comboTimer > 0) this.comboTimer--;
 
         // Shooting
         if(this.isShooting) { 
@@ -2569,7 +2627,6 @@ class ChapterSurvival {
         // Spawning
         this.spawnTimer += dt;
         const cfg = this.getWaveConfig();
-        // Spawn rate modified by slow effect (active firewall slows spawn too?) -> Maybe just enemies move slow
         if(this.spawnTimer > cfg.spawn) {
             this.spawnEnemy();
             this.spawnTimer = 0;
@@ -2586,7 +2643,6 @@ class ChapterSurvival {
             let p = this.powerups[i];
             p.y += p.vy;
             
-            // Collision Player
             if(Math.hypot(p.x - this.pX, p.y - this.pY) < 40) {
                 this.activatePowerUp(p.type);
                 this.powerups.splice(i, 1);
@@ -2600,35 +2656,32 @@ class ChapterSurvival {
             let e = this.enemies[i];
             e.timer++;
 
-            // AI Movement Logic
             let speed = e.spd;
-            if(this.effects.slow > 0) speed *= 0.5; // Slow Effect
+            if(this.effects.slow > 0) speed *= 0.5; 
 
             e.y += speed;
 
-            // Horizontal Movement based on AI
             if(e.type === 'zigzag_light') {
                 e.x = e.initialX + Math.sin(e.timer * 0.05) * 50;
             } else if (e.type === 'zigzag_hard') {
-                e.x = e.initialX + Math.sin(e.timer * 0.1) * 100; // Wider and faster zigzag
+                e.x = e.initialX + Math.sin(e.timer * 0.1) * 100; 
             } else if (e.type === 'track') {
                 const dx = this.pX - e.x;
-                e.x += dx * 0.02; // Slowly steer towards player
+                e.x += dx * 0.02; 
             }
 
-            // Screen Bounds Check
             if(e.x < 30) e.x = 30;
             if(e.x > 770) e.x = 770;
 
             // Player Collision
             if(Math.hypot(e.x - this.pX, e.y - this.pY) < 50) {
                 if(this.effects.shield > 0) {
-                    // Shield kills enemy on contact
                     this.spawnExplosion(e.x, e.y, 'blue');
                     this.enemies.splice(i, 1);
                     this.game.addScore(20);
                 } else {
                     this.hp -= 20;
+                    this.combo = 0; // RESET COMBO ON HIT
                     this.spawnExplosion(e.x, e.y, 'red');
                     AudioMgr.playSFX('sfx-wrong');
                     this.enemies.splice(i, 1);
@@ -2642,11 +2695,8 @@ class ChapterSurvival {
             // Missed Enemy
             if(e.y > 600) {
                 this.enemies.splice(i, 1);
-                // No miss penalty in survival, just score potential lost?
-                // Or maybe small HP hit? "Endless" usually ends on death.
-                // Let's deduct HP lightly or just ignore based on prompt "Continue (no penalty in survival)".
-                // Let's assume passed enemies damage the "City Server" (HP)
                 this.hp -= 5; 
+                this.combo = 0; // RESET COMBO ON MISS
                 this.game.gameStats.damageTaken += 5;
                 if(this.hp <= 0) this.game.triggerGameOver();
                 continue;
@@ -2662,13 +2712,23 @@ class ChapterSurvival {
                     
                     if(e.hp <= 0) {
                         this.enemies.splice(i, 1);
-                        this.game.addScore(10 * this.wave); // Scaling Score
+                        
+                        // COMBO LOGIC
+                        this.combo++;
+                        this.comboTimer = 60; // Pop effect duration
+                        if(this.combo > this.game.gameStats.maxCombo) {
+                            this.game.gameStats.maxCombo = this.combo;
+                        }
+
+                        // Score Calculation (Base + Combo Bonus)
+                        let comboBonus = this.combo * 5;
+                        this.game.addScore(10 + comboBonus); 
+                        
                         this.waveKills++;
                         this.game.gameStats.totalKills++;
                         this.dropPowerUp(e.x, e.y);
                         AudioMgr.playSFX('sfx-correct');
                         
-                        // Wave Progression
                         if(this.waveKills >= this.killsToNextWave) {
                             this.nextWave();
                         }
@@ -2689,12 +2749,11 @@ class ChapterSurvival {
         this.wave++;
         this.game.player.lastWave = this.wave;
         this.waveKills = 0;
-        this.killsToNextWave += 5; // Harder each wave
+        this.killsToNextWave += 5; 
         spawnFloatingScore(`WAVE ${this.wave} START!`);
         document.getElementById('current-mission-text').innerText = `SURVIVAL: WAVE ${this.wave}`;
         
-        // Trigger Quiz?
-        if(this.wave % this.quizTriggerWave === 1 && this.wave > 1) { // e.g., Wave 4 (after completing 3)
+        if(this.wave % this.quizTriggerWave === 1 && this.wave > 1) { 
              setTimeout(() => this.triggerQuiz(), 1000);
         }
     }
@@ -2711,31 +2770,60 @@ class ChapterSurvival {
     }
 
     draw(ctx) {
-        // HUD HP
-        ctx.fillStyle = "#550000"; ctx.fillRect(580, 585, 200, 10); 
-        ctx.fillStyle = this.hp > 30 ? "#00FF88" : "#FF4444"; 
-        ctx.fillRect(580, 585, 200 * (this.hp / this.maxHp), 10);
+        // --- 1. UI BARU: HERO HP (ATAS KIRI) ---
+        ctx.save();
+        // Background Bar
+        ctx.fillStyle = "rgba(0,0,0,0.8)";
+        ctx.fillRect(20, 20, 320, 40);
+        ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 2;
+        ctx.strokeRect(20, 20, 320, 40);
         
-        // HUD Wave Info
-        ctx.textAlign="left"; ctx.fillStyle = "#00D9FF"; ctx.font = "16px Orbitron"; 
-        ctx.fillText(`WAVE: ${this.wave} | KILLS: ${this.waveKills}/${this.killsToNextWave}`, 20, 570);
+        // HP Fill
+        const hpPct = Math.max(0, this.hp / this.maxHp);
+        ctx.fillStyle = hpPct > 0.3 ? "#00FF88" : "#FF4444"; 
+        ctx.fillRect(25, 25, 310 * hpPct, 30);
+        
+        // Label HP
+        ctx.fillStyle = "white"; ctx.font = "bold 20px Orbitron"; ctx.textAlign = "left";
+        ctx.shadowColor = "black"; ctx.shadowBlur = 5;
+        ctx.fillText(`HP: ${Math.floor(this.hp)}%`, 350, 48); // Label di samping bar
+        ctx.restore();
 
-        // PowerUp Indicators (Status Effects)
+        // --- 2. UI BARU: WAVE & KILLS (ATAS KANAN - BACKGROUND BIRU/GELAP) ---
+        ctx.save();
+        const panelX = 550;
+        // Panel Background agar tulisan terbaca
+        ctx.fillStyle = "rgba(5, 20, 40, 0.9)"; 
+        ctx.fillRect(panelX, 20, 230, 60);
+        ctx.strokeStyle = "#00D9FF"; ctx.lineWidth = 2;
+        ctx.strokeRect(panelX, 20, 230, 60);
+
+        // Teks Wave
+        ctx.fillStyle = "#FFD700"; // Warna Emas biar kontras
+        ctx.font = "bold 24px Orbitron"; ctx.textAlign = "center"; 
+        ctx.fillText(`WAVE ${this.wave}`, panelX + 115, 45);
+        
+        // Teks Kills
+        ctx.fillStyle = "#00D9FF"; // Cyan terang
+        ctx.font = "bold 16px Rajdhani";
+        ctx.fillText(`KILLS: ${this.waveKills} / ${this.killsToNextWave}`, panelX + 115, 70);
+        ctx.restore();
+
+        // --- 3. STATUS EFFECTS ---
         if(this.effects.shield > 0) {
             ctx.fillStyle = "rgba(0, 255, 255, 0.3)";
             ctx.beginPath(); ctx.arc(this.pX, this.pY, 60, 0, Math.PI*2); ctx.fill();
-            ctx.fillStyle = "cyan"; ctx.font="12px sans-serif";
-            ctx.fillText("SHIELD: " + Math.ceil(this.effects.shield/60) + "s", this.pX - 30, this.pY + 60);
+            ctx.fillStyle = "cyan"; ctx.font="12px sans-serif"; ctx.textAlign="center";
+            ctx.fillText("SHIELD: " + Math.ceil(this.effects.shield/60) + "s", this.pX, this.pY + 60);
         }
         if(this.effects.slow > 0) {
-            ctx.fillStyle = "rgba(255, 215, 0, 0.2)";
-            ctx.fillRect(0, 0, 800, 600); // Yellow tint screen
+            ctx.fillStyle = "rgba(255, 215, 0, 0.1)";
+            ctx.fillRect(0, 0, 800, 600); 
             ctx.fillStyle = "gold"; ctx.font="20px Orbitron"; ctx.textAlign="center";
-            ctx.fillText("FIREWALL BOOST ACTIVE!", 400, 100);
-            ctx.textAlign="left";
+            ctx.fillText("FIREWALL BOOST ACTIVE!", 400, 150);
         }
 
-        // Draw Player
+        // --- 4. DRAW PLAYER ---
         const charId = this.game.player.charId;
         let charImg = this.game.imgs['hero' + charId + '_tembak'];
         if (!charImg || !charImg.complete || charImg.naturalWidth === 0) charImg = this.game.getHeroIdle(charId);
@@ -2747,7 +2835,7 @@ class ChapterSurvival {
             ctx.fillStyle = "blue"; ctx.beginPath(); ctx.arc(this.pX, this.pY, 20, 0, Math.PI*2); ctx.fill(); 
         }
 
-        // Draw Enemies
+        // --- 5. DRAW ENEMIES ---
         const virusImg = this.game.imgs.virus;
         const wobble = Math.sin(Date.now() / 200) * 0.1;
         const pulse = 1 + Math.sin(Date.now() / 150) * 0.1;
@@ -2768,28 +2856,82 @@ class ChapterSurvival {
             ctx.fillStyle = "green"; ctx.fillRect(e.x - 20, e.y - 40, 40 * (e.hp / e.maxHp), 5);
         });
 
-        // Draw PowerUps
+        // --- 6. DRAW POWERUPS DENGAN NAMA ---
         this.powerups.forEach(p => {
             const icon = this.game.imgs[p.icon];
             const yOffset = Math.sin(Date.now() / 200) * 5;
+            
+            // Gambar Icon
             if(icon && icon.complete) {
                 ctx.drawImage(icon, p.x - 20, p.y - 20 + yOffset, 40, 40);
             } else {
                 ctx.fillStyle = "gold"; ctx.beginPath(); ctx.arc(p.x, p.y, 15, 0, Math.PI*2); ctx.fill();
             }
+            
+            // Gambar Nama Item
+            ctx.fillStyle = "#FFFFFF"; 
+            ctx.font = "bold 12px Orbitron"; 
+            ctx.textAlign = "center";
+            ctx.shadowColor = "black"; ctx.shadowBlur = 4;
+            ctx.fillText(p.name, p.x, p.y + 35 + yOffset);
+            ctx.shadowBlur = 0;
         });
+
+        // --- 7. DRAW COMBO ANIMATION (TENGAH LAYAR) ---
+        if(this.combo > 1) {
+            ctx.save();
+            // Scale effect based on hit timer
+            let scale = 1.0;
+            if(this.comboTimer > 0) scale = 1.2 + (Math.sin(Date.now()/50) * 0.1); // Pulse
+            
+            ctx.translate(400, 120);
+            ctx.scale(scale, scale);
+            
+            ctx.font = "bold 40px Orbitron";
+            ctx.textAlign = "center";
+            
+            // Text Shadow Glow
+            ctx.shadowColor = this.combo > 10 ? "#FF0000" : (this.combo > 5 ? "#FFA500" : "#00FFFF");
+            ctx.shadowBlur = 20;
+            
+            // Gradient Text
+            let grad = ctx.createLinearGradient(0, -20, 0, 20);
+            grad.addColorStop(0, "white");
+            grad.addColorStop(1, this.combo > 10 ? "#FF4444" : "#FFD700");
+            
+            ctx.fillStyle = grad;
+            ctx.fillText(`${this.combo}x COMBO!`, 0, 0);
+            
+            // Subtext Score
+            ctx.font = "14px monospace";
+            ctx.fillStyle = "white";
+            ctx.shadowBlur = 0;
+            ctx.fillText(`+${this.combo*5} PTS`, 0, 25);
+            
+            ctx.restore();
+        }
 
         // Draw Bullets & Particles
         ctx.fillStyle = "#FFFF00"; this.bullets.forEach(b => { ctx.fillRect(b.x - 3, b.y - 10, 6, 20); });
         this.particles.forEach(p => { ctx.globalAlpha = p.life; ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha = 1.0; });
+        
+        ctx.textAlign="left"; // Reset alignment
     }
 
     cleanup() {
         canvas.removeEventListener('mousemove', this.handleMove);
         canvas.removeEventListener('mousedown', this.handleStart);
         canvas.removeEventListener('mouseup', this.handleEnd);
+        
+        // RESTORE HUD ELEMENTS SAAT KELUAR MODE INI
+        const timerEl = document.getElementById('hud-timer');
+        if(timerEl) timerEl.parentElement.style.display = 'flex'; // Restore panel
+        
+        const purityEl = document.getElementById('hud-purity');
+        if(purityEl) purityEl.parentElement.parentElement.style.display = 'flex'; // Restore panel
     }
 }
+
 
 class ChapterEndingCinematic {
     constructor(game) {
@@ -3082,19 +3224,20 @@ class ChapterCredits {
             { t: "TIM GELOMBANG UTARA", size: "30px", color: "white", bold: true },
             { t: "SMK Negeri 1 Brondong", size: "20px", color: "#ccc" },
             { t: "", size: "30px" },
-            { t: "PROGRAMMER", size: "24px", color: "#00A8FF" },
-            { t: "Lead Developer", size: "20px", color: "white" },
-            { t: "AI Logic Assistant", size: "20px", color: "white" },
+            { t: "NAMA ANGGOTA:", size: "24px", color: "#00A8FF" },
+            { t: "NAILUL AUTHAR", size: "20px", color: "white" },
+            { t: "ANDY KRIS PERDAWAN", size: "20px", color: "white" },
+			{ t: "MA'RUF BUDI UTOMO", size: "20px", color: "white" },
             { t: "", size: "30px" },
             { t: "ASSET DESIGN", size: "24px", color: "#00A8FF" },
             { t: "Character & Environment", size: "20px", color: "white" },
             { t: "Generated by Gemini AI", size: "16px", color: "#888" },
             { t: "", size: "30px" },
             { t: "AUDIO", size: "24px", color: "#00A8FF" },
-            { t: "BGM & SFX Library", size: "20px", color: "white" },
+            { t: "BGM & SFX Library- PIXABAY", size: "20px", color: "white" },
             { t: "", size: "30px" },
             { t: "SPECIAL THANKS", size: "24px", color: "#FF4444" },
-            { t: "Bapak/Ibu Guru Pembimbing", size: "20px", color: "white" },
+            { t: "Bapak Sepala Sekolah SMK Negeri 1 Brondong", size: "20px", color: "white" },
             { t: "Teman-teman SMKN 1 Brondong", size: "20px", color: "white" },
             { t: "Seluruh Player Toya Guardians", size: "20px", color: "white" },
             { t: "", size: "50px" },
