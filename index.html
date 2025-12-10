@@ -232,6 +232,36 @@
         .lb-controls { display: flex; gap: 10px; margin-bottom: 10px; width: 100%; flex-wrap: wrap; }
         .lb-select { flex: 1; padding: 5px; background: rgba(0,0,0,0.5); border: 1px solid #445; color: white; font-family: 'Rajdhani'; min-width: 150px;}
         
+        /* NEW: LEADERBOARD TABS */
+        .lb-tabs {
+            display: flex;
+            width: 100%;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #334;
+        }
+        .lb-tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border: none;
+            color: #888;
+            font-family: 'Orbitron';
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            border-bottom: 2px solid transparent;
+        }
+        .lb-tab-btn.active-tab {
+            color: var(--accent-gold);
+            background: rgba(255, 215, 0, 0.1);
+            border-bottom: 2px solid var(--accent-gold);
+            font-weight: bold;
+        }
+        .lb-tab-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
         .sync-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; margin-left: 10px; border: 1px solid transparent; }
         .status-online { background: rgba(0, 255, 136, 0.1); color: var(--success-green); border-color: var(--success-green); }
         .status-offline { background: rgba(255, 68, 68, 0.1); color: var(--danger-red); border-color: var(--danger-red); }
@@ -598,6 +628,7 @@
         <div style="position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 9999;">
             <div style="background:red; color:white; font-size:0.7rem; padding:2px 5px; font-weight:bold;">DEBUG MODE</div>
             <button class="btn-ml" style="font-size: 0.7rem; padding: 5px; width: auto; background: #800000; border-color: red;" onclick="app.debugJumpBoss()">LOMPAT KE BOSS</button>
+            <button class="btn-ml" style="font-size: 0.7rem; padding: 5px; width: auto; background: #004d00; border-color: #00ff00;" onclick="app.debugJumpBomber()">LOMPAT KE BOMBER</button>
             <button class="btn-ml" style="font-size: 0.7rem; padding: 5px; width: auto; background: #4B0082; border-color: violet;" onclick="app.startEndingCinematic()">LOMPAT KE ENDING</button>
         </div>
         <!-- ----------------------------------- -->
@@ -662,6 +693,12 @@
                 <div id="lb-status-badge" class="sync-badge status-loading">CONNECTING...</div>
             </div>
             
+            <!-- NEW: TABS FOR STORY / SURVIVAL -->
+            <div class="lb-tabs">
+                <button id="lb-tab-story" class="lb-tab-btn active-tab" onclick="app.setLeaderboardMode('story')">STORY MODE</button>
+                <button id="lb-tab-survival" class="lb-tab-btn" onclick="app.setLeaderboardMode('survival')">SURVIVAL</button>
+            </div>
+
             <div class="lb-controls">
                 <select id="lb-filter" class="lb-select" onchange="app.renderLeaderboard()">
                     <option value="all">LINGKUP: NASIONAL</option>
@@ -800,8 +837,9 @@
  * - Statistics
  */
 
+// ... (KEEP EXISTING GOOGLE_SCRIPT_URL, ASSETS, DATA_INDONESIA, BANK_SOAL_CH1, BANK_SOAL_CH2, BANK_SOAL_CH3, BANK_SOAL_KABEL) ...
 // --- GOOGLE SHEETS CONFIGURATION ---
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTFofoEEYIn0kMDqTbbjU9KghQA9Yre-ZrbEbxV9mpWsUlAkQ4nBdj0V6rqrZLVFRX/exec"; 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytjS3e35BG-XzTTbpbz685-OQjH2NOlTy2MC_krJzU9widFCpc4BIeK7iG0xuRJ7Nm/exec"; 
 
 const ASSETS = {
     // FIX: Hero 1 (Laki-laki) menggunakan asset Laki-laki
@@ -842,7 +880,7 @@ const ASSETS = {
     bg_kabel: 'images/bg_kabel.png', bg_bomber: 'images/bg_server.png',
 	item_pc: 'images/item_pc.png', item_server: 'images/item_server.png', item_tablet: 'images/item_tablet.png', item_laptop: 'images/item_laptop.png',
     item_switch: 'images/item_switch.png', item_firewall: 'images/item_firewall.png', item_keylogger: 'images/item_keylogger.png',
-    item_door: 'images/item_door.png',
+    item_door: 'images/item_door.png', tile_pinggir: 'images/tile_pinggir.png',
     icon_http: 'images/icon_http.png', icon_ssh: 'images/icon_ssh.png', icon_email: 'images/icon_email.png',
     icon_sql: 'images/icon_sql.png', icon_ping: 'images/icon_ping.png', icon_telnet: 'images/icon_telnet.png', icon_exe: 'images/icon_exe.png',
     
@@ -1133,7 +1171,7 @@ const AudioMgr = {
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
-const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5, MODE_SELECT: 0.5, GAME_SURVIVAL: 7, GAME_SURVIVAL_QUIZ: 7.5 };
+const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_FORENSIC: 4.6, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5, MODE_SELECT: 0.5, GAME_SURVIVAL: 7, GAME_SURVIVAL_QUIZ: 7.5 };
 
 // --- FIX 1: SIMPLIFIED & FORCED SHOW MESSAGE ---
 function showMessage(title, body, onCloseCallback) {
@@ -1250,6 +1288,9 @@ class GameApp {
             startTime: Date.now()
         };
         this.screenShake = 0; // NEW: Screen Shake Value
+        
+        // LEADERBOARD MODE STATE
+        this.leaderboardMode = 'story'; // 'story' or 'survival'
 
         this.state = AppState.SPLASH;
         this.currentChapter = null; this.lastTime = 0;
@@ -1370,6 +1411,18 @@ class GameApp {
         AudioMgr.playSFX('sfx-click');
     }
 
+    // --- NEW HELPER: POPULATE RESULT INFO ---
+    populateResultInfo() {
+        // Mengisi data pemain dinamis ke layar hasil
+        document.getElementById('res-name').innerText = this.player.name || "GUARDIAN";
+        document.getElementById('res-school').innerText = this.player.school || "-";
+        
+        const loc = [];
+        if(this.player.city && this.player.city !== '-') loc.push(this.player.city);
+        if(this.player.prov) loc.push(this.player.prov);
+        document.getElementById('res-loc').innerText = loc.join(", ") || "INDONESIA";
+    }
+
     triggerGameOver() {
         this.active = false;
         // Cek jika Survival Mode
@@ -1394,6 +1447,9 @@ class GameApp {
         document.getElementById('end-msg').innerText = isSurvival ? "Pertahanan Jebol. Sistem offline." : "Sistem Keamanan Telah Dikuasai Malware!";
         document.getElementById('end-score').innerText = Math.floor(this.player.score);
         
+        // --- CALL NEW HELPER: POPULATE PLAYER INFO ---
+        this.populateResultInfo();
+
         // --- NEW: Submit score even on loss ---
         this.submitHighscore(); 
 
@@ -1459,6 +1515,27 @@ class GameApp {
         this.currentChapter = new ChapterBossBattle(this);
         
         showMessage("DEBUG ACCESS", "Melompat langsung ke Boss Battle. Good Luck!");
+    }
+
+    debugJumpBomber() {
+        // Setup minimal state
+        this.player.charId = this.player.charId || 1;
+        this.player.name = this.player.name || "Tester";
+
+        // Hide Title
+        this.switchScreen('dummy');
+
+        // Setup UI
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('mission-overlay').style.display = 'block';
+        document.getElementById('current-mission-text').innerText = "DEBUG: BOMBERMAN";
+        
+        // Start Bomber Logic
+        this.state = AppState.GAME_CH3_BOMBER;
+        AudioMgr.playMusic('bgm-bomber');
+        this.currentChapter = new Chapter3Bomber(this);
+
+        showMessage("DEBUG ACCESS", "Melompat ke Chapter 3: Bomber Labirin.");
     }
     // -------------------------
 
@@ -1964,16 +2041,8 @@ class GameApp {
 
         document.getElementById('end-score').innerText = Math.floor(this.player.score); 
         
-        // --- NEW: INJECT PLAYER INFO ---
-        document.getElementById('res-name').innerText = this.player.name || "GUARDIAN";
-        document.getElementById('res-school').innerText = this.player.school || "-";
-        
-        // Format Lokasi
-        const loc = [];
-        if(this.player.city && this.player.city !== '-') loc.push(this.player.city);
-        if(this.player.prov) loc.push(this.player.prov);
-        document.getElementById('res-loc').innerText = loc.join(", ") || "INDONESIA";
-        // --------------------------------
+        // --- CALL NEW HELPER: POPULATE PLAYER INFO ---
+        this.populateResultInfo();
 
         // --- POPULATE STATISTICS ---
         document.getElementById('stat-kills').innerText = this.gameStats.totalKills;
@@ -2003,9 +2072,27 @@ class GameApp {
         this.startEndingCinematic();
     }
 
+    // --- UPDATED: HANDLE LEADERBOARD TABS ---
+    setLeaderboardMode(mode) {
+        this.leaderboardMode = mode;
+        AudioMgr.playSFX('sfx-click');
+        
+        // Update UI Tabs
+        document.getElementById('lb-tab-story').className = mode === 'story' ? 'lb-tab-btn active-tab' : 'lb-tab-btn';
+        document.getElementById('lb-tab-survival').className = mode === 'survival' ? 'lb-tab-btn active-tab' : 'lb-tab-btn';
+        
+        // Re-render
+        this.renderLeaderboard();
+    }
+
     async showLeaderboard() { 
         this.switchScreen('screen-leaderboard');
         
+        // Default to Story Mode initially
+        this.leaderboardMode = 'story';
+        document.getElementById('lb-tab-story').className = 'lb-tab-btn active-tab';
+        document.getElementById('lb-tab-survival').className = 'lb-tab-btn';
+
         const statusBadge = document.getElementById('lb-status-badge');
         const statusText = document.getElementById('lb-sync-text');
         
@@ -2075,7 +2162,7 @@ class GameApp {
         this.renderLeaderboard();
     }
 
-    // --- ENHANCED LEADERBOARD WITH DYNAMIC SUB-FILTERS ---
+    // --- ENHANCED LEADERBOARD WITH DYNAMIC SUB-FILTERS & MODE ---
     renderLeaderboard(data = null) {
         const lbBody = document.getElementById('leaderboard-body');
         const lbScopeTitle = document.getElementById('lb-current-scope');
@@ -2091,6 +2178,14 @@ class GameApp {
              const map = new Map();
              [...mock, ...cached, ...local].forEach(i => map.set(i.name+'_'+i.school, i));
              lbData = Array.from(map.values());
+        }
+
+        // --- NEW: Filter based on Mode (Story vs Survival) ---
+        if(this.leaderboardMode === 'survival') {
+            lbData = lbData.filter(d => d.mode === 'survival');
+        } else {
+            // Story mode defaults (assume undefined mode is legacy story data)
+            lbData = lbData.filter(d => !d.mode || d.mode === 'story');
         }
 
         const filterType = document.getElementById('lb-filter').value;
@@ -2157,7 +2252,8 @@ class GameApp {
         }
 
         // Update Judul Lingkup
-        lbScopeTitle.innerText = "Peringkat: " + scopeName;
+        const modeLabel = this.leaderboardMode === 'survival' ? "SURVIVAL" : "STORY";
+        lbScopeTitle.innerText = `Peringkat (${modeLabel}): ` + scopeName;
         
         lbData.sort((a, b) => b.score - a.score);
         lbData = lbData.slice(0, 50);
@@ -2177,8 +2273,9 @@ class GameApp {
                 
                 // Tampilkan Wave jika Survival
                 let scoreDisplay = d.score;
-                if(d.mode === 'survival' && d.wave) {
-                    scoreDisplay = `${d.score} <span style="font-size:0.7rem; color:#FF4444">(W${d.wave})</span>`;
+                if(this.leaderboardMode === 'survival') {
+                    const waveNum = d.wave || 1;
+                    scoreDisplay = `${d.score} <span style="font-size:0.7rem; color:#FF4444">(WAVE ${waveNum})</span>`;
                 }
 
                 tr.innerHTML = `<td>${i+1}</td><td>${d.name}</td><td style="font-size:0.8rem; color:#aaa">${school}</td><td style="font-size:0.8rem; color:#aaa">${loc}</td><td style="color:var(--accent-gold); font-weight:bold;">${scoreDisplay}</td>`;
@@ -2219,7 +2316,11 @@ class GameApp {
             else if(this.state === AppState.GAME_CH2_QUIZ) bgKey = 'bg_firewall1';
             else if(this.state === AppState.BRIDGE_CH2) bgKey = 'bg_menujulift';
             else if(this.state === AppState.GAME_CH3_BOMBER || this.state === AppState.BOSS_BATTLE) bgKey = 'bg_bomber'; 
-            else if(this.state === AppState.GAME_CH3_QUIZ || this.state === AppState.GAME_CH3_IR) bgKey = 'bg_rtraining';
+            
+            // --- UPDATE DI SINI: TAMBAHKAN GAME_FORENSIC ---
+            else if(this.state === AppState.GAME_CH3_QUIZ || this.state === AppState.GAME_CH3_IR || this.state === AppState.GAME_FORENSIC) bgKey = 'bg_rtraining';
+            // -----------------------------------------------
+
             else if(this.state === AppState.ENDING_CINEMATIC || this.state === AppState.CREDITS) bgKey = 'bg_title'; // BG untuk ending/credits
             
             // --- SURVIVAL BACKGROUND LOGIC ---
@@ -3924,6 +4025,8 @@ class ChapterFirewallConfig {
     }
 }
 
+//BOMBERMAN
+
 class Chapter3Bomber {
     constructor(game) {
         this.game = game;
@@ -3934,7 +4037,7 @@ class Chapter3Bomber {
         this.rows = 12; this.cols = 16;
         this.grid = []; 
         this.playerPos = {r:1, c:1};
-        this.exitPos = {r:10, c:14}; 
+        // Hapus hardcoded exitPos di sini, kita set di initLevel
         this.logsCollected = 0;
         this.logsRequired = 3;
         this.logs = [];
@@ -3947,7 +4050,7 @@ class Chapter3Bomber {
         this.level = 1;
         this.maxLevels = 3;
         this.facingRight = true; 
-        this.transitioning = false; // FIX: Flag untuk mencegah trigger ganda saat di pintu keluar
+        this.transitioning = false; 
 
         this.timeLeft = 120; 
         document.getElementById('hud-timer').innerText = this.timeLeft;
@@ -3960,6 +4063,7 @@ class Chapter3Bomber {
         this.logImg = game.imgs.item_keylogger;
         this.bombImg = game.imgs.icon_exe; 
         this.doorImg = game.imgs.pintu_keluar; 
+        // Note: tile_pinggir diakses langsung dari game.imgs di draw()
 
         this.isMoving = false;
         this.frameIdx = 0;
@@ -4025,53 +4129,79 @@ class Chapter3Bomber {
     initLevel(lvl) {
         this.grid = [];
         this.playerPos = {r:1, c:1};
-        this.exitPos = {r:10, c:14}; 
         this.logsCollected = 0;
         this.logsRequired = 3;
         this.logs = [];
         this.enemies = [];
         this.bombs = [];
         this.exitRevealed = false;
-        this.transitioning = false; // Reset transition flag
+        this.transitioning = false; 
         
-        // FIX: RESET WAKTU TIAP LANTAI
         this.timeLeft = 120;
         document.getElementById('hud-timer').innerText = this.timeLeft;
 
         if(lvl > 1) spawnFloatingScore(`LEVEL ${lvl} START!`);
         
+        // --- 1. GENERATE GRID & KUMPULKAN KANDIDAT EXIT ---
+        let potentialExits = [];
+
         for(let r=0; r<this.rows; r++) {
             let row = [];
             for(let c=0; c<this.cols; c++) {
-                if(r===0 || r===this.rows-1 || c===0 || c===this.cols-1 || (r%2===0 && c%2===0)) row.push(1); 
-                else if(Math.random() < 0.3 && !(r===1 && c===1)) row.push(2); 
-                else row.push(0); 
+                // Tembok Permanen (Hard Wall)
+                if(r===0 || r===this.rows-1 || c===0 || c===this.cols-1 || (r%2===0 && c%2===0)) {
+                    row.push(1); 
+                } 
+                // Tembok Rapuh (Soft Block)
+                else if(Math.random() < 0.4 && !(r===1 && c===1)) { // Naikkan sedikit chance tembok (0.3 -> 0.4)
+                    row.push(2); 
+                    potentialExits.push({r,c}); // Simpan koordinat tembok rapuh
+                } 
+                // Lantai Kosong
+                else {
+                    row.push(0); 
+                }
             }
             this.grid.push(row);
         }
-        this.grid[this.exitPos.r][this.exitPos.c] = 2; 
 
+        // --- 2. TENTUKAN EXIT SECARA ACAK ---
+        if(potentialExits.length > 0) {
+            // Pilih satu tembok rapuh secara acak untuk jadi pintu keluar
+            this.exitPos = potentialExits[Math.floor(Math.random() * potentialExits.length)];
+        } else {
+            // Fallback jika map terlalu sepi (sangat jarang terjadi)
+            this.exitPos = {r:1, c:2};
+            this.grid[1][2] = 2; 
+        }
+
+        // --- 3. GENERATE KEYLOGGERS (JANGAN DI TEMPAT EXIT) ---
         for(let i=0; i<3; i++) {
             let placed = false;
-            while(!placed) {
+            let attempts = 0;
+            while(!placed && attempts < 100) {
                 let r = Math.floor(Math.random() * (this.rows-2)) + 1;
                 let c = Math.floor(Math.random() * (this.cols-2)) + 1;
-                if(this.grid[r][c] === 2) { this.logs.push({r,c, collected:false}); placed = true; }
+                
+                // Syarat: Harus di tembok rapuh (2), BUKAN di posisi Exit, dan belum ada log
+                if(this.grid[r][c] === 2 && (r !== this.exitPos.r || c !== this.exitPos.c) && !this.logs.some(l=>l.r===r && l.c===c)) { 
+                    this.logs.push({r,c, collected:false}); 
+                    placed = true; 
+                }
+                attempts++;
             }
         }
 
-        // FIX (Poin 3): Ensure Enemies Spawn FAR AWAY from Player
+        // --- 4. GENERATE ENEMIES ---
         let enemyCount = 2 + lvl;
         let spawned = 0;
         let attempts = 0;
         while(spawned < enemyCount && attempts < 200) {
-             let r = Math.floor(Math.random() * (this.rows-2)) + 1; // Range diperbaiki
+             let r = Math.floor(Math.random() * (this.rows-2)) + 1; 
              let c = Math.floor(Math.random() * (this.cols-2)) + 1;
              
-             // Hitung Jarak Manhattan ke Player (r=1, c=1)
              let dist = Math.abs(r - 1) + Math.abs(c - 1);
 
-             // Syarat: Di lantai kosong, belum ada musuh, dan JARAK > 6
              if(this.grid[r][c] === 0 && !this.enemies.some(e => e.r === r && e.c === c) && dist > 6) { 
                  this.enemies.push({r:r, c:c, dir:1, moveTimer:0});
                  spawned++;
@@ -4118,9 +4248,6 @@ class Chapter3Bomber {
         
         this.enemies.forEach(e => {
             e.moveTimer++;
-            // FIX (Poin 4): SLOWER ENEMIES
-            // Base timer dinaikkan dari 30 ke 55 (makin tinggi makin lambat)
-            // Scaling per level: Lvl 1=50, Lvl 2=45, Lvl 3=40
             if(e.moveTimer > 55 - (this.level * 5)) {
                 let moves = [[0,1], [0,-1], [1,0], [-1,0]];
                 let m = moves[Math.floor(Math.random()*4)];
@@ -4149,14 +4276,13 @@ class Chapter3Bomber {
                 this.game.addScore(10); 
             }
 
-            // 2. FIX (Poin 2): Hancurkan Musuh jika terkena ledakan
+            // 2. Hancurkan Musuh
             for(let i = this.enemies.length - 1; i >= 0; i--) {
                 let e = this.enemies[i];
                 if(e.r === p.r && e.c === p.c) {
-                    this.enemies.splice(i, 1); // Hapus musuh
+                    this.enemies.splice(i, 1); 
                     this.game.addScore(50);
                     spawnFloatingScore("VIRUS DELETED!");
-                    // Opsi: Mainkan suara musuh mati jika ada
                 }
             }
         });
@@ -4170,34 +4296,32 @@ class Chapter3Bomber {
             }
         });
         
-        // FIX: Logika Transisi Antar Lantai & Akhir Level
         if(this.exitRevealed && this.playerPos.r === this.exitPos.r && this.playerPos.c === this.exitPos.c && !this.transitioning) {
-            this.transitioning = true; // Kunci agar tidak trigger berkali-kali
-            this.active = false; // Pause gameplay (musuh & input berhenti)
+            this.transitioning = true; 
+            this.active = false; 
             AudioMgr.playSFX('sfx-correct');
             
             if(this.level < this.maxLevels) {
-                // --- NARASI ANTAR LANTAI (1->2, 2->3) ---
                 showMessage(
                     `LANTAI ${this.level} SELESAI`,
                     "Data Keylogger berhasil diamankan! Pintu akses ke lantai berikutnya terbuka.",
                     () => {
-                        // Callback saat tombol OK ditekan
                         this.level++;
-                        this.initLevel(this.level); // Setup lantai baru
-                        this.active = true; // Lanjut main
+                        this.initLevel(this.level); 
+                        this.active = true; 
                     }
                 );
             } else {
-                // --- NARASI SETELAH LANTAI 3 (KE NARASI FORENSIK) ---
                 showMessage(
                     "SEMUA DATA DIAMANKAN",
                     "Seluruh jejak virus berhasil ditemukan. Mengirim data ke markas...",
                     () => {
-                        // Callback saat tombol OK ditekan
                         this.cleanup(); 
-                        // FIX: Panggil fungsi narasi transisi
-                        this.game.triggerForensicNarrative(); 
+                        if(this.game && typeof this.game.triggerForensicNarrative === 'function') {
+                            this.game.triggerForensicNarrative();
+                        } else {
+                            this.game.startChapter3Quiz();
+                        }
                     }
                 );
             }
@@ -4206,7 +4330,6 @@ class Chapter3Bomber {
 
     draw(ctx) {
         // ... existing background drawing ...
-        // FIX 2: Draw Full Background Once
         let floorImg = this.game.imgs['bomb_lt' + this.level];
         const totalW = this.cols * this.tileSize;
         const totalH = this.rows * this.tileSize;
@@ -4224,9 +4347,18 @@ class Chapter3Bomber {
                 let y = r*this.tileSize + this.gridOffsetY;
 
                 if(this.grid[r][c] === 1) { 
-                    if(this.game.imgs.tile_tembok && this.game.imgs.tile_tembok.complete) {
+                    // --- UPDATE: Logika Tembok Pinggir (Border Wall) ---
+                    let isEdge = (r === 0 || r === this.rows-1 || c === 0 || c === this.cols-1);
+                    
+                    if(isEdge && this.game.imgs.tile_pinggir && this.game.imgs.tile_pinggir.complete) {
+                        // Gambar Tile Pinggir
+                        ctx.drawImage(this.game.imgs.tile_pinggir, x, y, this.tileSize, this.tileSize);
+                    } 
+                    else if(this.game.imgs.tile_tembok && this.game.imgs.tile_tembok.complete) {
+                        // Gambar Tile Tembok Biasa (Inner Wall)
                         ctx.drawImage(this.game.imgs.tile_tembok, x, y, this.tileSize, this.tileSize);
                     } else {
+                        // Fallback jika gambar belum loading
                         ctx.fillStyle = "#444"; ctx.fillRect(x,y,this.tileSize,this.tileSize); ctx.strokeStyle="#555"; ctx.strokeRect(x,y,this.tileSize,this.tileSize); 
                     }
                 }
@@ -4248,9 +4380,7 @@ class Chapter3Bomber {
                  let lx = l.c*this.tileSize + this.gridOffsetX + 5;
                  let ly = l.r*this.tileSize + this.gridOffsetY + 5;
                  let lw = 30 * pulseLog;
-                 
                  let offset = (30 - lw) / 2;
-
                  if(this.logImg && this.logImg.complete) ctx.drawImage(this.logImg, lx + offset, ly + offset, lw, lw);
                  else { ctx.fillStyle = "#0FF"; ctx.beginPath(); ctx.arc(lx + 15, ly + 15, 10, 0, Math.PI*2); ctx.fill(); }
             }
@@ -4286,7 +4416,6 @@ class Chapter3Bomber {
             else { ctx.fillStyle = "purple"; ctx.beginPath(); ctx.arc(ex + 20, ey + 20, 20, 0, Math.PI*2); ctx.fill(); }
         });
 
-        // ... existing Player Drawing ...
         let pImg;
         if(this.isMoving) { pImg = this.heroFrames[this.frameIdx]; } else { pImg = this.heroIdle; }
         let px = this.playerPos.c*this.tileSize + this.gridOffsetX;
@@ -4297,23 +4426,19 @@ class Chapter3Bomber {
         if(pImg && pImg.complete) { ctx.drawImage(pImg, -20, -25, 40, 50); } else { ctx.fillStyle = "#00A8FF"; ctx.beginPath(); ctx.arc(0, 0, 20, 0, Math.PI*2); ctx.fill(); }
         ctx.restore();
 
-        // --- FIX (Poin 1): UI PANEL DIPINDAH KE ATAS TENGAH ---
-        // Pindahkan dari (10, 80) ke (260, 15) agar tidak menutupi tile game
         ctx.fillStyle = "rgba(0,0,0,0.85)"; 
-        ctx.fillRect(260, 15, 280, 70); // Posisi baru
+        ctx.fillRect(260, 15, 280, 70); 
         ctx.strokeStyle = "#00D9FF";
         ctx.strokeRect(260, 15, 280, 70);
 
         ctx.fillStyle = "#FFD700"; 
         ctx.font = "bold 22px Orbitron";
-        ctx.fillText(`LANTAI ${this.level} / ${this.maxLevels}`, 280, 45); // Adjust Text Pos
+        ctx.fillText(`LANTAI ${this.level} / ${this.maxLevels}`, 280, 45);
         
         ctx.fillStyle = "white"; 
         ctx.font = "18px Rajdhani";
-        ctx.fillText(`KEYLOGGERS: ${this.logsCollected}/${this.logsRequired}`, 280, 70); // Adjust Text Pos
+        ctx.fillText(`KEYLOGGERS: ${this.logsCollected}/${this.logsRequired}`, 280, 70);
         
-        // --- NEW: MISSION TEXT OVERLAY (BAWAH LAYAR) ---
-        // Kotak Misi yang jelas
         ctx.fillStyle = "rgba(0,0,0,0.85)";
         ctx.fillRect(100, 550, 600, 40);
         ctx.strokeStyle = "#00FF88";
@@ -4328,8 +4453,24 @@ class Chapter3Bomber {
 
         if(this.scanEffect > 0) { ctx.fillStyle = `rgba(0, 217, 255, ${this.scanEffect/200})`; ctx.fillRect(0,0,800,600); ctx.fillStyle = "white"; ctx.font = "30px Orbitron"; ctx.textAlign="center"; ctx.fillText(`MEMINDAI LANTAI ${this.level}...`, 400, 300); ctx.textAlign="left"; }
     }
-    // ... existing cleanup ...
+
+    cleanup() {
+        if(this.keyDown) window.removeEventListener('keydown', this.keyDown);
+        
+        if(this.dpadEl) {
+            this.dpadEl.removeEventListener('touchstart', this.dpadHandler);
+            this.dpadEl.removeEventListener('mousedown', this.dpadHandler);
+        }
+
+        if(this.timerInterval) clearInterval(this.timerInterval);
+
+        const dpad = document.getElementById('dpad-controls');
+        if(dpad) dpad.style.display = 'none';
+
+        this.active = false;
+    }
 }
+
 
 // ... [CLASS BOSS BATTLE TETAP SAMA] ...
 // --- NEW CLASS: CHAPTER BOSS BATTLE (REAL-TIME ARPG STYLE) ---
