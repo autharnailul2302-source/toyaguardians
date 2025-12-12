@@ -73,13 +73,53 @@
         @keyframes pulseAudio { 0% { box-shadow: 0 0 0 0 rgba(0, 217, 255, 0.4); transform: scale(1); } 70% { box-shadow: 0 0 0 20px rgba(0, 217, 255, 0); transform: scale(1.05); } 100% { box-shadow: 0 0 0 0 rgba(0, 217, 255, 0); transform: scale(1); } }
         
         /* TITLE & LIGHTNING */
-        #screen-title { background-color: var(--dark-base); background-image: linear-gradient(rgba(5, 20, 40, 0.4), rgba(5, 20, 40, 0.9)), url('images/bg_title.png'); background-size: cover; background-position: center; justify-content: flex-start; padding-top: 20px; }
+        /* UBAH: justify-content jadi center, hapus padding-top agar pas di tengah */
+        #screen-title { 
+            background-color: var(--dark-base); 
+            background-image: linear-gradient(rgba(5, 20, 40, 0.4), rgba(5, 20, 40, 0.9)), url('images/bg_title.png'); 
+            background-size: cover; 
+            background-position: center; 
+            justify-content: center; /* KUNCI PRESISI: Center Vertikal */
+            align-items: center; 
+            padding-top: 0; 
+        }
         
-        #logo-container { margin-bottom: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; overflow: visible; }
-        #logo-img { width: auto; height: auto; max-width: 80%; max-height: 420px; display: block; filter: drop-shadow(0 0 25px rgba(0, 168, 255, 0.7)); object-fit: contain; animation: floatLogo 3s ease-in-out infinite; }
-        #subtitle-img { width: auto; height: auto; max-width: 70%; max-height: 90px; margin-top: -140px; display: block; filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5)); animation: floatLogo 3.5s ease-in-out infinite reverse; }
+        #logo-container { 
+            margin-bottom: 5px; /* Jarak kecil ke tombol */
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            width: 100%; 
+            overflow: visible; 
+        }
         
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        /* --- UPDATE: UKURAN PRESISI (Sedikit dikurangi dari 320 ke 290 agar muat nyaman dengan tombol) --- */
+        #logo-img { 
+            width: auto; 
+            height: auto; 
+            max-width: 90%; 
+            max-height: 290px; /* Ukuran Goldilocks: Tidak terlalu besar, tidak terlalu kecil */
+            display: block; 
+            filter: drop-shadow(0 0 35px rgba(0, 168, 255, 0.9)); 
+            object-fit: contain; 
+            animation: floatLogo 3s ease-in-out infinite; 
+        }
+        
+        /* --- UPDATE: POSISI SUBTITLE LEBIH RENGGANG (REQUEST USER) --- */
+        #subtitle-img { 
+            width: auto; 
+            height: auto; 
+            max-width: 75%; 
+            max-height: 80px; 
+            margin-top: -20px; /* Diturunkan dari -55px agar tidak nempel judul */
+            margin-bottom: 15px; /* Jarak ke tombol agar tidak nempel */
+            display: block; 
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); 
+            animation: floatLogo 3.5s ease-in-out infinite reverse; 
+        }
+        
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
 
         #lightning-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
         
@@ -170,16 +210,63 @@
         }
         .hud-val { font-size: 1.1rem; font-weight: bold; }
         
-        .purity-container { 
-            width: 120px; 
-            height: 8px; 
-            background: #333; 
-            border: 1px solid #555; 
-            margin-top: 3px; 
-            position: relative; 
-        }
-        .purity-fill { height: 100%; width: 100%; transition: width 0.3s, background-color 0.5s; box-shadow: 0 0 5px var(--tech-cyan); }
-        
+        /* --- FIX VISUAL TOYA PURITY (TANGKI AIR SCI-FI) --- */
+/* --- FIX VISUAL TOYA PURITY (TANGKI AIR SCI-FI) --- */
+
+/* Wadah Tangki */
+.purity-container {
+    width: 100%; 
+    height: 18px; /* Lebih tebal biar jelas */
+    background: #050a10; 
+    border: 2px solid #445;
+    margin-top: 5px;
+    border-radius: 10px; 
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.8); 
+}
+
+/* Isi Air Default */
+.purity-fill {
+    height: 100%; 
+    width: 0%; 
+    background-color: #FF4444; /* Default Merah */
+    transition: width 0.5s ease-out, background-color 0.5s ease; /* Animasi halus */
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Efek Kilau */
+.purity-fill::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%;
+    background: rgba(255, 255, 255, 0.2); border-radius: 8px 8px 0 0;
+}
+
+/* --- STATE WARNA KHUSUS (Wajib !important agar berubah) --- */
+.purity-critical {
+    background-color: #FF4444 !important; /* Merah */
+    box-shadow: 0 0 10px #FF4444;
+}
+.purity-medium {
+    background-color: #FFD700 !important; /* Kuning Emas */
+    box-shadow: 0 0 15px #FFD700;
+}
+.purity-good {
+    background-color: #00FF88 !important; /* Hijau Stabil */
+    box-shadow: 0 0 15px #00FF88;
+}
+.purity-max {
+    background-color: #00D9FF !important; /* Biru Cyan (Murni) */
+    box-shadow: 0 0 25px #00D9FF, 0 0 50px rgba(0, 217, 255, 0.5); 
+    animation: pulsePurity 1s infinite alternate;
+}
+
+@keyframes pulsePurity {
+    from { filter: brightness(1); } to { filter: brightness(1.3); }
+}
+
+		
+		
         #mission-overlay { 
             background: linear-gradient(90deg, rgba(5, 20, 40, 0.95), rgba(10, 30, 60, 0.8));
             border: 1px solid var(--accent-gold); padding: 8px 15px; border-radius: 6px; 
@@ -282,48 +369,123 @@
         .quiz-option-btn { width: 100%; text-align: left; }
 
         /* RESULT SCREEN STYLES */
+ /* --- STYLE BARU: RESULT SCREEN (COMPACT & NO SCROLL) --- */
         #screen-ending { 
-            background-color: rgba(5, 10, 20, 0.92); 
-            backdrop-filter: blur(8px);
+            background-color: rgba(5, 10, 20, 0.95); 
+            backdrop-filter: blur(5px);
             z-index: 200; 
+            /* Pastikan flexbox menengahkan panel */
+            
+            align-items: center; 
+            justify-content: center;
         }
 
         .result-panel {
-            background: linear-gradient(145deg, rgba(10, 30, 60, 0.9), rgba(0, 0, 0, 0.95));
+            background: linear-gradient(145deg, rgba(10, 30, 60, 0.95), rgba(0, 0, 0, 0.98));
             border: 2px solid var(--tech-cyan);
             border-radius: 15px;
-            padding: 40px;
+            
+            /* PENGATURAN KUNCI AGAR MUAT: Padding kecil & Max Height */
+            padding: 15px 25px; 
             width: 90%;
-            max-width: 450px;
+            max-width: 420px; /* Lebar dibatasi */
+            max-height: 95vh; /* Tinggi max 95% layar */
+            
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+            justify-content: center; /* Isi konten rapat ke tengah */
+            
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
             position: relative;
-            animation: slideUpFade 0.6s ease-out;
+            animation: slideUpFade 0.5s ease-out;
         }
 
+        /* Judul diperkecil */
+        .result-title {
+            font-family: 'Orbitron'; 
+            font-size: 1.8rem; 
+            margin: 0 0 5px 0;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        /* Lingkaran Rank diperkecil */
+        .rank-circle {
+            width: 90px; height: 90px; /* Ukuran dikurangi dari 120px */
+            border-radius: 50%;
+            border: 3px double rgba(255,255,255,0.3);
+            display: flex; justify-content: center; align-items: center;
+            margin: 5px 0 10px 0; /* Margin dikurangi */
+            background: rgba(0,0,0,0.4);
+            position: relative;
+        }
+        
+        #end-rank {
+            font-size: 4rem; /* Font dikurangi dari 5rem */
+            font-family: 'Orbitron'; font-weight: 900; margin: 0;
+            text-shadow: 0 0 20px currentColor; z-index: 2;
+        }
+
+        /* Info Player lebih rapat */
         .player-result-info {
             width: 100%;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 15px;
+            padding: 5px;
+            margin-bottom: 8px;
             text-align: center;
-            border: 1px solid rgba(0, 217, 255, 0.2);
+            border: 1px solid rgba(0, 217, 255, 0.1);
         }
-        .p-name { color: var(--accent-gold); font-family: 'Orbitron'; font-size: 1.2rem; margin-bottom: 2px; }
-        .p-school { color: #ccc; font-size: 0.9rem; margin-bottom: 2px; }
-        .p-loc { color: #888; font-size: 0.8rem; font-style: italic; }
+        .p-name { color: var(--accent-gold); font-family: 'Orbitron'; font-size: 1rem; margin-bottom: 0; }
+        .p-school { color: #ccc; font-size: 0.8rem; margin-bottom: 0; }
+        .p-loc { color: #888; font-size: 0.7rem; font-style: italic; display: block; margin-top:2px; }
 
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(50px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        /* Kotak Skor lebih tipis */
+        .score-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 8px;
+            text-align: center;
+            width: 100%; box-sizing: border-box;
+        }
+        
+        .score-label { color: #888; font-size: 0.7rem; letter-spacing: 2px; margin-bottom: 0; font-family: 'Rajdhani'; text-transform: uppercase; }
+        #end-score { color: white; font-size: 1.8rem; font-family: 'Orbitron'; font-weight: bold; margin: 0; text-shadow: 0 0 10px white; }
+
+        /* Grid Statistik Rapat */
+        .stats-container {
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px; /* Jarak antar kotak kecil */
+            margin-bottom: 8px;
+            font-family: 'Rajdhani';
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #aaa;
+            display: flex; justify-content: space-between;
+        }
+        .stat-val { color: var(--tech-cyan); font-weight: bold; }
+
+        #end-msg { color: #ccc; margin-bottom: 5px; font-style: italic; font-size: 0.8rem; }
+        #save-status { font-size: 0.7rem; color: #666; margin-bottom: 5px; border-top: 1px solid #333; padding-top: 2px; width: 100%; text-align: center; }
+        
+        /* Tombol sedikit lebih kecil */
+        #btn-victory-action {
+            margin-top: 5px;
+            padding: 8px 0;
+            font-size: 1rem;
         }
 
         .result-win { border-color: var(--accent-gold); box-shadow: 0 0 40px rgba(255, 215, 0, 0.2); }
         .result-loss { border-color: var(--danger-red); box-shadow: 0 0 40px rgba(255, 68, 68, 0.2); }
-
+		
         .result-title {
             font-family: 'Orbitron'; font-size: 2rem; margin: 0 0 10px 0;
             text-shadow: 0 0 10px currentColor;
@@ -481,6 +643,144 @@
             text-shadow: 0 0 15px var(--danger-red);
         }
         #mode-survival:hover .mode-desc { color: white; }
+		
+/* --- FIX TOTAL LAYOUT HUD --- */
+
+/* --- FIX LAYOUT HUD & POSISI --- */
+
+#hud {
+    position: absolute; top: 0; left: 0; width: 100%;
+    padding: 20px; box-sizing: border-box;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    pointer-events: none; z-index: 60;
+}
+
+/* KIRI: SKOR & WAKTU (Frame Neon) */
+.hud-top-left {
+    display: flex; flex-direction: column; gap: 10px; z-index: 65;
+}
+.hud-top-left > div:first-child {
+    display: flex !important; flex-direction: row !important; gap: 15px;
+}
+.hud-panel {
+    background: rgba(5, 20, 40, 0.9);
+    border: 2px solid var(--primary-blue);
+    border-radius: 8px; padding: 5px 15px; min-width: 90px;
+    display: flex; flex-direction: column; align-items: center;
+    box-shadow: 0 0 15px rgba(0, 168, 255, 0.3);
+}
+.hud-panel span:first-child { color: var(--tech-cyan); font-size: 0.8rem; font-family: 'Orbitron'; margin-bottom: 2px; }
+.hud-val { font-size: 1.5rem; font-weight: bold; font-family: 'Orbitron'; color: white; }
+
+/* KANAN: PURITY BAR (Turun ke bawah agar tidak kena ikon) */
+#hud > .hud-panel:last-child {
+    margin-top: 60px; /* TURUN 60px */
+    min-width: 160px;
+    border-color: var(--tech-cyan);
+    align-items: stretch;
+}
+
+/* TENGAH: JUDUL LANTAI (DEAD CENTER) */
+/* Pastikan elemen judul di HTML punya ID="hud-center" */
+#hud-center {
+    position: absolute;
+    left: 50%; transform: translateX(-50%); /* Trik Dead Center */
+    top: 20px;
+    text-align: center;
+    z-index: 65;
+    font-family: 'Orbitron'; color: var(--accent-gold);
+    text-shadow: 0 0 10px black;
+    background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 10px; border: 1px solid var(--accent-gold);
+}
+
+/* PANEL QUIZ (Turun ke bawah) */
+/* --- GANTI BAGIAN CSS QUIZ DENGAN INI --- */
+        #screen-quiz .panel {
+            /* HAPUS margin-top: 140px yang lama */
+            margin-top: 60px !important; /* Cukup turun 60px agar di bawah HUD */
+            position: relative; 
+            z-index: 50;
+            border: 2px solid var(--primary-blue);
+            box-shadow: 0 0 30px rgba(0, 168, 255, 0.2);
+            background: rgba(5, 15, 30, 0.98);
+            
+            /* Padding Compact */
+            padding: 15px !important; 
+            max-width: 500px;
+            width: 90%;
+            
+            /* Agar tidak scroll */
+            max-height: 80vh; 
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Perkecil Tampilan Kode */
+        #quiz-code-display {
+            padding: 5px !important;
+            margin-bottom: 5px !important;
+            font-size: 1.5rem !important; /* Font diperkecil */
+            letter-spacing: 5px !important;
+        }
+
+        /* Kotak Soal */
+        #screen-quiz .panel > div:nth-child(4) { 
+            padding: 8px !important;
+            margin-bottom: 8px !important;
+            max-height: 70px; /* Batasi tinggi teks soal */
+            overflow-y: auto; /* Hanya teks soal yang scroll jika sangat panjang */
+        }
+        #quiz-question-text { font-size: 0.9rem; margin: 0; line-height: 1.2; }
+
+        /* Container Jawaban Rapat */
+        #quiz-options-container {
+            display: flex; flex-direction: column; gap: 5px; /* Jarak rapat */
+        }
+
+        /* Tombol Jawaban Compact */
+        .quiz-option-btn {
+            padding: 6px 10px !important;
+            font-size: 0.85rem !important;
+            margin-top: 0 !important;
+            width: 100%; 
+            text-align: left;
+        }
+
+        /* Tombol Bantuan & Feedback */
+        #screen-quiz .panel > div:last-child {
+            margin-top: 10px !important;
+        }
+        #btn-hint { padding: 5px !important; font-size: 0.8rem !important; width: auto !important; }
+        #quiz-feedback { font-size: 0.8rem !important; }
+
+
+/* Sembunyikan Misi saat Quiz aktif agar layar bersih */
+#screen-quiz ~ #hud #mission-overlay {
+    display: none;
+}
+
+/* --- FIX KHUSUS: MENENGAHKAN JUDUL "LANTAI 1/3" --- */
+
+/* 1. Pastikan HUD menjadi patokan posisi */
+#hud {
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%;
+}
+
+/* 2. Paksa elemen tengah (Judul) agar lepas dari Flexbox dan diam di tengah layar */
+/* Kita target elemen 'div' ke-2 di dalam #hud */
+#hud > div:nth-child(2):not(.hud-top-left):not(.hud-panel) {
+    position: absolute;        /* Lepas dari aliran kiri-kanan */
+    left: 50%;                 /* Titik mulai di 50% layar */
+    transform: translateX(-50%); /* Geser balik 50% dari lebar teksnya sendiri */
+    top: 20px;                 /* Jarak dari atas layar */
+    text-align: center;
+    z-index: 70;               /* Pastikan di atas segalanya */
+}
+
 
     </style>
 </head>
@@ -637,7 +937,9 @@
             <img id="logo-img" src="images/logo_main.png" alt="TOYA GUARDIANS" onerror="this.style.display='none'">
             <img id="subtitle-img" src="images/subtitle.png" alt="TIRTATELAGA DEFENSE" onerror="this.style.display='none'">
         </div>
-        <div class="panel" style="background:transparent; border:none; box-shadow:none; margin-top:10px;">
+        
+        <!-- --- POSISI TOMBOL PRESISI (Reset margin negatif aneh-aneh) --- -->
+        <div class="panel" style="background:transparent; border:none; box-shadow:none; margin-top:10px; padding-top:0; position:relative; top:0;">
             <button class="btn-ml btn-anim" onclick="app.goToRegister()">MULAI MISI BARU</button>
             <button class="btn-ml btn-anim" style="background: #002244; border-color:#004488;" onclick="app.showLeaderboard()">HALL OF GUARDIANS (NASIONAL)</button>
         </div>
@@ -826,6 +1128,7 @@
         <button class="btn-msg-ok">OK</button>
     </div>
 
+
 </div>
 
 <script>
@@ -916,6 +1219,7 @@ for(let i=1; i<=14; i++) {
     ASSETS[`ending${i}`] = `ending/${i}.png`;
 }
 
+//DATA WILAYAH INDONESIA
 const DATA_INDONESIA = {
     "Aceh": {
         "Banda Aceh": ["Baiturrahman", "Banda Raya", "Jaya Baru", "Kuta Alam", "Kuta Raja", "Lueng Bata", "Meuraxa", "Syiah Kuala", "Ulee Kareng"],
@@ -969,7 +1273,148 @@ const DATA_INDONESIA = {
       "Kedamean", "Kebomas", "Manyar", "Menganti",
       "Panceng", "Sangkapura", "Sidayu", "Tambak",
       "Ujungpangkah", "Wringinanom"
-    ]
+    ],
+	"Kabupaten Jember": [
+    "Ajung", "Ambulu", "Arjasa", "Balung", "Bangsalsari",
+    "Gumukmas", "Jelbuk", "Jenggawah", "Jombang",
+    "Kalisat", "Kaliwates", "Kencong", "Ledokombo",
+    "Mayang", "Mumbulsari", "Pakusari", "Panti",
+    "Patrang", "Puger", "Rambipuji", "Semboro",
+    "Silo", "Sukorambi", "Sukowono", "Sumberbaru",
+    "Sumberjambe", "Sumbersari", "Tanggul", "Tempurejo",
+    "Umbulsari", "Wuluhan"
+  ],
+  "Kabupaten Jombang": [
+    "Bareng", "Diwek", "Gudo", "Jogoroto", "Jombang",
+    "Kabuh", "Kesamben", "Kudu", "Megah", "Mojoagung",
+    "Mojowarno", "Ngoro", "Ngusikan", "Perak",
+    "Peterongan", "Plandaan", "Ploso", "Sumobito",
+    "Tembelang", "Wonosalam"
+  ],
+  "Kabupaten Kediri": [
+    "Badas", "Gurah", "Kandangan", "Kandat",
+    "Kayen Kidul", "Kepung", "Kras", "Kunjang",
+    "Mojo", "Ngadiluwih", "Ngancar", "Ngasem",
+    "Pagu", "Papar", "Pare", "Plemahan", "Purwoasri",
+    "Ringinrejo", "Semen", "Tarokan", "Wates"
+  ],
+  "Kabupaten Lamongan": [
+    "Babat", "Bluluk", "Brondong", "Deket", "Glagah",
+    "Kalitengah", "Karangbinangun", "Kedungpring",
+    "Kembangbahu", "Lamongan", "Laren", "Maduran",
+    "Mantup", "Modo", "Ngimbang", "Pucuk", "Sambeng",
+    "Sarirejo", "Sekaran", "Solokuro", "Sugio",
+    "Sukodadi", "Sukorame", "Tikung", "Turi"
+  ],
+  "Kabupaten Lumajang": [
+    "Candipuro", "Gucialit", "Jatiroto", "Kedungjajang",
+    "Klakah", "Kunir", "Lumajang", "Padang", "Pasirian",
+    "Pasrujambe", "Pronojiwo", "Randuagung", "Ranuyoso",
+    "Rowokangkung", "Senduro", "Sukodono", "Sumbersuko",
+    "Tekung", "Tempursari", "Tempeh", "Yosowilangun"
+  ],
+  "Kabupaten Madiun": [
+    "Balerejo", "Dagangan", "Dolopo", "Geger", "Gemarang",
+    "Jiwan", "Kare", "Madiun", "Mejayan", "Pilangkenceng",
+    "Saradan", "Sawahan", "Wonoasri", "Wungu"
+  ],
+  "Kabupaten Magetan": [
+    "Barat", "Bendo", "Karangrejo", "Karas", "Kartoharjo",
+    "Kawedanan", "Lembeyan", "Magetan", "Maospati",
+    "Ngariboyo", "Nguntoronadi", "Panekan", "Parang",
+    "Plaosan", "Poncol", "Sidorejo", "Sukomoro",
+    "Takeran"
+  ],
+  "Kabupaten Malang": [
+    "Ampelgading", "Bantur", "Bululawang", "Dau",
+    "Donomulyo", "Gedangan", "Gondanglegi", "Jabung",
+    "Kalipare", "Karangploso", "Kasembon", "Kepanjen",
+    "Kromengan", "Lawang", "Ngajum", "Ngantang",
+    "Pagak", "Pagelaran", "Pakis", "Pakisaji",
+    "Poncokusumo", "Pujon", "Singosari", "Sumbermanjing",
+    "Sumberpucung", "Tirtoyudo", "Tumpang", "Turen",
+    "Wagir", "Wajak", "Wonosari"
+  ],
+  "Kabupaten Mojokerto": [
+    "Bangsal", "Dawarblandong", "Dlanggu", "Gedeg",
+    "Gondang", "Jatirejo", "Jetis", "Kemlagi",
+    "Kutorejo", "Mojoanyar", "Mojosari", "Ngoro",
+    "Pacet", "Pungging", "Sooko", "Trawas", "Trowulan"
+  ],
+  "Kabupaten Nganjuk": [
+    "Bagor", "Baron", "Berbek", "Gondang", "Jatikalen",
+    "Kertosono", "Lengkong", "Loceret", "Nganjuk",
+    "Ngetos", "Ngluyu", "Ngronggot", "Pace", "Patianrowo",
+    "Prambon", "Rejoso", "Sawahan", "Sukomoro",
+    "Tanjunganom", "Wilangan"
+  ],
+  "Kabupaten Ngawi": [
+    "Bringin", "Geneng", "Gerih", "Jogorogo", "Karanganyar",
+    "Karangjati", "Kasreman", "Kedunggalar", "Kendal",
+    "Mantingan", "Ngawi", "Ngrambe", "Padas", "Pangkur",
+    "Paron", "Pitu", "Sine", "Widodaren"
+  ],
+  "Kabupaten Pacitan": [
+    "Arjosari", "Bandar", "Donorojo", "Kebonagung",
+    "Nawangan", "Ngadirojo", "Pacitan", "Pringkuku",
+    "Punung", "Sudimoro", "Tegalombo", "Tulakan"
+  ],
+  "Kabupaten Pamekasan": [
+    "Batumarmar", "Galis", "Kadur", "Larangan", "Pademawu",
+    "Pakalongan", "Palengaan", "Pamekasan", "Pasean",
+    "Pegantenan", "Proppo", "Tlanakan", "Waru"
+  ],
+  "Kabupaten Pasuruan": [
+    "Bangil", "Beji", "Gempol", "Gondangwetan", "Grati",
+    "Kejayan", "Kraton", "Lekok", "Lumbang", "Nguling",
+    "Pandaan", "Pasrepan", "Pohjentrek", "Prigen",
+    "Purwodadi", "Purwosari", "Puspo", "Rejoso",
+    "Rembang", "Sukorejo", "Tosari", "Tutur",
+    "Wonorejo"
+  ],
+  "Kabupaten Ponorogo": [
+    "Babadan", "Badegan", "Balong", "Bungkal", "Jambon",
+    "Jenangan", "Jetis", "Kauman", "Mlarak", "Ngebel",
+    "Ngrayun", "Ponorogo", "Pudak", "Pulung", "Sambit",
+    "Sampung", "Sawoo", "Siman", "Slahung", "Sooko",
+    "Sukorejo"
+  ],
+  "Kabupaten Probolinggo": [
+    "Bantaran", "Banyuanyar", "Besuk", "Dringu",
+    "Gading", "Gending", "Kotaanyar", "Kraksaan",
+    "Krejengan", "Krucil", "Kuripan", "Leces",
+    "Lumbang", "Maron", "Paiton", "Pajarakan",
+    "Pakuniran", "Sukapura", "Sumber", "Tegal Siwalan",
+    "Tiris", "Tongas", "Wonomerto"
+  ],
+  "Kabupaten Sampang": [
+    "Banyuates", "Camplong", "Jrengik", "Karangpenang",
+    "Kedungdung", "Ketapang", "Omben", "Pangarengan",
+    "Robatal", "Sampang", "Sokobanah", "Sreseh",
+    "Tambelangan", "Torjun"
+  ],
+  "Kabupaten Sidoarjo": [
+    "Balongbendo", "Buduran", "Candi", "Gedangan",
+    "Jabon", "Krembung", "Krian", "Porong",
+    "Prambon", "Sedati", "Sidoarjo", "Sukodono",
+    "Taman", "Tanggulangin", "Tulangan", "Waru",
+    "Wonoayu"
+  ],
+  "Kabupaten Situbondo": [
+    "Asembagus", "Banyuglugur", "Banyuputih", "Besuki",
+    "Bungatan", "Jangkar", "Jatibanteng", "Kapongan",
+    "Kendit", "Mangaran", "Mlandingan", "Panarukan",
+    "Panji", "Situbondo", "Suboh"
+  ],
+  "Kabupaten Sumenep": [
+    "Ambunten", "Arjasa", "Batang-Batang", "Batuan",
+    "Batuputih", "Bluto", "Dasuk", "Dungkek", "Ganding",
+    "Gapura", "Gayam", "Gili Genting", "Guluk-guluk",
+    "Kalianget", "Kangayan", "Kota Sumenep",
+    "Lenteng", "Manding", "Masalembu", "Nonggunong",
+    "Pasongsongan", "Pragaan", "Ra'as", "Rubaru",
+    "Sapeken", "Saronggi", "Talango"
+  ]
   },
     "Jawa Barat": {
         "Bandung": ["Cicendo", "Coblong", "Andir", "Buahbatu", "Kiaracondong"],
@@ -982,29 +1427,680 @@ const DATA_INDONESIA = {
     }
 };
 
+// --- UPDATE: BANK SOAL (4 Opsi Jawaban + Penjelasan) ---
+// --- BANK SOAL CHAPTER 1 (DASAR KEAMANAN - 20 SOAL) ---
 const BANK_SOAL_CH1 = [
-    { q: "Apa nama serangan yang membanjiri server dengan lalu lintas palsu agar layanan lumpuh?", options: [{text:"DDoS",correct:true},{text:"Phishing",correct:false},{text:"Trojan",correct:false},{text:"Worm",correct:false}], hint:"Distributed Denial of Service." },
-    { q: "Tiga pilar utama keamanan informasi dikenal dengan singkatan CIA. Apa kepanjangannya?", options: [{text:"Confidentiality, Integrity, Availability",correct:true},{text:"Control, Intelligence, Access",correct:false},{text:"Cyber, Internet, Authority",correct:false},{text:"Code, Input, Algorithm",correct:false}], hint:"Kerahasiaan, Integritas, Ketersediaan." },
-    { q: "Jenis malware yang menyamar sebagai program berguna namun berisi kode berbahaya disebut...", options: [{text:"Trojan Horse",correct:true},{text:"Worm",correct:false},{text:"Spyware",correct:false},{text:"Adware",correct:false}], hint:"Seperti kuda kayu Yunani kuno." },
-    { q: "Serangan di mana peretas menempatkan diri di antara dua pihak yang berkomunikasi disebut...", options: [{text:"Man-in-the-Middle (MITM)",correct:true},{text:"Brute Force",correct:false},{text:"SQL Injection",correct:false},{text:"Ransomware",correct:false}], hint:"Orang di tengah-tengah." },
-    { q: "Teknik memalsukan identitas pengirim (seperti IP address) untuk menipu penerima disebut...", options: [{text:"Spoofing",correct:true},{text:"Sniffing",correct:false},{text:"Hacking",correct:false},{text:"Phishing",correct:false}], hint:"Mirip kata 'Spoof' (parodi/palsu)." }
+    { 
+        q: "DDoS adalah...", 
+        options: [
+            {text:"Denial of Service (Banjir Trafik)", correct:true},
+            {text:"Data Service", correct:false, explanation:"Data Service adalah layanan kuota internet, bukan serangan siber."},
+            {text:"Domain Service", correct:false, explanation:"Domain Service (DNS) adalah sistem alamat web, bukan serangan."},
+            {text:"Disk Operating System", correct:false, explanation:"DOS (Disk Operating System) adalah sistem operasi lama, berbeda dengan DDoS."}
+        ], 
+        hint:"Serangan membanjiri server", 
+        explanation:"DDoS membanjiri server dengan trafik palsu agar server overload dan mati." 
+    },
+    { 
+        q: "Phishing bertujuan untuk...", 
+        options: [
+            {text:"Mencuri Data Pribadi", correct:true},
+            {text:"Memancing Ikan", correct:false, explanation:"Phishing memang plesetan dari 'Fishing', tapi targetnya data user, bukan ikan."},
+            {text:"Mengedit Foto", correct:false, explanation:"Itu Photoshop. Phishing adalah penipuan untuk mencuri password."},
+            {text:"Memperbaiki Jaringan", correct:false, explanation:"Phishing adalah serangan, bukan perbaikan (Maintenance)."}
+        ], 
+        hint:"Penipuan online", 
+        explanation:"Phishing menyamar sebagai pihak resmi untuk menipu korban agar menyerahkan password/data." 
+    },
+    { 
+        q: "Fungsi utama Firewall?", 
+        options: [
+            {text:"Filter Lalu Lintas Jaringan", correct:true},
+            {text:"Menghapus Data", correct:false, explanation:"Menghapus data itu kerjaan **Wiper** atau **Ransomware**. Firewall justru MELINDUNGI data."},
+            {text:"Mempercepat Download", correct:false, explanation:"Firewall justru sedikit memperlambat karena harus memeriksa paket, bukan mempercepat."},
+            {text:"Mendinginkan CPU", correct:false, explanation:"Itu tugas Kipas (Fan). Firewall adalah sistem keamanan."}
+        ], 
+        hint:"Penyaring paket", 
+        explanation:"Firewall adalah pos satpam yang menyaring siapa yang boleh masuk/keluar jaringan." 
+    },
+    { 
+        q: "Malware adalah singkatan dari...", 
+        options: [
+            {text:"Malicious Software", correct:true},
+            {text:"Male Software", correct:false, explanation:"'Male' artinya Pria. Malware singkatan dari **Malicious** (Jahat)."},
+            {text:"Mail Software", correct:false, explanation:"Mail Software itu aplikasi Email. Malware adalah perangkat lunak perusak."},
+            {text:"Mall Ware", correct:false, explanation:"Bukan barang Mall. Malware adalah program berbahaya."}
+        ], 
+        hint:"Perangkat lunak jahat", 
+        explanation:"Malware mencakup virus, worm, trojan, spyware, dll." 
+    },
+    { 
+        q: "Ransomware bekerja dengan cara...", 
+        options: [
+            {text:"Menyandera Data & Minta Tebusan", correct:true},
+            {text:"Mencuri Pulsa", correct:false, explanation:"Mencuri pulsa biasanya dilakukan **Trojan SMS**, bukan Ransomware."},
+            {text:"Merusak Monitor", correct:false, explanation:"Software tidak bisa merusak fisik monitor. Ransomware mengunci file digital."},
+            {text:"Memperlambat WiFi", correct:false, explanation:"WiFi lambat masalah sinyal. Ransomware fokus pada penguncian data (Enkripsi)."}
+        ], 
+        hint:"Minta uang", 
+        explanation:"Ransomware mengenkripsi file korban sehingga tidak bisa dibuka sampai tebusan dibayar." 
+    },
+    { 
+        q: "Apa itu Keylogger?", 
+        options: [
+            {text:"Perekam Tombol Keyboard", correct:true},
+            {text:"Kunci Pintu Otomatis", correct:false, explanation:"Itu Smart Lock. Keylogger adalah spyware pencuri password."},
+            {text:"Pencatat Absensi", correct:false, explanation:"Log absensi itu sah. Keylogger merekam ketikan diam-diam untuk mencuri akun."},
+            {text:"Tukang Kunci", correct:false, explanation:"Keylogger adalah program jahat, bukan profesi."}
+        ], 
+        hint:"Mencuri password ketikan", 
+        explanation:"Keylogger merekam setiap tombol yang ditekan user untuk mencuri password/PIN." 
+    },
+    { 
+        q: "Trojan Horse adalah...", 
+        options: [
+            {text:"Program Jahat Menyamar Baik", correct:true},
+            {text:"Antivirus Gratis", correct:false, explanation:"Banyak Trojan MENYAMAR jadi antivirus, tapi aslinya virus. Antivirus asli melindungi."},
+            {text:"Kuda Balap", correct:false, explanation:"Ini istilah sejarah Perang Troya. Di komputer, ini adalah virus penipu."},
+            {text:"Game Catur", correct:false, explanation:"Bukan Kuda Catur. Trojan adalah malware yang menyusup lewat file aman."}
+        ], 
+        hint:"Hadiah palsu", 
+        explanation:"Seperti Kuda Troya sejarah, virus ini terlihat berguna (misal: game gratis) tapi membawa virus." 
+    },
+    { 
+        q: "SQL Injection menyerang...", 
+        options: [
+            {text:"Database Website", correct:true},
+            {text:"Jaringan Listrik", correct:false, explanation:"Jaringan listrik diserang lewat sistem SCADA, bukan SQL (bahasa database)."},
+            {text:"Monitor Komputer", correct:false, explanation:"Monitor itu hardware output. SQL Injection menyerang data di server."},
+            {text:"Printer Kantor", correct:false, explanation:"Printer tidak menyimpan database user. SQL Injection menyerang penyimpanan data."}
+        ], 
+        hint:"Bahasa query", 
+        explanation:"SQL Injection memanipulasi database untuk login tanpa password atau mencuri data user." 
+    },
+    { 
+        q: "Fungsi VPN adalah...", 
+        options: [
+            {text:"Menyamarkan IP & Enkripsi", correct:true},
+            {text:"Menghapus Virus", correct:false, explanation:"Itu tugas Antivirus. VPN hanya mengamankan JALUR koneksi."},
+            {text:"Menambah Kuota", correct:false, explanation:"VPN tidak bisa menambah kuota internet. Data tetap terhitung oleh provider."},
+            {text:"Mempercepat HP", correct:false, explanation:"VPN adalah software jaringan, tidak mempercepat hardware HP/Laptop."}
+        ], 
+        hint:"Jalur pribadi", 
+        explanation:"VPN membuat terowongan aman (tunnel) sehingga lokasi dan data Anda tersembunyi." 
+    },
+    { 
+        q: "Password yang kuat mengandung...", 
+        options: [
+            {text:"Huruf, Angka, & Simbol", correct:true},
+            {text:"Tanggal Lahir", correct:false, explanation:"Tanggal lahir sangat mudah ditebak hacker lewat media sosial (Social Engineering)."},
+            {text:"Nama Pacar", correct:false, explanation:"Nama orang dekat masuk daftar password terburuk karena mudah ditebak."},
+            {text:"Urutan 123456", correct:false, explanation:"123456 adalah password paling tidak aman sedunia."}
+        ], 
+        hint:"Sulit ditebak", 
+        explanation:"Kombinasi karakter membuat password sulit dibobol dengan metode Brute Force." 
+    },
+    { 
+        q: "Apa itu IP Address?", 
+        options: [
+            {text:"Alamat Identitas Perangkat", correct:true},
+            {text:"Internet Protocol", correct:false, explanation:"Itu kepanjangannya (IP). IP Address adalah deretan angka alamatnya."},
+            {text:"Kode Pos Digital", correct:false, explanation:"Istilah ini kiasan, tapi kurang tepat. IP Address adalah alamat teknis jaringan."},
+            {text:"Nama Komputer", correct:false, explanation:"Nama komputer disebut Hostname. IP Address berbentuk angka (misal: 192.168.1.1)."}
+        ], 
+        hint:"Alamat rumah digital", 
+        explanation:"Setiap perangkat di jaringan memiliki IP Address unik sebagai identitas pengiriman data." 
+    },
+    { 
+        q: "Teknik Social Engineering adalah...", 
+        options: [
+            {text:"Manipulasi Psikologis Manusia", correct:true},
+            {text:"Hack Satelit", correct:false, explanation:"Itu serangan teknis tingkat tinggi. Social Engineering menyerang kelemahan manusia (human error)."},
+            {text:"Mengirim Spam", correct:false, explanation:"Spam adalah iklan sampah. Social Engineering adalah tipuan terarah dan personal."},
+            {text:"Mebobol ATM", correct:false, explanation:"Itu kejahatan fisik/skimming. Social Engineering dilakukan lewat komunikasi/bujukan."}
+        ], 
+        hint:"Menipu orangnya, bukan mesin", 
+        explanation:"Social Engineering (Rekayasa Sosial) menipu korban agar memberikan data rahasia secara sukarela." 
+    },
+    { 
+        q: "2FA (Two-Factor Authentication) artinya...", 
+        options: [
+            {text:"Verifikasi Dua Langkah", correct:true},
+            {text:"Punya 2 Akun Medsos", correct:false, explanation:"Itu akun ganda (Second Account), bukan fitur keamanan."},
+            {text:"Bermuka Dua", correct:false, explanation:"Itu peribahasa. 2FA adalah lapisan keamanan tambahan saat login."},
+            {text:"Menyimpan 2 File", correct:false, explanation:"Itu Backup. 2FA membutuhkan password + kode verifikasi (OTP)."}
+        ], 
+        hint:"Password + OTP", 
+        explanation:"Selain password, 2FA meminta bukti kedua (seperti kode SMS/WA) agar akun lebih aman." 
+    },
+    { 
+        q: "Apa itu Botnet?", 
+        options: [
+            {text:"Jaringan Komputer Zombie", correct:true},
+            {text:"Robot Mainan", correct:false, explanation:"Bukan mainan fisik. Botnet adalah ribuan komputer yang dikendalikan hacker."},
+            {text:"Chat Bot", correct:false, explanation:"Chat Bot adalah AI penjawab otomatis. Botnet adalah pasukan cyber untuk menyerang."},
+            {text:"Jaringan Internet", correct:false, explanation:"Internet adalah infrastrukturnya. Botnet adalah parasit jahat di dalamnya."}
+        ], 
+        hint:"Pasukan hacker", 
+        explanation:"Botnet adalah sekumpulan komputer yang terinfeksi malware dan dikendalikan jarak jauh untuk serangan DDoS." 
+    },
+    { 
+        q: "Kenapa HTTPS lebih aman dari HTTP?", 
+        options: [
+            {text:"Karena Terenkripsi (SSL)", correct:true},
+            {text:"Karena Lebih Cepat", correct:false, explanation:"Enkripsi justru butuh proses komputasi, jadi tidak selalu lebih cepat. Keunggulannya adalah keamanan."},
+            {text:"Karena Gratis", correct:false, explanation:"Sertifikat SSL ada yang berbayar. Keunggulannya bukan di biaya, tapi privasi data."},
+            {text:"Karena Tanpa Kuota", correct:false, explanation:"Akses HTTPS tetap memakan kuota data internet Anda."}
+        ], 
+        hint:"Huruf S = Secure", 
+        explanation:"HTTPS mengacak data yang dikirim sehingga tidak bisa dibaca jika disadap di tengah jalan." 
+    },
+    { 
+        q: "Zero Day Attack adalah...", 
+        options: [
+            {text:"Serangan pada Celah Baru", correct:true},
+            {text:"Serangan di Hari Minggu", correct:false, explanation:"Hacker tidak kenal hari libur. Zero Day merujuk pada celah yang belum ada obatnya."},
+            {text:"Serangan 0 Detik", correct:false, explanation:"Bukan durasi serangan. Artinya developer punya '0 hari' untuk memperbaiki."},
+            {text:"Hari Libur Hacker", correct:false, explanation:"Justru ini hari tersibuk hacker karena menemukan celah emas yang belum ditambal."}
+        ], 
+        hint:"Belum ada patch", 
+        explanation:"Zero Day memanfaatkan celah keamanan yang baru ditemukan dan belum sempat diperbaiki oleh pembuat software." 
+    },
+    { 
+        q: "Brute Force Attack dilakukan dengan...", 
+        options: [
+            {text:"Menebak Password Terus-menerus", correct:true},
+            {text:"Memukul Komputer", correct:false, explanation:"Kekerasan fisik tidak akan membuka password komputer."},
+            {text:"Mematikan Listrik", correct:false, explanation:"Itu sabotase fisik. Brute Force mencoba ribuan kombinasi password per detik."},
+            {text:"Menghapus Windows", correct:false, explanation:"Menghapus OS malah membuat sistem rusak, bukan berhasil login."}
+        ], 
+        hint:"Coba semua kombinasi", 
+        explanation:"Hacker menggunakan software untuk mencoba semua kemungkinan kombinasi password sampai berhasil." 
+    },
+    { 
+        q: "Fungsi Backup Data adalah...", 
+        options: [
+            {text:"Salinan Data Cadangan", correct:true},
+            {text:"Memenuhi Harddisk", correct:false, explanation:"Memang memakan ruang, tapi tujuannya untuk penyelamatan data saat darurat."},
+            {text:"Format Data", correct:false, explanation:"Format artinya menghapus bersih. Backup artinya menyalin/mengamankan."},
+            {text:"Jual Data", correct:false, explanation:"Itu kejahatan data (Ilegal). Backup adalah tindakan pencegahan kehilangan data."}
+        ], 
+        hint:"Ban serep data", 
+        explanation:"Backup penting agar data bisa dipulihkan (Restore) jika terjadi kerusakan atau serangan Ransomware." 
+    },
+    { 
+        q: "White Hat Hacker adalah...", 
+        options: [
+            {text:"Hacker Baik (Etis)", correct:true},
+            {text:"Penjahat Cyber", correct:false, explanation:"Itu **Black Hat**. White Hat bekerja untuk mengamankan sistem secara legal."},
+            {text:"Pencuri WiFi", correct:false, explanation:"Mencuri itu kriminal. White Hat disewa perusahaan untuk tes keamanan."},
+            {text:"Pembuat Virus", correct:false, explanation:"Pembuat virus biasanya Black Hat. White Hat justru membuat antivirus atau patch."}
+        ], 
+        hint:"Topi Putih", 
+        explanation:"White Hat meretas sistem dengan izin pemiliknya untuk menemukan celah keamanan sebelum diserang orang jahat." 
+    },
+    { 
+        q: "Apa fungsi Enkripsi?", 
+        options: [
+            {text:"Mengacak data agar rahasia", correct:true},
+            {text:"Menghapus Data", correct:false, explanation:"Enkripsi mengacak data, bukan menghapusnya. Data masih ada tapi tak terbaca."},
+            {text:"Mengopi Data", correct:false, explanation:"Copy itu menyalin (Backup). Enkripsi itu menyandikan menjadi kode acak."},
+            {text:"Mengirim Email", correct:false, explanation:"Email adalah media pengiriman. Enkripsi adalah cara mengamankan isi emailnya."}
+        ], 
+        hint:"Kode rahasia", 
+        explanation:"Enkripsi mengubah data (Plaintext) menjadi kode acak (Ciphertext) yang hanya bisa dibuka dengan kunci khusus." 
+    }
 ];
 
+// --- BANK SOAL CHAPTER 2 (FIREWALL - 20 SOAL) ---
 const BANK_SOAL_CH2 = [
-    { q: "Apa perbedaan mendasar antara Firewall dan IDS (Intrusion Detection System)?", options: [{text:"Firewall memblokir akses, IDS mendeteksi serangan",correct:true},{text:"Firewall hanya mencatat log, IDS memblokir virus",correct:false},{text:"Keduanya sama saja",correct:false},{text:"IDS hanya untuk WiFi",correct:false}], hint:"Satu bertindak sebagai gerbang (memblokir), satu sebagai alarm (mendeteksi)." },
-    { q: "Teknologi apa yang memungkinkan akses aman ke jaringan privat melalui jaringan publik (internet)?", options: [{text:"VPN (Virtual Private Network)",correct:true},{text:"VLAN",correct:false},{text:"WAN",correct:false},{text:"LAN",correct:false}], hint:"Jaringan 'Pribadi Virtual'." },
-    { q: "Dalam konfigurasi firewall, aturan apa yang paling aman diterapkan sebagai standar?", options: [{text:"Default Deny (Blokir semua kecuali yang diizinkan)",correct:true},{text:"Default Allow (Izinkan semua)",correct:false},{text:"Block Port 80",correct:false},{text:"Allow All Traffic",correct:false}], hint:"Tolak semua secara default." },
-    { q: "Apa fungsi dari ACL (Access Control List) pada router atau firewall?", options: [{text:"Mengontrol lalu lintas berdasarkan aturan (IP/Port)",correct:true},{text:"Mempercepat koneksi internet",correct:false},{text:"Menyimpan password pengguna",correct:false},{text:"Mendeteksi kerusakan kabel",correct:false}], hint:"Daftar untuk mengontrol akses." },
-    { q: "Tindakan 'Hardening' pada perangkat jaringan meliputi...", options: [{text:"Menutup port yang tidak perlu & update firmware",correct:true},{text:"Menambah RAM perangkat",correct:false},{text:"Membersihkan debu perangkat",correct:false},{text:"Memasang kipas tambahan",correct:false}], hint:"Memperkuat sistem dari sisi software/konfigurasi." }
+    { 
+        q: "Port standar HTTP (Web Biasa) adalah...", 
+        options: [
+            {text:"80", correct:true},
+            {text:"443", correct:false, explanation:"Port 443 adalah untuk **HTTPS** (Aman/Terenkripsi), bukan HTTP biasa."},
+            {text:"21", correct:false, explanation:"Port 21 adalah untuk **FTP** (Transfer File)."},
+            {text:"22", correct:false, explanation:"Port 22 adalah untuk **SSH** (Remote Server)."}
+        ], 
+        hint:"Angka puluhan", 
+        explanation:"HTTP (Port 80) tidak aman karena teks dikirim polos. Gunakan HTTPS (Port 443) untuk transaksi." 
+    },
+    { 
+        q: "DMZ (Demilitarized Zone) berfungsi untuk...", 
+        options: [
+            {text:"Menempatkan Server Publik", correct:true},
+            {text:"Area Perang", correct:false, explanation:"DMZ jaringan adalah area aman untuk server publik, bukan medan perang."},
+            {text:"Menyimpan Virus", correct:false, explanation:"DMZ bukan karantina virus. Itu tempat Web Server diletakkan."},
+            {text:"Ruang Kedap Suara", correct:false, explanation:"DMZ adalah konsep jaringan logis, bukan ruangan fisik."}
+        ], 
+        hint:"Zona Netral", 
+        explanation:"DMZ memisahkan server publik (Web) dari jaringan internal rahasia (Database) untuk keamanan." 
+    },
+    { 
+        q: "Packet Filtering bekerja dengan...", 
+        options: [
+            {text:"Cek Header (IP/Port)", correct:true},
+            {text:"Cek Isi Pesan", correct:false, explanation:"Packet filtering tidak membaca isi pesan (Payload), hanya melihat alamat IP pengirim/tujuan."},
+            {text:"Scan Wajah", correct:false, explanation:"Firewall tidak melihat fisik user (Biometrik), hanya data jaringan."},
+            {text:"Menimbang Paket", correct:false, explanation:"Data digital tidak punya berat fisik. Filtering melihat alamat asal/tujuan."}
+        ], 
+        hint:"Cek alamat amplop", 
+        explanation:"Packet Filtering adalah firewall dasar yang hanya melihat asal dan tujuan paket tanpa membuka isinya." 
+    },
+    { 
+        q: "Action 'DROP' pada Firewall artinya...", 
+        options: [
+            {text:"Buang paket diam-diam", correct:true},
+            {text:"Tolak & Lapor", correct:false, explanation:"Jika menolak dan melapor, itu action **REJECT**. DROP itu diam-diam."},
+            {text:"Terima Paket", correct:false, explanation:"DROP artinya membuang. Kalau terima itu **ALLOW/ACCEPT**."},
+            {text:"Simpan Paket", correct:false, explanation:"Firewall tidak menyimpan paket sampah, langsung dibuang."}
+        ], 
+        hint:"Abaikan", 
+        explanation:"DROP lebih aman karena hacker tidak tahu komputer kita hidup atau mati (tidak ada respon)." 
+    },
+    { 
+        q: "Apa itu IDS?", 
+        options: [
+            {text:"Pendeteksi Serangan (Alarm)", correct:true},
+            {text:"Pencegah (Blokir)", correct:false, explanation:"Yang memblokir otomatis adalah **IPS** (Prevention). IDS hanya mendeteksi."},
+            {text:"Internet Data Service", correct:false, explanation:"IDS di sini adalah Intrusion Detection System."},
+            {text:"Identitas Siswa", correct:false, explanation:"Bukan ID Card. IDS adalah sistem alarm jaringan."}
+        ], 
+        hint:"Hanya mendeteksi", 
+        explanation:"IDS seperti alarm: berbunyi jika ada maling, tapi tidak menangkapnya sendiri. Admin harus bertindak." 
+    },
+    { 
+        q: "Apa fungsi Proxy Server?", 
+        options: [
+            {text:"Perantara Client & Internet", correct:true},
+            {text:"Server Game", correct:false, explanation:"Server Game untuk bermain. Proxy untuk menyembunyikan identitas atau filtering."},
+            {text:"Kabel Jaringan", correct:false, explanation:"Proxy adalah software/server, bukan kabel fisik."},
+            {text:"Hacker", correct:false, explanation:"Proxy adalah alat yang netral, bisa dipakai untuk keamanan atau kejahatan."}
+        ], 
+        hint:"Wakil/Joki", 
+        explanation:"Proxy bertindak sebagai perantara yang melakukan request atas nama pengguna, menyembunyikan IP asli pengguna." 
+    },
+    { 
+        q: "Apa itu NAT (Network Address Translation)?", 
+        options: [
+            {text:"Menerjemahkan IP Lokal ke Publik", correct:true},
+            {text:"Menerjemahkan Bahasa", correct:false, explanation:"NAT bukan Google Translate. NAT menerjemahkan alamat IP jaringan."},
+            {text:"Nama Admin", correct:false, explanation:"NAT bukan nama orang. Itu singkatan Network Address Translation."},
+            {text:"Antivirus Jaringan", correct:false, explanation:"NAT fungsi utamanya routing/alamat, bukan membersihkan virus."}
+        ], 
+        hint:"Penerjemah Alamat", 
+        explanation:"NAT memungkinkan banyak komputer di kantor/rumah menggunakan satu IP Publik untuk akses internet." 
+    },
+    { 
+        q: "Stateful Inspection adalah...", 
+        options: [
+            {text:"Memantau Status Koneksi Aktif", correct:true},
+            {text:"Memeriksa KTP", correct:false, explanation:"Firewall tidak memeriksa KTP fisik. Stateful memeriksa apakah paket bagian dari sesi yang sah."},
+            {text:"Hanya Cek Header", correct:false, explanation:"Itu Packet Filtering. Stateful lebih pintar karena ingat konteks percakapan."},
+            {text:"Mematikan Internet", correct:false, explanation:"Tujuannya mengamankan, bukan mematikan internet."}
+        ], 
+        hint:"Ingat percakapan", 
+        explanation:"Stateful Inspection lebih aman dari Packet Filtering karena ia tahu apakah paket ini balasan yang sah atau penyusup." 
+    },
+    { 
+        q: "Next Generation Firewall (NGFW) bisa...", 
+        options: [
+            {text:"Cek Aplikasi (Layer 7)", correct:true},
+            {text:"Hanya Cek IP", correct:false, explanation:"Itu Firewall jadul. NGFW bisa tahu kamu buka Facebook atau YouTube."},
+            {text:"Memasak Kopi", correct:false, explanation:"NGFW canggih, tapi belum bisa bikin kopi. Ia fokus pada keamanan aplikasi."},
+            {text:"Hapus Windows", correct:false, explanation:"NGFW melindungi jaringan, tidak merusak OS."}
+        ], 
+        hint:"Paham aplikasi", 
+        explanation:"NGFW bisa membedakan trafik 'Aplikasi Kantor' dan 'Game Online' meskipun lewat port yang sama." 
+    },
+    { 
+        q: "VPN Passthrough berfungsi untuk...", 
+        options: [
+            {text:"Izinkan VPN lewat Firewall", correct:true},
+            {text:"Blokir VPN", correct:false, explanation:"Passthrough artinya 'lewat'. Jadi ini mengizinkan, bukan memblokir."},
+            {text:"Membuat VPN", correct:false, explanation:"Ini fitur di router untuk melewatkan trafik, bukan membuat server VPN."},
+            {text:"Hapus VPN", correct:false, explanation:"Passthrough tidak menghapus software VPN."}
+        ], 
+        hint:"Jalan lewat", 
+        explanation:"Fitur ini mengizinkan paket data terenkripsi (VPN) melewati router/firewall tanpa diblokir." 
+    },
+    { 
+        q: "Apa itu Access Control List (ACL)?", 
+        options: [
+            {text:"Daftar Izin Akses", correct:true},
+            {text:"Daftar Belanja", correct:false, explanation:"ACL bukan catatan belanja. Ini daftar siapa yang boleh masuk jaringan."},
+            {text:"Anti virus List", correct:false, explanation:"ACL mengatur akses (Boleh/Tidak), bukan database virus."},
+            {text:"Daftar Hadir", correct:false, explanation:"ACL berlaku untuk trafik data, bukan absensi orang."}
+        ], 
+        hint:"Daftar tamu", 
+        explanation:"ACL adalah tabel aturan yang menentukan IP mana yang boleh (Allow) atau dilarang (Deny) mengakses sistem." 
+    },
+    { 
+        q: "IPS (Intrusion Prevention System) berbeda dengan IDS karena...", 
+        options: [
+            {text:"Bisa Blokir Otomatis", correct:true},
+            {text:"Hanya Mendeteksi", correct:false, explanation:"Hanya mendeteksi itu tugas **IDS**. IPS bertindak (mencegah)."},
+            {text:"Lebih Murah", correct:false, explanation:"IPS biasanya lebih kompleks dan mahal daripada IDS."},
+            {text:"Tidak Butuh Listrik", correct:false, explanation:"Semua perangkat jaringan butuh listrik."}
+        ], 
+        hint:"Pencegah vs Pendeteksi", 
+        explanation:"IPS ditempatkan di jalur utama (inline) sehingga bisa langsung memutus koneksi jahat secara otomatis." 
+    },
+    { 
+        q: "Firewall Hardware contohnya...", 
+        options: [
+            {text:"Cisco ASA / Fortinet", correct:true},
+            {text:"Windows Firewall", correct:false, explanation:"Windows Firewall adalah **Software** yang diinstall di PC."},
+            {text:"Avast Antivirus", correct:false, explanation:"Avast adalah software antivirus, bukan hardware firewall khusus."},
+            {text:"Kabel LAN", correct:false, explanation:"Kabel adalah media transmisi, bukan alat keamanan pintar."}
+        ], 
+        hint:"Alat fisik", 
+        explanation:"Firewall Hardware adalah perangkat fisik khusus yang didedikasikan untuk keamanan jaringan satu kantor." 
+    },
+    { 
+        q: "Firewall Software contohnya...", 
+        options: [
+            {text:"Windows Defender Firewall", correct:true},
+            {text:"Router Cisco", correct:false, explanation:"Router Cisco adalah perangkat keras (Hardware)."},
+            {text:"Kabel Fiber", correct:false, explanation:"Kabel fiber optik adalah media, bukan software."},
+            {text:"Mouse", correct:false, explanation:"Mouse adalah input device."}
+        ], 
+        hint:"Aplikasi di OS", 
+        explanation:"Firewall Software berjalan di dalam sistem operasi untuk melindungi satu komputer saja (Host-based)." 
+    },
+    { 
+        q: "Kelemahan Firewall adalah...", 
+        options: [
+            {text:"Tidak cegah serangan orang dalam", correct:true},
+            {text:"Membuat internet mati", correct:false, explanation:"Firewall yang dikonfigurasi benar tidak mematikan internet, hanya menyaring."},
+            {text:"Tidak bisa menyaring", correct:false, explanation:"Menyaring adalah fungsi utamanya. Kelemahannya ada di ancaman internal."},
+            {text:"Terlalu murah", correct:false, explanation:"Firewall enterprise harganya sangat mahal."}
+        ], 
+        hint:"Musuh dalam selimut", 
+        explanation:"Firewall menjaga pagar luar. Jika serangan berasal dari karyawan sendiri (Internal Threat), firewall seringkali tidak tahu." 
+    },
+    { 
+        q: "Aturan 'Default Deny' artinya...", 
+        options: [
+            {text:"Blokir semua kecuali yang diizinkan", correct:true},
+            {text:"Izinkan semua kecuali yang diblokir", correct:false, explanation:"Itu **Default Allow**. Default Deny lebih aman (tutup semua pintu dulu)."},
+            {text:"Hapus semua data", correct:false, explanation:"Deny artinya tolak akses, bukan hapus data."},
+            {text:"Matikan Firewall", correct:false, explanation:"Justru ini aturan firewall yang paling ketat."}
+        ], 
+        hint:"Tutup semua pintu", 
+        explanation:"Default Deny adalah praktik keamanan terbaik: semua dilarang masuk, kecuali yang punya tiket khusus." 
+    },
+    { 
+        q: "Bastion Host adalah...", 
+        options: [
+            {text:"Server Tameng di garis depan", correct:true},
+            {text:"Komputer Rusak", correct:false, explanation:"Bastion Host adalah komputer super aman, bukan rusak."},
+            {text:"Admin Jaringan", correct:false, explanation:"Bastion Host adalah server/alat, bukan orang."},
+            {text:"Virus", correct:false, explanation:"Bastion Host adalah pertahanan, bukan penyakit."}
+        ], 
+        hint:"Benteng pertahanan", 
+        explanation:"Bastion Host adalah komputer yang sengaja ditaruh di area publik (DMZ) dengan keamanan super tinggi untuk menahan serangan awal." 
+    },
+    { 
+        q: "Apa itu Inbound Rule?", 
+        options: [
+            {text:"Aturan Trafik Masuk", correct:true},
+            {text:"Aturan Trafik Keluar", correct:false, explanation:"Trafik keluar diatur oleh **Outbound Rule**."},
+            {text:"Aturan Gaji", correct:false, explanation:"Ini firewall, bukan HRD."},
+            {text:"Aturan Parkir", correct:false, explanation:"Inbound di sini maksudnya data yang masuk dari internet ke komputer kita."}
+        ], 
+        hint:"Data masuk", 
+        explanation:"Inbound Rule mengatur siapa saja dari internet yang boleh masuk ke komputer/server kita." 
+    },
+    { 
+        q: "Apa itu Outbound Rule?", 
+        options: [
+            {text:"Aturan Trafik Keluar", correct:true},
+            {text:"Aturan Trafik Masuk", correct:false, explanation:"Trafik masuk diatur oleh **Inbound Rule**."},
+            {text:"Aturan Main Game", correct:false, explanation:"Outbound mengatur koneksi keluar, misal mencegah malware mengirim data curian."},
+            {text:"Kabel Putus", correct:false, explanation:"Ini aturan software, bukan kondisi kabel."}
+        ], 
+        hint:"Data keluar", 
+        explanation:"Outbound Rule penting untuk mencegah malware di komputer kita mengirim data rahasia ke luar (Command & Control)." 
+    },
+    { 
+        q: "Analisa Log Firewall berguna untuk...", 
+        options: [
+            {text:"Melacak jejak serangan", correct:true},
+            {text:"Menambah RAM", correct:false, explanation:"Analisa log tidak menambah hardware."},
+            {text:"Memperbaiki Monitor", correct:false, explanation:"Log adalah catatan teks, tidak berhubungan dengan layar rusak."},
+            {text:"Main Game", correct:false, explanation:"Membaca log itu pekerjaan detektif jaringan, bukan hiburan."}
+        ], 
+        hint:"Audit keamanan", 
+        explanation:"Dengan membaca Log, admin tahu siapa yang mencoba menyusup, kapan, dan menggunakan metode apa." 
+    }
 ];
 
+// --- BANK SOAL CHAPTER 3 (FORENSIK - 20 SOAL) ---
 const BANK_SOAL_CH3 = [
-    { q: "Aplikasi apa yang paling umum digunakan untuk menganalisis paket data jaringan (Packet Sniffer)?", options: [{text:"Wireshark",correct:true},{text:"Photoshop",correct:false},{text:"Notepad++",correct:false},{text:"WinRAR",correct:false}], hint:"Ikonnya sirip hiu." },
-    { q: "Di dalam Wireshark, warna merah pada baris paket biasanya menandakan...", options: [{text:"Paket Error / Reset (RST)",correct:true},{text:"Paket Aman",correct:false},{text:"Paket Gambar",correct:false},{text:"Paket Email",correct:false}], hint:"Warna bahaya." },
-    { q: "Langkah pertama dalam Incident Response menurut standar NIST adalah...", options: [{text:"Preparation (Persiapan)",correct:true},{text:"Detection",correct:false},{text:"Eradication",correct:false},{text:"Recovery",correct:false}], hint:"Sedia payung sebelum hujan." },
-    { q: "Apa itu 'Log File' dalam server?", options: [{text:"Catatan aktivitas sistem dan user",correct:true},{text:"Batang kayu",correct:false},{text:"File sampah",correct:false},{text:"Program antivirus",correct:false}], hint:"Jejak digital." },
-    { q: "Jika ditemukan login sukses di jam 3 pagi dari IP asing, ini indikasi...", options: [{text:"Compromised Account (Akun jebol)",correct:true},{text:"Server update",correct:false},{text:"Admin lembur",correct:false},{text:"Listrik padam",correct:false}], hint:"Aktivitas anomali." }
+    { 
+        q: "Wireshark digunakan untuk...", 
+        options: [
+            {text:"Sniffing / Analisa Paket", correct:true},
+            {text:"Edit Video", correct:false, explanation:"Wireshark bukan editor video. Ia adalah 'mikroskop' paket jaringan."},
+            {text:"Membuat Virus", correct:false, explanation:"Wireshark adalah alat diagnosa, bukan pembuat virus."},
+            {text:"Chatting", correct:false, explanation:"Wireshark bisa menyadap chat tidak aman, tapi bukan aplikasi chat."}
+        ], 
+        hint:"Lihat lalu lintas data", 
+        explanation:"Wireshark menangkap paket data yang lewat di kabel/WiFi untuk dianalisa isinya." 
+    },
+    { 
+        q: "Hashing (MD5/SHA) berfungsi untuk...", 
+        options: [
+            {text:"Menjaga Integritas Data", correct:true},
+            {text:"Mengompres Data", correct:false, explanation:"Hashing tidak mengecilkan ukuran file (Zip), tapi membuat sidik jari unik."},
+            {text:"Enkripsi Balik", correct:false, explanation:"Hash satu arah (tidak bisa dibalik). Enkripsi bisa dibalik (Dekripsi)."},
+            {text:"Memperbaiki File", correct:false, explanation:"Hash hanya memberi tahu kalau file rusak, tidak bisa memperbaikinya."}
+        ], 
+        hint:"Sidik jari file", 
+        explanation:"Jika satu huruf file berubah, nilai Hash berubah total. Ini untuk cek keaslian bukti digital." 
+    },
+    { 
+        q: "Anti-Forensik bertujuan untuk...", 
+        options: [
+            {text:"Menghilangkan Jejak Bukti", correct:true},
+            {text:"Membantu Polisi", correct:false, explanation:"Itu Forensik. Anti-Forensik dilakukan penjahat untuk mempersulit polisi."},
+            {text:"Memulihkan Data", correct:false, explanation:"Itu Recovery. Anti-Forensik justru menghancurkan data (Wiping)."},
+            {text:"Mencatat Log", correct:false, explanation:"Mencatat log memudahkan investigasi. Penjahat justru menghapus log."}
+        ], 
+        hint:"Musuh investigator", 
+        explanation:"Pelaku menggunakan teknik Wiping atau Enkripsi agar kejahatannya tidak terlacak." 
+    },
+    { 
+        q: "Steganografi adalah teknik...", 
+        options: [
+            {text:"Sembunyikan pesan di gambar", correct:true},
+            {text:"Menulis Indah", correct:false, explanation:"Itu Kaligrafi. Steganografi adalah seni menyembunyikan data rahasia."},
+            {text:"Mengunci Folder", correct:false, explanation:"Itu Enkripsi folder. Steganografi menyisipkan pesan di dalam file lain."},
+            {text:"Melukis Digital", correct:false, explanation:"Bukan melukis. Ini teknik spionase digital."}
+        ], 
+        hint:"Pesan tersembunyi", 
+        explanation:"Pesan rahasia disisipkan ke dalam piksel gambar sehingga gambar terlihat normal padahal berisi data curian." 
+    },
+    { 
+        q: "Chain of Custody adalah...", 
+        options: [
+            {text:"Dokumentasi Riwayat Bukti", correct:true},
+            {text:"Rantai Kapal", correct:false, explanation:"Istilah hukum ini bukan tentang kapal, tapi tentang penjagaan bukti."},
+            {text:"Borgol Tahanan", correct:false, explanation:"Bukan alat penahan fisik. Ini adalah catatan administrasi bukti."},
+            {text:"Rantai Makanan", correct:false, explanation:"Bukan Biologi. Ini prosedur hukum forensik."}
+        ], 
+        hint:"Riwayat kepemilikan", 
+        explanation:"Mencatat siapa saja yang memegang bukti dari TKP sampai Pengadilan agar bukti dianggap sah." 
+    },
+    { 
+        q: "Fungsi Write Blocker adalah...", 
+        options: [
+            {text:"Mencegah Perubahan Data Bukti", correct:true},
+            {text:"Menulis Laporan", correct:false, explanation:"Bukan alat tulis. Ini alat hardware untuk mengunci harddisk."},
+            {text:"Blokir Website", correct:false, explanation:"Itu fitur Firewall. Write Blocker untuk harddisk forensik."},
+            {text:"Hapus Data", correct:false, explanation:"Justru Write Blocker MENCEGAH penghapusan data secara tidak sengaja."}
+        ], 
+        hint:"Baca saja, jangan tulis", 
+        explanation:"Alat ini memastikan harddisk tersangka hanya bisa dibaca (Read-Only) agar bukti tidak tercemar/berubah." 
+    },
+    { 
+        q: "Apa itu Digital Artifact?", 
+        options: [
+            {text:"Jejak digital user", correct:true},
+            {text:"Barang Antik", correct:false, explanation:"Bukan museum. Artifact di komputer adalah sisa-sisa aktivitas (History, Cache)."},
+            {text:"Seni Digital", correct:false, explanation:"Bukan lukisan. Artifact adalah bukti, seperti 'Recent Documents' atau Cookies."},
+            {text:"Virus Kuno", correct:false, explanation:"Artifact bukan virus, tapi jejak yang ditinggalkan user."}
+        ], 
+        hint:"Sisa aktivitas", 
+        explanation:"Artifact seperti History Browser, Log File, dan Cache adalah bukti emas untuk mengetahui apa yang dilakukan user." 
+    },
+    { 
+        q: "Volatile Memory (RAM) datanya akan...", 
+        options: [
+            {text:"Hilang saat listrik mati", correct:true},
+            {text:"Tersimpan selamanya", correct:false, explanation:"Itu Harddisk/SSD. RAM adalah memori sementara."},
+            {text:"Menjadi Virus", correct:false, explanation:"RAM tidak berubah jadi virus. Ia hanya tempat program berjalan."},
+            {text:"Membeku", correct:false, explanation:"Data RAM menguap (hilang) sangat cepat tanpa listrik."}
+        ], 
+        hint:"Ingatan jangka pendek", 
+        explanation:"Karena mudah hilang, Forensik RAM harus dilakukan pertama kali saat komputer masih menyala (Live Response)." 
+    },
+    { 
+        q: "Metadata pada foto berisi...", 
+        options: [
+            {text:"Lokasi GPS & Kamera", correct:true},
+            {text:"Suara Fotografer", correct:false, explanation:"Foto jpg standar tidak merekam suara."},
+            {text:"Virus", correct:false, explanation:"Metadata adalah info file (EXIF), bukan virus."},
+            {text:"Harga Kamera", correct:false, explanation:"Metadata mencatat Tipe Kamera dan Setting (ISO/Shutter), bukan harga belinya."}
+        ], 
+        hint:"Data tentang data", 
+        explanation:"Metadata (EXIF) bisa mengungkap di mana foto diambil (koordinat GPS) dan kapan waktunya." 
+    },
+    { 
+        q: "Wiping Data berbeda dengan Delete karena...", 
+        options: [
+            {text:"Wiping menimpa data (Permanen)", correct:true},
+            {text:"Wiping bisa di-undo", correct:false, explanation:"Justru Delete biasa yang bisa di-undo (Recovery). Wiping itu permanen."},
+            {text:"Wiping hanya menyembunyikan", correct:false, explanation:"Itu Hidden File. Wiping menghancurkan struktur magnetik data."},
+            {text:"Wiping lebih cepat", correct:false, explanation:"Wiping jauh lebih lama karena harus menimpa seluruh sektor harddisk berkali-kali."}
+        ], 
+        hint:"Hapus total", 
+        explanation:"Delete biasa hanya menghapus 'daftar isi', datanya masih ada. Wiping menimpa data lama dengan angka acak." 
+    },
+    { 
+        q: "Apa itu Imaging/Cloning dalam forensik?", 
+        options: [
+            {text:"Duplikasi Bukti Bit-per-Bit", correct:true},
+            {text:"Foto Selfie", correct:false, explanation:"Imaging di sini artinya membuat citra (image) harddisk, bukan foto diri."},
+            {text:"Copy Paste Biasa", correct:false, explanation:"Copy paste biasa mengubah metadata. Cloning menyalin sampai sektor kosong dan file terhapus."},
+            {text:"Edit Foto", correct:false, explanation:"Bukan editing. Ini proses pengamanan barang bukti."}
+        ], 
+        hint:"Salinan identik", 
+        explanation:"Cloning membuat tiruan persis dari harddisk tersangka, termasuk file yang sudah dihapus di dalamnya." 
+    },
+    { 
+        q: "Tools 'dd' di Linux digunakan untuk...", 
+        options: [
+            {text:"Membuat Disk Image (Cloning)", correct:true},
+            {text:"Chatting", correct:false, explanation:"'dd' adalah perintah terminal powerful untuk copy raw data, bukan chat."},
+            {text:"Download Lagu", correct:false, explanation:"Gunakan wget atau curl untuk download. dd untuk operasi disk level rendah."},
+            {text:"Hapus Virus", correct:false, explanation:"dd menyalin apa adanya (termasuk virus jika ada), bukan membersihkannya."}
+        ], 
+        hint:"Disk Dump", 
+        explanation:"Perintah 'dd' adalah standar forensik untuk menyalin seluruh isi storage secara identik." 
+    },
+    { 
+        q: "Recycle Bin yang dikosongkan...", 
+        options: [
+            {text:"Masih bisa direcovery (jika belum tertimpa)", correct:true},
+            {text:"Hilang selamanya 100%", correct:false, explanation:"Tidak 100%. Software recovery seringkali masih bisa mengembalikan file tersebut."},
+            {text:"Menjadi Virus", correct:false, explanation:"File sampah tidak otomatis jadi virus."},
+            {text:"Pindah ke Flashdisk", correct:false, explanation:"File dihapus tidak pindah sendiri."}
+        ], 
+        hint:"Belum hilang total", 
+        explanation:"Saat Empty Recycle Bin, sistem hanya menghapus pointer file. Isi data fisiknya masih ada di harddisk sampai tertimpa file baru." 
+    },
+    { 
+        q: "Analisa Timeline bertujuan untuk...", 
+        options: [
+            {text:"Merekonstruksi urutan kejadian", correct:true},
+            {text:"Mengatur Jam Komputer", correct:false, explanation:"Timeline adalah analisa waktu kejadian kriminal, bukan setting jam."},
+            {text:"Membuat Jadwal Pelajaran", correct:false, explanation:"Ini investigasi kasus, bukan jadwal sekolah."},
+            {text:"Menghapus Sejarah", correct:false, explanation:"Justru Timeline berusaha mengungkap sejarah kejadian yang disembunyikan."}
+        ], 
+        hint:"Kronologi", 
+        explanation:"Timeline mengurutkan kapan file dibuat, diakses, dan diubah untuk mengetahui alur aksi si penjahat." 
+    },
+    { 
+        q: "Apa itu Slack Space?", 
+        options: [
+            {text:"Sisa ruang kosong di ujung file", correct:true},
+            {text:"Aplikasi Chatting", correct:false, explanation:"Itu aplikasi Slack. Slack Space adalah celah di harddisk yang bisa dipakai menyembunyikan data."},
+            {text:"Kabel Kendor", correct:false, explanation:"Ini istilah penyimpanan data, bukan kabel fisik."},
+            {text:"Ruang Istirahat", correct:false, explanation:"Bukan tempat santai. Ini area tersembunyi di cluster harddisk."}
+        ], 
+        hint:"Ruang sempit tersembunyi", 
+        explanation:"Penjahat kadang menyembunyikan data kecil di Slack Space agar tidak terlihat oleh explorer biasa." 
+    },
+    { 
+        q: "Integritas bukti digital diverifikasi dengan...", 
+        options: [
+            {text:"Nilai HASH", correct:true},
+            {text:"Nama File", correct:false, explanation:"Nama file mudah diubah. Hash tidak bisa dibohongi."},
+            {text:"Ukuran File", correct:false, explanation:"Ukuran bisa sama walau isinya beda. Hash memastikan isinya identik."},
+            {text:"Warna Ikon", correct:false, explanation:"Ikon tidak menjamin keaslian isi file."}
+        ], 
+        hint:"Cek keaslian", 
+        explanation:"Sebelum dan sesudah analisa, nilai Hash bukti harus sama. Jika beda, berarti bukti sudah cacat hukum." 
+    },
+    { 
+        q: "Live Response dilakukan pada...", 
+        options: [
+            {text:"Komputer yang masih menyala", correct:true},
+            {text:"Komputer mati", correct:false, explanation:"Jika mati disebut **Dead Forensics** (Post-mortem). Live Response saat mesin hidup."},
+            {text:"Siaran Langsung TV", correct:false, explanation:"Bukan Live TV. Ini respon cepat di TKP saat komputer pelaku on."},
+            {text:"Mayat", correct:false, explanation:"Itu otopsi medis. Ini forensik digital."}
+        ], 
+        hint:"Jangan dimatikan dulu", 
+        explanation:"Live Response bertujuan mengambil data RAM dan koneksi jaringan yang akan hilang jika komputer dimatikan." 
+    },
+    { 
+        q: "Apa itu Hash Collision?", 
+        options: [
+            {text:"Dua file beda punya Hash sama", correct:true},
+            {text:"Tabrakan Mobil", correct:false, explanation:"Ini istilah kriptografi, bukan kecelakaan lalu lintas."},
+            {text:"Hash yang hilang", correct:false, explanation:"Collision artinya benturan/tabrakan nilai, bukan hilang."},
+            {text:"Virus Hash", correct:false, explanation:"Bukan virus. Ini fenomena matematika langka."}
+        ], 
+        hint:"Kejadian langka", 
+        explanation:"Sangat jarang terjadi, tapi jika 2 file berbeda menghasilkan sidik jari (Hash) yang sama, itu disebut Collision." 
+    },
+    { 
+        q: "Rainbow Table digunakan untuk...", 
+        options: [
+            {text:"Cracking Password Hash", correct:true},
+            {text:"Desain Grafis", correct:false, explanation:"Bukan palet warna pelangi. Ini tabel database hash password."},
+            {text:"Meja Makan", correct:false, explanation:"Rainbow Table adalah file database raksasa untuk meretas password."},
+            {text:"Mewarnai Folder", correct:false, explanation:"Tidak ada hubungannya dengan warna folder."}
+        ], 
+        hint:"Jalan pintas hack password", 
+        explanation:"Rainbow Table berisi jutaan pasangan password dan nilai hash-nya, mempercepat proses cracking tanpa harus menghitung ulang." 
+    },
+    { 
+        q: "Bukti digital harus bersifat...", 
+        options: [
+            {text:"Admissible (Diterima Pengadilan)", correct:true},
+            {text:"Palsu", correct:false, explanation:"Bukti palsu akan ditolak dan bisa mempidanakan investigatornya."},
+            {text:"Rusak", correct:false, explanation:"Bukti rusak tidak berguna."},
+            {text:"Mahal", correct:false, explanation:"Harga tidak penting, yang penting keaslian dan relevansinya."}
+        ], 
+        hint:"Sah secara hukum", 
+        explanation:"Admissible artinya bukti tersebut didapatkan dengan cara legal dan penanganannya sesuai prosedur (SOP) sehingga sah di mata hakim." 
+    }
 ];
+
+
 
 const BANK_SOAL_KABEL = [
     { q: "Hubungkan PC ke Switch (Straight)", srcType: 'item_pc', targetType: 'item_switch', cableType: 'straight' },
@@ -1320,9 +2416,16 @@ class GameApp {
         if (savedProfile) {
             this.player = savedProfile;
         } else {
-            this.player = { name: "", charId: 1, score: 0, toyaPurity: 20, school: "", prov: "", city: "", district: "", chapter: 0 }; 
+            this.player = { name: "", charId: 1, score: 0, toyaPurity: 10, school: "", prov: "", city: "", district: "", chapter: 0 }; 
         }
 
+		// --- TAMBAHKAN KODE INI (WAJIB) ---
+        // Paksa Reset Status setiap kali game dimuat ulang (Refresh)
+        this.player.toyaPurity = 10; // Kembali ke 10% (Merah)
+        this.player.score = 0;       // Kembali ke 0
+        this.player.lastWave = 0;
+        // ----------------------------------
+		
         // NEW STATS TRACKING
         this.gameStats = {
             totalKills: 0,
@@ -1365,6 +2468,25 @@ class GameApp {
         // --- FIXED: ADD RESIZE HANDLER ---
         window.addEventListener('resize', () => this.resizeGame());
         this.resizeGame(); // Initial call
+		
+		 // PENTING: Panggil updatePurityDisplay di sini agar visual awal langsung merah
+        // (Tambahkan baris ini di akhir constructor)
+        setTimeout(() => this.updatePurityDisplay(this.player.toyaPurity), 100);
+    }
+
+
+	// --- STEP 10: FUNGSI RESET GAME ---
+   resetGame() {
+        this.player.score = 0;
+        this.player.toyaPurity = 10; // Start Merah
+        this.gameStats = { totalKills: 0, maxCombo: 0, damageTaken: 0, startTime: Date.now() };
+        
+        this.updatePurityDisplay(10);
+        document.getElementById('hud-score').innerText = "0";
+        
+        this.switchScreen('screen-title');
+        this.state = 0; // TITLE
+        AudioMgr.playMusic('bgm-player');
     }
 
     // --- NEW FUNCTION: RESIZE GAME (FIXED ASPECT RATIO) ---
@@ -1424,29 +2546,50 @@ class GameApp {
         });
     }
 
+    // 1. MENCEGAH SKOR NEGATIF
     addScore(amount) {
-        if(isNaN(amount)) { console.warn("Invalid score amount"); return; }
-        this.player.score += amount;
+        // Jika pengurangan, pastikan tidak kurang dari 0
+        const newScore = this.player.score + amount;
+        this.player.score = Math.max(0, newScore); // KUNCI: Max(0, ...)
+        
         const hudScore = document.getElementById('hud-score');
         if(hudScore) hudScore.innerText = Math.floor(this.player.score);
+        
         spawnFloatingScore(amount >= 0 ? `+${amount}` : `${amount}`);
     }
 
+
     getHeroFrames(charId) { const p = 'hero' + charId; return [ this.imgs[p+'_walk1'], this.imgs[p+'_walk2'], this.imgs[p+'_walk3'], this.imgs[p+'_walk4'] ]; }
     getHeroIdle(charId) { return this.imgs['hero'+charId+'_idle']; }
-    
+
+// --- STEP 9: UPDATE LOGIKA VISUAL PURITY ---
     updatePurityDisplay(newPurity) {
+        // 1. Batasi nilai 0-100
         this.player.toyaPurity = Math.min(100, Math.max(0, newPurity));
-        const purityEl = document.getElementById('hud-purity');
-        if (purityEl) {
-            purityEl.style.width = this.player.toyaPurity + "%";
-            const r = Math.floor(255 * (1 - this.player.toyaPurity / 100));
-            const g = Math.floor(255 * (this.player.toyaPurity / 100) * 0.7); 
-            const b = Math.floor(255 * (this.player.toyaPurity / 100));
-            purityEl.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        
+        const bar = document.getElementById('hud-purity');
+        if (!bar) return;
+
+        // 2. Update Lebar
+        bar.style.width = this.player.toyaPurity + "%";
+        
+        // 3. Reset Kelas Warna
+        bar.className = 'purity-fill'; // Reset ke class dasar dulu
+        
+        // 4. Tentukan Warna Baru
+        if (this.player.toyaPurity >= 100) {
+            bar.classList.add('purity-max');     // 100% = Biru
+        } else if (this.player.toyaPurity > 60) {
+            bar.classList.add('purity-good');    // 61-99% = Hijau
+        } else if (this.player.toyaPurity > 30) {
+            bar.classList.add('purity-medium');  // 31-60% = Kuning
+        } else {
+            bar.classList.add('purity-critical'); // 0-30% = Merah
         }
     }
-    
+
+	
+	
     toggleAbout() {
         const s = document.getElementById('screen-about');
         if(s.style.display === 'flex') s.style.display = 'none';
@@ -1466,41 +2609,104 @@ class GameApp {
         document.getElementById('res-loc').innerText = loc.join(", ") || "INDONESIA";
     }
 
-    triggerGameOver() {
-        this.active = false;
-        // Cek jika Survival Mode
-        const isSurvival = (this.state === AppState.GAME_SURVIVAL || this.state === AppState.GAME_SURVIVAL_QUIZ);
+// --- TAMBAHAN BARU: Helper untuk update statistik ---
+    updateResultStats() {
+        // Update Virus Kills
+        const elKills = document.getElementById('stat-kills');
+        if(elKills) elKills.innerText = this.gameStats.totalKills;
+
+        // Update Max Combo
+        const elCombo = document.getElementById('stat-combo');
+        if(elCombo) elCombo.innerText = this.gameStats.maxCombo + "x";
+
+        // Update Damage Taken
+        const elDmg = document.getElementById('stat-dmg');
+        if(elDmg) elDmg.innerText = Math.floor(this.gameStats.damageTaken);
         
+        // Update Play Time (Menit)
+        const playTime = Math.floor((Date.now() - this.gameStats.startTime) / 60000); 
+        const elTime = document.getElementById('stat-time');
+        if(elTime) elTime.innerText = playTime + "m";
+    }
+
+
+
+
+    triggerGameOver() {
+		// ✅ PROTEKSI: Cegah double-call
+		if(this.state === AppState.ENDING) return; // Sudah di ending screen
+        this.active = false;
+		
+		// Bersihkan chapter dengan aman
+		if(this.currentChapter) {
+        if(this.currentChapter.cleanup) {
+            this.currentChapter.cleanup();
+        }
+        this.currentChapter.active = false; // Force stop
+        this.currentChapter.isGameOver = true; // Force flag
+		}
+    
+		this.state = AppState.ENDING;
+		this.switchScreen('screen-ending');
+		
+		
+        // Deteksi Survival (Cek AppState atau angka 7/7.5)
+        const isSurvival = (this.state === AppState.GAME_SURVIVAL || this.state === AppState.GAME_SURVIVAL_QUIZ || this.state === 7 || this.state === 7.5);
+        
+        // Bersihkan chapter jika ada fungsi cleanup
         if(this.currentChapter && this.currentChapter.cleanup) this.currentChapter.cleanup();
+        
         this.state = AppState.ENDING;
         this.switchScreen('screen-ending');
         
-        // CSS Styling Logic for Loss
         const panel = document.getElementById('result-panel-container');
-        panel.className = "result-panel result-loss"; // Tambahkan class Merah
-
+        panel.className = "result-panel result-loss";
+        
         const title = document.getElementById('end-title');
         title.innerText = isSurvival ? "SURVIVAL ENDED" : "MISSION FAILED";
         title.style.color = "var(--danger-red)";
         
-        const rank = document.getElementById('end-rank');
-        rank.innerText = isSurvival ? "W"+(this.player.lastWave||0) : "F";
-        rank.style.color = "var(--danger-red)";
+        // --- LOGIKA RANK (DIPERBAIKI) ---
+        // Hitung Rank S/A/B berdasarkan SKOR
+        const score = this.player.score;
+        let rankChar = "D"; 
+        let rankColor = "white";
+
+        if (score >= 9000) { rankChar = "S"; rankColor = "var(--accent-gold)"; }
+        else if (score >= 70000) { rankChar = "A"; rankColor = "#00D9FF"; }
+        else if (score >= 40000) { rankChar = "B"; rankColor = "#00FF88"; }
+        else if (score >= 10000) { rankChar = "C"; rankColor = "white"; }
         
-        document.getElementById('end-msg').innerText = isSurvival ? "Pertahanan Jebol. Sistem offline." : "Sistem Keamanan Telah Dikuasai Malware!";
+        const rank = document.getElementById('end-rank');
+        
+        // JIKA SURVIVAL: Pakai Rank Skor (S/A/B). JIKA STORY GAGAL: Tetap F.
+        if (isSurvival) {
+            rank.innerText = rankChar;
+            rank.style.color = rankColor;
+        } else {
+            rank.innerText = "F";
+            rank.style.color = "var(--danger-red)";
+        }
+        
+        // Pesan Akhir
+        document.getElementById('end-msg').innerText = isSurvival ? ("Wave Terakhir: " + (this.player.lastWave||0)) : "Sistem Keamanan Telah Dikuasai Malware!";
         document.getElementById('end-score').innerText = Math.floor(this.player.score);
         
-        // --- CALL NEW HELPER: POPULATE PLAYER INFO ---
         this.populateResultInfo();
-
-        // --- NEW: Submit score even on loss ---
-        this.submitHighscore(); 
-
-        const btn = document.querySelector('#screen-ending button');
-        btn.innerText = "COBA LAGI";
-        btn.onclick = () => location.reload();
         
-        AudioMgr.stopAll();
+        // --- PERBAIKAN: Panggil update stats agar muncul saat kalah ---
+        this.updateResultStats(); 
+
+        this.submitHighscore(); 
+        
+         // Reset button action: KE HOME (bukan reload)
+        const btn = document.querySelector('#screen-ending button');
+        if(btn) {
+            btn.innerText = "KEMBALI KE MARKAS"; // Ganti teks biar sesuai
+            btn.onclick = () => this.resetGame(); // Panggil fungsi reset
+        }
+        
+        AudioMgr.stopAll(); 
         AudioMgr.playSFX('sfx-wrong');
     }
 
@@ -1666,7 +2872,7 @@ class GameApp {
             document.getElementById('reg-name').value = saved.name || "";
             document.getElementById('reg-school').value = saved.school || "";
         } else {
-            this.player = { name: "", charId: 1, score: 0, toyaPurity: 20, school: "", prov: "", city: "", district: "", chapter: 0 };
+            this.player = { name: "", charId: 1, score: 0, toyaPurity: 10, school: "", prov: "", city: "", district: "", chapter: 0 };
         }
         
         // Reset Visual Selection in case it was modified previously in DOM
@@ -1695,8 +2901,15 @@ class GameApp {
         this.player.prov = p;
         this.player.city = c;
         this.player.district = d;
-        this.player.score = 0; // Reset score on new game
-        this.gameStats.startTime = Date.now(); // Reset stats
+        
+        // --- PERBAIKAN: PAKSA RESET SAAT SUBMIT ---
+        this.player.score = 0; 
+        this.player.toyaPurity = 10; // Ini kuncinya: Reset ke 10%
+        this.gameStats.startTime = Date.now(); 
+        
+        // Update tampilan bar HUD segera agar visualnya merah
+        this.updatePurityDisplay(10); 
+        // ------------------------------------------
 
         // SIMPAN PROFIL AGAR TIDAK HILANG SAAT RELOAD
         SaveSystem.saveProfile(this.player);
@@ -1704,8 +2917,6 @@ class GameApp {
         this.switchScreen('screen-char');
         
         // FIX ADDED: Ensure UI matches the Data
-        // Panggil selectChar dengan charId saat ini (yang sudah direset jadi 1 di goToRegister)
-        // untuk memastikan border hijau (class .selected) ada di kartu yang benar.
         this.selectChar(this.player.charId);
     }
     
@@ -1863,6 +3074,7 @@ class GameApp {
         this.switchScreen('dummy');
         document.getElementById('hud').style.display = 'flex';
         // KEMBALIKAN KE GAMEPLAY SHOOTER (DEFENSE)
+		AudioMgr.playMusic('bgm-shooter'); 
         document.getElementById('current-mission-text').innerText = "PERTAHANAN FIREWALL";
         document.getElementById('mission-overlay').style.display = 'block';
         this.state = AppState.GAME_CH2; 
@@ -2068,37 +3280,45 @@ class GameApp {
     }
 
     showVictoryScreen() {
-        this.state = AppState.VICTORY_SCORE;
-        
-        // CSS Styling Logic for Win
-        const panel = document.getElementById('result-panel-container');
-        panel.className = "result-panel result-win"; // Tambahkan class Emas/Hijau
+        // PAKSA PURITY JADI 100% SAAT MENANG
+        // Ini akan memicu efek warna Biru Bersinar otomatis
+        this.updatePurityDisplay(100); 
 
+       
+         this.state = AppState.VICTORY_SCORE;
+        const panel = document.getElementById('result-panel-container');
+        panel.className = "result-panel result-win";
         const title = document.getElementById('end-title');
         title.innerText = "MISSION COMPLETE";
-        title.style.color = "var(--accent-gold)"; // Emas
+        title.style.color = "var(--accent-gold)";
+
+        // --- PERBAIKAN: Logika Rank Berjalan ---
+        const score = this.player.score;
+        let rankChar = "C"; 
+        let rankColor = "white";
+
+        // Sesuaikan angka ini dengan standar game Anda
+        if (score >= 9000) { rankChar = "S"; rankColor = "var(--accent-gold)"; }
+        else if (score >= 7000) { rankChar = "A"; rankColor = "#00D9FF"; }
+        else if (score >= 5000) { rankChar = "B"; rankColor = "#00FF88"; }
+        else if (score >= 4000) { rankChar = "C"; rankColor = "white"; }
+        else { rankChar = "D"; rankColor = "#aaa"; }
 
         const rank = document.getElementById('end-rank');
-        rank.innerText = "S"; // Bisa dilogika nanti berdasarkan skor
-        rank.style.color = "var(--accent-gold)";
+        rank.innerText = rankChar;
+        rank.style.color = rankColor;
 
         document.getElementById('end-score').innerText = Math.floor(this.player.score); 
-        
-        // --- CALL NEW HELPER: POPULATE PLAYER INFO ---
         this.populateResultInfo();
 
-        // --- POPULATE STATISTICS ---
-        document.getElementById('stat-kills').innerText = this.gameStats.totalKills;
-        document.getElementById('stat-combo').innerText = this.gameStats.maxCombo + "x";
-        document.getElementById('stat-dmg').innerText = Math.floor(this.gameStats.damageTaken);
-        
-        const playTime = Math.floor((Date.now() - this.gameStats.startTime) / 60000); // in minutes
-        document.getElementById('stat-time').innerText = playTime + "m";
+        // --- PERBAIKAN: Panggil update stats ---
+        this.updateResultStats();
 
-        // Update tombol untuk lanjut ke credits
         const btn = document.getElementById('btn-victory-action');
-        btn.innerText = "LIHAT CREDIT";
-        btn.onclick = () => this.startCredits();
+        if(btn) {
+            btn.innerText = "LIHAT CREDIT"; 
+            btn.onclick = () => this.startCredits();
+        }
         
         this.switchScreen('screen-ending'); 
     }
@@ -2480,7 +3700,9 @@ class ChapterSurvival {
             </div>`,
             () => { this.active = true; }
         );
+		this.isGameOver = false; // ✅ ADD THIS
     }
+
 
     getBackgroundKey() {
         if(this.wave <= 5) return 'bg_wave1';
@@ -2608,7 +3830,8 @@ class ChapterSurvival {
     }
 
     update(dt) {
-        if(!this.active) return;
+	if(!this.active || this.isGameOver) return; 
+       // if(!this.active) return;
 
         // Effect Timers
         if(this.effects.slow > 0) this.effects.slow--;
@@ -2687,8 +3910,11 @@ class ChapterSurvival {
                     this.enemies.splice(i, 1);
                     this.game.gameStats.damageTaken += 20;
                     this.game.screenShake = 15;
-                    if(this.hp <= 0) this.game.triggerGameOver();
+                   if(this.hp <= 0 && !this.isGameOver) { // ✅ CHECK BEFORE TRIGGER
+                    this.isGameOver = true;
+                    this.game.triggerGameOver();
                 }
+            }
                 continue;
             }
 
@@ -2698,8 +3924,12 @@ class ChapterSurvival {
                 this.hp -= 5; 
                 this.combo = 0; // RESET COMBO ON MISS
                 this.game.gameStats.damageTaken += 5;
-                if(this.hp <= 0) this.game.triggerGameOver();
-                continue;
+                //if(this.hp <= 0) this.game.triggerGameOver();
+                if(this.hp <= 0 && !this.isGameOver) { // ✅ CHECK BEFORE TRIGGER
+                this.isGameOver = true;
+                this.game.triggerGameOver();
+            }
+				continue;
             }
 
             // Bullet Collision
@@ -3493,111 +4723,258 @@ class ChapterWalkingScene {
     cleanup() { canvas.removeEventListener('mousedown', this.handler); }
 }
 
+//chapter kuis
 class ChapterQuiz {
     constructor(game, questionBank, onComplete, fixedCode = null) {
-        this.game = game; this.onComplete = onComplete; this.currentPhase = 0; 
+        this.game = game; 
+        this.onComplete = onComplete; 
+        this.currentPhase = 0; 
+        
+        // Acak 5 soal
         this.activeQuestions = shuffleArray([...questionBank]).slice(0, 5);
         this.generatedCode = fixedCode || Array(5).fill(0).map(() => Math.floor(Math.random() * 10)); 
         this.userCode = ['-', '-', '-', '-', '-'];
+        
         this.hasUsedHint = false; 
-        this.isQuizActive = false; // Start paused, waiting for tutorial
+        this.isQuizActive = false;
         this.timeLeft = 120; 
-        this.attemptsOnCurrent = 0;
+        
+        // Variabel Skor & Kesempatan
+        this.answered = false;
+        this.attemptCount = 0;
+        this.lastPhaseSeen = -1;
 
         document.getElementById('hud-timer').innerText = this.timeLeft;
 
-        // TUTORIAL OVERLAY QUIZ (NEW) - ADDED TIMEOUT
+        // Mulai Tutorial
         setTimeout(() => {
             showMessage(
                 "TUTORIAL: KODE AKSES",
                 `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
                 <strong>🎮 CARA BERMAIN:</strong><br>
-                ✅ KLIK JAWABAN PALING BENAR.<br>
-                🦖 JIKA KESULITAN, BISA MENGGUNAKAN <strong>BANTUAN MASTER REX</strong>.<br>
-                ⚠️ BANTUAN HANYA BISA DIGUNAKAN <strong>SEKALI SAJA</strong>!
+                ✅ PILIH JAWABAN YANG BENAR.<br>
+                🦖 GUNAKAN BANTUAN REX JIKA BUNTU.<br>
                 </div>`,
                 () => {
                     this.isQuizActive = true;
                     this.timerInterval = setInterval(() => this.tick(), 1000);
-                    this.loadPhase(); 
+                    this.loadQuestion(); 
                     this.updateCodeDisplay();
                 }
             );
         }, 500);
     }
+
     tick() {
         if (!this.isQuizActive) return;
-        this.timeLeft--; document.getElementById('hud-timer').innerText = this.timeLeft;
+        this.timeLeft--; 
+        const elTime = document.getElementById('hud-timer');
+        if(elTime) elTime.innerText = this.timeLeft;
+        
         if (this.timeLeft <= 0) {
             this.timeLeft = 0; clearInterval(this.timerInterval); this.isQuizActive = false;
             this.game.triggerGameOver();
         }
     }
-    loadPhase() {
-        if (this.currentPhase >= this.activeQuestions.length) { this.finishQuiz(); return; }
-        this.attemptsOnCurrent = 0; 
-        document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = false);
-        const data = this.activeQuestions[this.currentPhase];
-        document.getElementById('quiz-phase-num').innerText = this.currentPhase + 1;
-        document.getElementById('quiz-question-text').innerText = data.q;
-        document.getElementById('quiz-feedback').innerText = '';
-        const btnHint = document.getElementById('btn-hint');
-        if(this.hasUsedHint) { btnHint.disabled = true; btnHint.innerText = "DIGUNAKAN"; btnHint.style.filter = "grayscale(100%)"; } 
-        else { btnHint.disabled = false; btnHint.innerText = "BANTUAN (REX)"; btnHint.style.filter = "none"; }
-        const optionsContainer = document.getElementById('quiz-options-container'); optionsContainer.innerHTML = '';
-        shuffleArray([...data.options]).forEach((opt, index) => {
-            const btn = document.createElement('button'); btn.className = 'btn-ml quiz-option-btn'; btn.style.marginTop = '10px'; btn.style.background = '#002244'; btn.style.borderColor = '#004488';
-            btn.innerText = `${String.fromCharCode(65 + index)}. ${opt.text}`;
-            btn.onclick = () => this.checkAnswer(opt, btn);
-            optionsContainer.appendChild(btn);
-        });
-    }
-    checkAnswer(option, button) {
-        if (!this.isQuizActive) return;
-        const feedbackEl = document.getElementById('quiz-feedback');
-        if (option.correct) {
-            document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = true);
-            AudioMgr.playSFX('sfx-correct'); button.style.background = 'var(--success-green)'; feedbackEl.style.color = 'var(--success-green)';
-            
-            let scoreGain = 0;
-            if(this.attemptsOnCurrent === 0) scoreGain = 40;
-            else if(this.attemptsOnCurrent === 1) scoreGain = 30;
-            else if(this.attemptsOnCurrent === 2) scoreGain = 20;
-            else scoreGain = 10;
 
-            this.game.addScore(scoreGain); feedbackEl.innerText = `[BENAR] (+${scoreGain} Poin)`;
-            this.userCode[this.currentPhase] = this.generatedCode[this.currentPhase]; this.updateCodeDisplay();
-            setTimeout(() => { this.currentPhase++; this.loadPhase(); }, 1500);
-        } else {
-            this.attemptsOnCurrent++; AudioMgr.playSFX('sfx-wrong'); button.style.background = 'var(--danger-red)'; button.disabled = true; feedbackEl.style.color = 'var(--danger-red)'; feedbackEl.innerText = `[SALAH] - Maaf, jawaban itu kurang tepat.`;
+    // --- FUNGSI 1: MEMBUAT TOMBOL (RENDER) ---
+    loadQuestion() {
+        if (this.currentPhase >= this.activeQuestions.length) { 
+            this.finishQuiz(); 
+            return; 
+        }
+
+        // Reset status
+        this.answered = false; 
+        this.attemptCount = 0;
+        
+        const q = this.activeQuestions[this.currentPhase];
+        
+        // Update UI
+        document.getElementById('quiz-phase-num').innerText = this.currentPhase + 1;
+        document.getElementById('quiz-question-text').innerText = q.q;
+        document.getElementById('quiz-feedback').innerText = '';
+
+        // Tombol Bantuan
+        const btnHint = document.getElementById('btn-hint');
+        if(this.hasUsedHint) { 
+            btnHint.disabled = true; btnHint.innerText = "DIGUNAKAN"; btnHint.style.filter = "grayscale(100%)"; 
+        } else { 
+            btnHint.disabled = false; btnHint.innerText = "BANTUAN (REX)"; btnHint.style.filter = "none"; 
+        }
+        
+        // Buat Tombol Jawaban
+        const container = document.getElementById('quiz-options-container');
+        if(container) {
+            container.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-ml quiz-option-btn'; 
+                btn.innerText = String.fromCharCode(65 + index) + ". " + opt.text;
+                
+                // Styling Paksa (Agar Rapi)
+                btn.style.textAlign = 'left';
+                btn.style.marginBottom = '10px';
+                btn.style.position = 'relative';
+                btn.style.zIndex = '100'; // Agar bisa diklik
+                
+                // PENTING: Kirim INDEX (Angka) dan elemen TOMBOL (btn)
+                btn.onclick = () => {
+                    this.checkAnswer(index, btn);
+                };
+                
+                container.appendChild(btn);
+            });
         }
     }
-    getHint() {
-        if (this.hasUsedHint) return; this.hasUsedHint = true; const btnHint = document.getElementById('btn-hint'); btnHint.disabled = true; btnHint.innerText = "DIGUNAKAN"; btnHint.style.filter = "grayscale(100%)"; 
-        showRexMessage("PETUNJUK MASTER REX", this.activeQuestions[this.currentPhase].hint); this.game.addScore(-5);
+	
+	// --- FUNGSI 2: CEK JAWABAN (LOGIKA) ---
+    checkAnswer(optionIndex, btnElement) {
+        // Reset jika fase berubah
+        if (this.lastPhaseSeen !== this.currentPhase) {
+            this.lastPhaseSeen = this.currentPhase;
+            this.attemptCount = 0; 
+            this.answered = false;
+        }
+
+        if(this.answered) return; 
+
+        const q = this.activeQuestions[this.currentPhase];
+        // Ambil data berdasarkan index
+        const selectedOption = q.options[optionIndex];
+        const isCorrect = selectedOption.correct;
+        
+        const feedback = document.getElementById('quiz-feedback');
+
+        if(isCorrect) {
+            // BENAR
+            let finalScore = 20; 
+            if (this.attemptCount === 0) finalScore = 100;
+            else if (this.attemptCount === 1) finalScore = 80;
+            else if (this.attemptCount === 2) finalScore = 40;
+
+            this.answered = true;
+            feedback.innerText = "BENAR! +" + finalScore;
+            feedback.style.color = "var(--success-green)";
+            AudioMgr.playSFX('sfx-correct');
+            
+            // Ubah tombol jadi hijau
+            if(btnElement) {
+                btnElement.style.background = "var(--success-green)";
+                btnElement.style.borderColor = "#00FF00";
+            }
+            
+            this.game.addScore(finalScore);
+            this.game.player.toyaPurity = Math.min(100, this.game.player.toyaPurity + 5);
+            this.game.updatePurityDisplay(this.game.player.toyaPurity);
+
+            // Buka Kode/Gembok
+            this.revealCode(this.currentPhase);
+            
+            // Lanjut
+            setTimeout(() => {
+                this.currentPhase++;
+                this.loadQuestion();
+            }, 1500);
+
+        } else {
+            // SALAH
+            this.attemptCount++;
+            feedback.innerText = "SALAH! LIHAT ANALISA.";
+            feedback.style.color = "var(--danger-red)";
+            AudioMgr.playSFX('sfx-wrong');
+            
+            // Ubah tombol jadi merah & disable
+            if(btnElement) {
+                btnElement.style.background = "var(--danger-red)";
+                btnElement.disabled = true;
+                btnElement.style.opacity = "0.6";
+            }
+            
+            this.game.screenShake = 10;
+            this.game.player.toyaPurity = Math.max(0, this.game.player.toyaPurity - 2);
+            this.game.updatePurityDisplay(this.game.player.toyaPurity);
+            
+            // Tampilkan Explanation
+            setTimeout(() => {
+                let explainText = selectedOption.explanation;
+                if (!explainText) {
+                    explainText = `Anda memilih: <strong>${selectedOption.text}</strong>.<br>Jawaban ini kurang tepat. Coba analisa lagi!`;
+                }
+                showRexMessage("ANALISA KESALAHAN", explainText);
+            }, 500);
+        }
     }
+
+    // Helper Buka Kode/Gembok
+    revealCode(idx) {
+        if (this.generatedCode && this.generatedCode[idx] !== undefined) {
+            this.userCode[idx] = this.generatedCode[idx];
+            
+            // Update Angka (CH1 & CH3)
+            const digitEl = document.getElementById(`digit-${idx}`);
+            if (digitEl) {
+                digitEl.innerText = this.generatedCode[idx];
+                digitEl.style.color = "#00FF88";
+                digitEl.style.textShadow = "0 0 15px #00FF88";
+            }
+            // Update Gembok (CH2)
+            const lockEl = document.getElementById(`lock-${idx}`);
+            if (lockEl) {
+                lockEl.innerText = '🔓';
+                lockEl.style.color = "#00FF88";
+                lockEl.classList.add('unlocked');
+            }
+        }
+    }
+
+    getHint() {
+        if (this.hasUsedHint) return; 
+        this.hasUsedHint = true; 
+        
+        const currentQ = this.activeQuestions[this.currentPhase];
+        showRexMessage("PETUNJUK MASTER REX", currentQ.hint); 
+        this.game.addScore(-5); // Penalti kecil
+        
+        // Update tombol
+        const btnHint = document.getElementById('btn-hint'); 
+        if(btnHint) {
+            btnHint.disabled = true; 
+            btnHint.innerText = "DIGUNAKAN"; 
+            btnHint.style.filter = "grayscale(100%)"; 
+        }
+    }
+
     updateCodeDisplay() { 
+        // Dipanggil saat inisialisasi untuk mereset tampilan - - - - -
         this.userCode.forEach((digit, index) => { 
             const elDigit = document.getElementById(`digit-${index}`); 
-            if(elDigit) elDigit.innerText = digit; 
-            
-            const elLock = document.getElementById(`lock-${index}`);
-            if(elLock) {
-                if(digit !== '-' && digit !== undefined) {
-                    elLock.innerText = '🔒'; 
-                    elLock.style.color = '#00FF88';
-                } else {
-                    elLock.innerText = '🔓'; 
-                    elLock.style.color = '#FF4444'; 
-                }
+            if(elDigit) {
+                elDigit.innerText = (digit === '-') ? '-' : digit;
+                elDigit.style.color = (digit === '-') ? 'var(--success-green)' : '#00FF88';
+                elDigit.style.textShadow = "none";
             }
         }); 
     }
-    finishQuiz() { this.isQuizActive = false; clearInterval(this.timerInterval); this.game.addScore(this.timeLeft); spawnFloatingScore(`TIME BONUS +${this.timeLeft}`); if(this.onComplete) this.onComplete(); }
+
+    finishQuiz() { 
+        this.isQuizActive = false; 
+        clearInterval(this.timerInterval); 
+        if(this.timeLeft > 0) {
+            this.game.addScore(this.timeLeft); 
+            spawnFloatingScore(`TIME BONUS +${this.timeLeft}`); 
+        }
+        if(this.onComplete) this.onComplete(); 
+    }
+    
     cleanup() { clearInterval(this.timerInterval); }
-    update() { } draw(ctx) { }
+    update() {} 
+    draw(ctx) {}
 }
 
+	
+	
 class ChapterCabling {
     constructor(game) {
         this.game = game; this.timeLeft = 60; 
@@ -3847,8 +5224,22 @@ class Chapter2 {
             }
         }
         for(let i = this.particles.length - 1; i >= 0; i--) { let p = this.particles[i]; p.x += p.vx; p.y += p.vy; p.life -= 0.05; if(p.life <= 0) this.particles.splice(i, 1); }
+    
+	// Regenerasi Purity perlahan (misal setiap 100 frame naik 0.5)
+        // Agar terlihat dinamis walau tidak menembak
+       // Regenerasi Purity perlahan (misal setiap 100 frame naik 0.5)
+    // Agar terlihat dinamis walau tidak menembak
+    if (Math.random() < 0.01) { 
+         // PERBAIKAN: Gunakan 'this.game' agar sesuai dengan constructor
+         this.game.updatePurityDisplay(this.game.player.toyaPurity + 0.1);
     }
-    checkWin() { if(this.kills >= this.targetKills && !this.won) { this.won = true; this.active = false; showMessage("MISI SELESAI", "Area diamankan! Melanjutkan ke konfigurasi firewall..."); setTimeout(() => { this.cleanup(); this.game.triggerConfigNarrative(); }, 3000); } }
+	
+	
+	}
+  
+
+
+  checkWin() { if(this.kills >= this.targetKills && !this.won) { this.won = true; this.active = false; showMessage("MISI SELESAI", "Area diamankan! Melanjutkan ke konfigurasi firewall..."); setTimeout(() => { this.cleanup(); this.game.triggerConfigNarrative(); }, 3000); } }
     
     gameOver() { this.active = false; this.game.triggerGameOver(); }
     
@@ -4623,6 +6014,7 @@ class ChapterBossBattle {
     constructor(game) {
         this.game = game;
         this.active = false; // Start paused
+		this.isGameOver = false; // <--- TAMBAHKAN BARIS INI (PENTING!)
         
         // Setup Characters (CharacterSprite untuk animasi)
         const frames = game.getHeroFrames(game.player.charId);
@@ -4787,189 +6179,213 @@ class ChapterBossBattle {
         });
     }
 
-    update(dt) {
-        if(!this.active) return;
-        
-        // 0. Handle Dash Inputs & Logic
-        if ((this.keys['Shift'] || this.keys['Control']) && !this.isDashing) {
-            this.dash();
-        }
+   update(dt) {
+   
+   // --- TAMBAHKAN KODE INI DI PALING ATAS FUNGSI UPDATE ---
+    if (this.playerHp <= 0 && !this.isGameOver) {
+        this.loseBattle();
+        return;
+    }
+    // -------------------------------------------------------
+	
+    if(!this.active || this.isGameOver) return; // ⚠️ PENTING: Cek flag di awal!
+    
+    // 0. Handle Dash Inputs & Logic
+    if ((this.keys['Shift'] || this.keys['Control']) && !this.isDashing) {
+        this.dash();
+    }
 
-        // Manage Dash Cooldown UI
-        if(this.dashCooldown > 0) {
-            this.dashCooldown--;
-            if(this.dashCooldown <= 0) {
-                const btn = document.getElementById('btn-dash');
-                if(btn) btn.classList.remove('cooldown');
-            }
-        }
-
-        let currentSpeed = this.playerSpeed;
-        
-        // Apply Dash Effect
-        if (this.isDashing) {
-            currentSpeed = 20; // Burst Speed
-            this.dashTimer--;
-            
-            // Create afterimage/ghost effect
-            if (this.dashTimer % 2 === 0) {
-                 this.particles.push({
-                    x: this.playerX + 40, y: this.playerY + 40,
-                    vx: 0, vy: 0,
-                    life: 0.2, color: 'rgba(255, 255, 255, 0.4)', size: 35
-                });
-            }
-
-            if (this.dashTimer <= 0) {
-                this.isDashing = false;
-                this.invincible = false;
-            }
-        }
-
-        // 1. Player Movement (Real-Time)
-        let moved = false;
-        if(this.keys['ArrowUp'] || this.keys['w']) { this.playerY -= currentSpeed; moved = true; }
-        if(this.keys['ArrowDown'] || this.keys['s']) { this.playerY += currentSpeed; moved = true; }
-        if(this.keys['ArrowLeft'] || this.keys['a']) { this.playerX -= currentSpeed; moved = true; }
-        if(this.keys['ArrowRight'] || this.keys['d']) { this.playerX += currentSpeed; moved = true; }
-        
-        // Attack Keys
-        if(this.keys[' ']) { this.attack(); } // Space to attack
-        if(this.keys['z']) { this.skill(); }
-
-        // Clamp Player to Screen
-        this.playerX = Math.max(20, Math.min(780, this.playerX));
-        this.playerY = Math.max(50, Math.min(550, this.playerY));
-
-        // Update Hero Sprite Logic (sync with simple x/y)
-        this.hero.x = this.playerX;
-        this.hero.y = this.playerY;
-        // Manual animation update since not using moveTo()
-        if(moved) {
-            this.hero.frameTimer += dt;
-            if(this.hero.frameTimer > 150) { 
-                this.hero.frameIdx = (this.hero.frameIdx + 1) % 4; 
-                this.hero.frameTimer = 0; 
-            }
-        } else {
-            this.hero.frameIdx = 0; // Idle frame
-        }
-
-        // Cooldown
-        if(this.playerCooldown > 0) this.playerCooldown--;
-
-        // 2. Boss Logic (Real-Time)
-        // Float movement
-        this.bossY += this.bossDirY * 2;
-        if(this.bossY < 100 || this.bossY > 500) this.bossDirY *= -1;
-
-        // Boss Actions (Independent Timers)
-        this.bossAttackTimer++;
-        if(this.bossAttackTimer > 60) { // Shoot every ~1 sec
-            this.spawnBossProjectile();
-            this.bossAttackTimer = 0;
-        }
-
-        this.bossMinionTimer++;
-        if(this.bossMinionTimer > 200) { // Spawn minion every ~3 sec
-            this.spawnMinion();
-            this.bossMinionTimer = 0;
-        }
-
-        // 3. Update Minions
-        for(let i = this.minions.length - 1; i >= 0; i--) {
-            let m = this.minions[i];
-            // Move towards player
-            const dx = this.playerX - m.x;
-            const dy = this.playerY - m.y;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            
-            if(dist > 5) {
-                m.x += (dx/dist) * m.speed;
-                m.y += (dy/dist) * m.speed;
-            }
-
-            // Collide with Player (Check Invincible)
-            if(!this.invincible && dist < 30) {
-                this.playerHp -= 0.5; // Damage over time contact
-                this.game.gameStats.damageTaken += 0.5;
-                this.spawnDamage(this.playerX, this.playerY, "-1", "red");
-            }
-        }
-
-        // 4. Update Projectiles & Collisions
-        for(let i = this.projectiles.length - 1; i >= 0; i--) {
-            let p = this.projectiles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-
-            // Remove if out of bounds
-            if(p.x < 0 || p.x > 800 || p.y < 0 || p.y > 600) {
-                this.projectiles.splice(i, 1);
-                continue;
-            }
-
-            let hit = false;
-            
-            if(p.type === 'player') {
-                // Check Boss Hit
-                if(Math.hypot(p.x - this.bossX, p.y - this.bossY) < 80) {
-                    this.bossHp -= p.damage;
-                    this.game.screenShake = 5; // Boss Hit Shake
-                    this.spawnDamage(this.bossX, this.bossY, p.damage, "orange");
-                    this.spawnExplosion(p.x, p.y, p.color);
-                    hit = true;
-                    if(this.bossHp <= 0) this.winBattle();
-                }
-                
-                // Check Minion Hit
-                if(!hit) {
-                    for(let j=this.minions.length-1; j>=0; j--) {
-                        let m = this.minions[j];
-                        if(Math.hypot(p.x - m.x, p.y - m.y) < 30) {
-                            m.hp -= p.damage;
-                            this.spawnExplosion(m.x, m.y, "green");
-                            hit = true;
-                            if(m.hp <= 0) {
-                                this.minions.splice(j, 1);
-                                this.game.gameStats.totalKills++;
-                                this.spawnDamage(m.x, m.y, "KILL", "gold");
-                            }
-                            break; 
-                        }
-                    }
-                }
-            } else if (p.type === 'boss') {
-                // Check Player Hit (Check Invincible)
-                if(!this.invincible && Math.hypot(p.x - this.playerX, p.y - this.playerY) < 30) {
-                    this.playerHp -= p.damage;
-                    this.game.gameStats.damageTaken += p.damage;
-                    this.game.screenShake = 20; // Player Hit Shake (Hard)
-                    this.spawnDamage(this.playerX, this.playerY, "-" + p.damage, "red");
-                    this.spawnExplosion(p.x, p.y, "red");
-                    hit = true;
-                    if(this.playerHp <= 0) this.loseBattle();
-                }
-            }
-
-            if(hit) {
-                this.projectiles.splice(i, 1);
-            }
-        }
-
-        // 5. FX Updates
-        for(let i = this.particles.length - 1; i >= 0; i--) {
-            let p = this.particles[i];
-            p.x += p.vx; p.y += p.vy; p.life -= 0.05;
-            if(p.life <= 0) this.particles.splice(i, 1);
-        }
-        for(let i = this.damageTexts.length - 1; i >= 0; i--) {
-            let t = this.damageTexts[i];
-            t.y -= 1; t.life -= 0.02;
-            if(t.life <= 0) this.damageTexts.splice(i, 1);
+    // Manage Dash Cooldown UI
+    if(this.dashCooldown > 0) {
+        this.dashCooldown--;
+        if(this.dashCooldown <= 0) {
+            const btn = document.getElementById('btn-dash');
+            if(btn) btn.classList.remove('cooldown');
         }
     }
 
+    let currentSpeed = this.playerSpeed;
+    
+    // Apply Dash Effect
+    if (this.isDashing) {
+        currentSpeed = 20;
+        this.dashTimer--;
+        
+        if (this.dashTimer % 2 === 0) {
+             this.particles.push({
+                x: this.playerX + 40, y: this.playerY + 40,
+                vx: 0, vy: 0,
+                life: 0.2, color: 'rgba(255, 255, 255, 0.4)', size: 35
+            });
+        }
+
+        if (this.dashTimer <= 0) {
+            this.isDashing = false;
+            this.invincible = false;
+        }
+    }
+
+    // 1. Player Movement
+    let moved = false;
+    if(this.keys['ArrowUp'] || this.keys['w']) { this.playerY -= currentSpeed; moved = true; }
+    if(this.keys['ArrowDown'] || this.keys['s']) { this.playerY += currentSpeed; moved = true; }
+    if(this.keys['ArrowLeft'] || this.keys['a']) { this.playerX -= currentSpeed; moved = true; }
+    if(this.keys['ArrowRight'] || this.keys['d']) { this.playerX += currentSpeed; moved = true; }
+    
+    // Attack Keys
+    if(this.keys[' ']) { this.attack(); }
+    if(this.keys['z']) { this.skill(); }
+
+    // Clamp Player
+    this.playerX = Math.max(20, Math.min(780, this.playerX));
+    this.playerY = Math.max(50, Math.min(550, this.playerY));
+
+    // Update Hero Sprite
+    this.hero.x = this.playerX;
+    this.hero.y = this.playerY;
+    if(moved) {
+        this.hero.frameTimer += dt;
+        if(this.hero.frameTimer > 150) { 
+            this.hero.frameIdx = (this.hero.frameIdx + 1) % 4; 
+            this.hero.frameTimer = 0; 
+        }
+    } else {
+        this.hero.frameIdx = 0;
+    }
+
+    if(this.playerCooldown > 0) this.playerCooldown--;
+
+    // 2. Boss Logic
+    this.bossY += this.bossDirY * 2;
+    if(this.bossY < 100 || this.bossY > 500) this.bossDirY *= -1;
+
+    this.bossAttackTimer++;
+    if(this.bossAttackTimer > 60) {
+        this.spawnBossProjectile();
+        this.bossAttackTimer = 0;
+    }
+
+    this.bossMinionTimer++;
+    if(this.bossMinionTimer > 200) {
+        this.spawnMinion();
+        this.bossMinionTimer = 0;
+    }
+
+    // 3. Update Minions
+    for(let i = this.minions.length - 1; i >= 0; i--) {
+        let m = this.minions[i];
+        const dx = this.playerX - m.x;
+        const dy = this.playerY - m.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        
+        if(dist > 5) {
+            m.x += (dx/dist) * m.speed;
+            m.y += (dy/dist) * m.speed;
+        }
+
+        // 🔥 FIX 1: Collision dengan Minion
+        if(!this.invincible && dist < 30) {
+            this.playerHp -= 0.5;
+            this.game.gameStats.damageTaken += 0.5;
+            
+            // Visual feedback sesekali (cegah spam)
+            if(Math.random() > 0.8) {
+                this.spawnDamage(this.playerX, this.playerY, "-1", "red");
+            }
+
+            // ✅ CEK HP & FLAG LANGSUNG DI SINI
+            if(this.playerHp <= 0 && !this.isGameOver) {
+                //this.isGameOver = true; // SET FLAG DULU
+                this.loseBattle();
+                return; // STOP LOOP SEGERA
+            }
+        }
+    }
+
+    // 4. Update Projectiles & Collisions
+    for(let i = this.projectiles.length - 1; i >= 0; i--) {
+        let p = this.projectiles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if(p.x < 0 || p.x > 800 || p.y < 0 || p.y > 600) {
+            this.projectiles.splice(i, 1);
+            continue;
+        }
+
+        let hit = false;
+        
+        if(p.type === 'player') {
+            // Hit Boss
+            if(Math.hypot(p.x - this.bossX, p.y - this.bossY) < 80) {
+                this.bossHp -= p.damage;
+                this.game.screenShake = 5;
+                this.spawnDamage(this.bossX, this.bossY, p.damage, "orange");
+                this.spawnExplosion(p.x, p.y, p.color);
+                hit = true;
+                
+                // ✅ CEK BOSS MATI (VICTORY)
+                if(this.bossHp <= 0 && !this.isGameOver) {
+                    this.isGameOver = true;
+                    this.winBattle();
+                    return; // STOP
+                }
+            }
+            
+            // Hit Minion
+            if(!hit) {
+                for(let j=this.minions.length-1; j>=0; j--) {
+                    let m = this.minions[j];
+                    if(Math.hypot(p.x - m.x, p.y - m.y) < 30) {
+                        m.hp -= p.damage;
+                        this.spawnExplosion(m.x, m.y, "green");
+                        hit = true;
+                        if(m.hp <= 0) {
+                            this.minions.splice(j, 1);
+                            this.game.gameStats.totalKills++;
+                            this.spawnDamage(m.x, m.y, "KILL", "gold");
+                        }
+                        break; 
+                    }
+                }
+            }
+        } else if (p.type === 'boss') {
+            // 🔥 FIX 2: Hit Player oleh Projectile Boss
+            if(!this.invincible && Math.hypot(p.x - this.playerX, p.y - this.playerY) < 30) {
+                this.playerHp -= p.damage;
+                this.game.gameStats.damageTaken += p.damage;
+                this.game.screenShake = 20;
+                this.spawnDamage(this.playerX, this.playerY, "-" + p.damage, "red");
+                this.spawnExplosion(p.x, p.y, "red");
+                hit = true;
+                
+                // ✅ CEK HP & FLAG DI SINI
+                if(this.playerHp <= 0 && !this.isGameOver) {
+                    //this.isGameOver = true; // SET FLAG DULU
+                    this.loseBattle();
+                    return; // STOP SEGERA
+                }
+            }
+        }
+
+        if(hit) {
+            this.projectiles.splice(i, 1);
+        }
+    }
+
+    // 5. FX Updates
+    for(let i = this.particles.length - 1; i >= 0; i--) {
+        let p = this.particles[i];
+        p.x += p.vx; p.y += p.vy; p.life -= 0.05;
+        if(p.life <= 0) this.particles.splice(i, 1);
+    }
+    for(let i = this.damageTexts.length - 1; i >= 0; i--) {
+        let t = this.damageTexts[i];
+        t.y -= 1; t.life -= 0.02;
+        if(t.life <= 0) this.damageTexts.splice(i, 1);
+    }
+}
+   
     winBattle() {
         this.active = false;
         this.cleanup();
@@ -4977,9 +6393,23 @@ class ChapterBossBattle {
     }
 
     loseBattle() {
+		// TAMBAHKAN 2 BARIS INI DI PALING ATAS:
+		if (this.isGameOver) return; 
+		this.isGameOver = true;
+		
         this.active = false;
-        this.cleanup();
+		
+		// Hapus listener SEGERA
+    window.removeEventListener('keydown', this.keyDownHandler);
+    window.removeEventListener('keyup', this.keyUpHandler);
+    
+    // Panggil Game Over TERAKHIR
+    setTimeout(() => {
         this.game.triggerGameOver();
+    }, 100); // Delay kecil untuk memastikan flag terproses
+		
+        //this.cleanup();
+        //this.game.triggerGameOver();
     }
 
     draw(ctx) {
@@ -5017,8 +6447,8 @@ class ChapterBossBattle {
         
         // Text Label
         ctx.fillStyle = "white"; ctx.font = "bold 14px Orbitron"; ctx.textAlign = "left";
-        ctx.fillText(`GUARDIAN HP: ${Math.floor(this.playerHp)}%`, 20, 45);
-
+       // ctx.fillText(`GUARDIAN HP: ${Math.floor(this.playerHp)}%`, 20, 45);
+		ctx.fillText(`GUARDIAN HP: ${Math.max(0, Math.floor(this.playerHp))}%`, 20, 45);
         // Draw Boss (Virus Genderuwo)
         const bossImg = this.game.imgs.virus;
         if(bossImg && bossImg.complete) {
