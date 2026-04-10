@@ -20,42 +20,34 @@
             color: white; 
             font-family: 'Rajdhani', sans-serif; 
             overflow: hidden; 
-            width: 100vw; 
-            height: 100vh;
-            height: 100dvh; /* Support dynamic viewport height di mobile */
-            max-width: 100%;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            width: 100%;
+            height: 100%;
             touch-action: none;
-            position: fixed;
-            top: 0; left: 0;
-        }
-        
-        /* --- CONTAINER UTAMA (FIXED RATIO SCALING) --- */
-        #game-container { 
-            position: relative; 
-            width: 800px; 
-            height: 600px; 
-            background: #000; 
-            border: 2px solid var(--primary-blue); 
-            box-shadow: 0 0 50px rgba(0, 168, 255, 0.3); 
-            overflow: hidden; 
-            border-radius: 8px; 
-            
-            /* Penting untuk scaling */
-            transform-origin: center center;
-            transition: transform 0.2s ease-out; /* Smooth resizing */
-        }
-        
-        /* Hapus border saat fullscreen agar terlihat menyatu */
-        body.fullscreen-mode #game-container {
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
         }
 
-        canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        /* --- CONTAINER UTAMA: FULL SCREEN, NO BOX --- */
+        #game-container { 
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; 
+            height: 100vh;
+            height: 100dvh;
+            background: #000; 
+            overflow: hidden; 
+        }
+
+        canvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%; 
+            image-rendering: auto;
+        }
         
         /* UI SCREENS */
         .ui-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
@@ -2720,6 +2712,18 @@ const AudioMgr = {
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
+
+// ── GLOBAL HELPER: konversi koordinat touch/mouse → game space (800×600) ──
+// Pakai ini di SEMUA chapter agar drag/tap selalu akurat di HP maupun desktop
+function getGamePos(e) {
+    const r = canvas.getBoundingClientRect();
+    const clientX = (e.clientX !== undefined) ? e.clientX : (e.touches ? e.touches[0].clientX : 0);
+    const clientY = (e.clientY !== undefined) ? e.clientY : (e.touches ? e.touches[0].clientY : 0);
+    return {
+        x: (clientX - r.left) * (800 / r.width),
+        y: (clientY - r.top)  * (600 / r.height)
+    };
+}
 const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_FORENSIC: 4.6, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5, MODE_SELECT: 0.5, GAME_SURVIVAL: 7, GAME_SURVIVAL_QUIZ: 7.5 };
 
 // --- FIX 1: SIMPLIFIED & FORCED SHOW MESSAGE ---
@@ -2922,25 +2926,14 @@ class GameApp {
 
     // --- NEW FUNCTION: RESIZE GAME (FIXED ASPECT RATIO) ---
     resizeGame() {
-        const container = document.getElementById('game-container');
-        // Gunakan visualViewport jika tersedia (lebih akurat di mobile browser)
-        const windowWidth = (window.visualViewport ? window.visualViewport.width : window.innerWidth);
-        const windowHeight = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
-        const gameWidth = 800;
-        const gameHeight = 600;
+        const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+        const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
 
-        // Calculate Scale Factor - isi penuh layar
-        const scale = Math.min(
-            windowWidth / gameWidth,
-            windowHeight / gameHeight
-        );
-
-        // Apply Scale Transform
-        container.style.transform = `scale(${scale})`;
-        
-        // Pastikan body dan container benar-benar memenuhi layar
-        document.body.style.width = windowWidth + 'px';
-        document.body.style.height = windowHeight + 'px';
+        // Set canvas internal resolution = CSS size (CSS pixels)
+        // Loop akan scale ctx dari game space 800×600 ke canvas.width/height
+        // getGamePos pakai getBoundingClientRect() yang return CSS px → konsisten
+        canvas.width  = Math.round(w);
+        canvas.height = Math.round(h);
     }
 
     // ===== UNIVERSAL VIRTUAL JOYSTICK MANAGER =====
@@ -4140,17 +4133,22 @@ class GameApp {
 
         // --- RENDER LOGIC UTAMA ---
         if (this.state >= AppState.TUTORIAL && this.state <= AppState.CREDITS || this.state >= 7) {
-            ctx.clearRect(0,0, 800, 600);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Scale ctx agar game space 800×600 mengisi full canvas (stretch ke layar)
+            const scaleX = canvas.width  / 800;
+            const scaleY = canvas.height / 600;
+            ctx.save();
+            ctx.scale(scaleX, scaleY);
             
-            // --- NEW: SCREEN SHAKE LOGIC ---
+            // --- SCREEN SHAKE LOGIC ---
             if(this.screenShake > 0) {
                 const dx = (Math.random() - 0.5) * this.screenShake;
                 const dy = (Math.random() - 0.5) * this.screenShake;
                 ctx.translate(dx, dy);
-                this.screenShake *= 0.9; // Decay shake
+                this.screenShake *= 0.9;
                 if(this.screenShake < 0.5) this.screenShake = 0;
             }
-            // --------------------------------
 
             let bgKey = 'bg_rtraining';
             
@@ -4198,8 +4196,8 @@ class GameApp {
                 }
             }
             
-            // Reset Shake
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            // Restore transform (undo scale + shake)
+            ctx.restore();
         }
         requestAnimationFrame(this.loop);
     }
@@ -4255,10 +4253,8 @@ class ChapterSurvival {
         // Controls
         this.handleMove = (e) => { 
             if(!this.active) return; 
-            const r = canvas.getBoundingClientRect(); 
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX; 
-            this.pX = (clientX - r.left) * (800/r.width); 
-            this.pX = Math.max(30, Math.min(770, this.pX)); 
+            const pos = getGamePos(e);
+            this.pX = Math.max(30, Math.min(770, pos.x)); 
         };
         this.handleStart = (e) => { if(!this.active) return; this.isShooting = true; this.handleMove(e); };
         this.handleEnd = (e) => { this.isShooting = false; };
@@ -4266,8 +4262,8 @@ class ChapterSurvival {
         canvas.addEventListener('mousemove', this.handleMove);
         canvas.addEventListener('mousedown', this.handleStart);
         canvas.addEventListener('mouseup', this.handleEnd);
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this.handleMove(e); }, {passive: false});
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e); }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this.handleMove(e.touches[0]); }, {passive: false});
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e.touches[0]); }, {passive: false});
         canvas.addEventListener('touchend', (e) => { e.preventDefault(); this.handleEnd(e); }, {passive: false});
 
         // Virtual joystick horizontal untuk survival shooter
@@ -5133,9 +5129,7 @@ class ChapterCredits {
     }
 
     handleClick(e) {
-        const r = canvas.getBoundingClientRect(); 
-        const mx = (e.clientX - r.left) * (800/r.width); 
-        const my = (e.clientY - r.top) * (600/r.height);
+        const {x: mx, y: my} = getGamePos(e);
 
         // Cek area tombol SKIP (X: 700-780, Y: 550-580)
         if (mx > 700 && mx < 780 && my > 550 && my < 580) {
@@ -5566,7 +5560,7 @@ class ChapterTutorial {
         this.finished = false;
     }
     click(e) {
-        const r = canvas.getBoundingClientRect(); const mx = (e.clientX - r.left) * (800/r.width); const my = (e.clientY - r.top) * (600/r.height);
+        const {x: mx, y: my} = getGamePos(e);
         if(this.step === 1) { this.hero.moveTo(mx, my); AudioMgr.playSFX('sfx-click'); setTimeout(() => this.step=2, 1500); }
         else if(this.step === 3) { this.hero.moveTo(mx, my); AudioMgr.playSFX('sfx-click'); } 
         else { this.step++; AudioMgr.playSFX('sfx-click'); }
@@ -5632,7 +5626,7 @@ class ChapterWalkingScene {
         showMessage("AREA LORONG SERVER", "Gunakan joystick (HP) atau klik lantai (PC) untuk berjalan menuju LIFT di ujung kanan.");
     }
     click(e) {
-        const r = canvas.getBoundingClientRect(); const mx = (e.clientX - r.left) * (800/r.width); const my = (e.clientY - r.top) * (600/r.height);
+        const {x: mx, y: my} = getGamePos(e);
         if(my > 350 && my < 600) { this.hero.moveTo(mx, my); AudioMgr.playSFX('sfx-click'); }
     }
     update(dt) {
@@ -5986,21 +5980,16 @@ class ChapterCabling {
         canvas.removeEventListener('touchend',   this.evTouchEnd);
     }
     getCanvasCoords(e) {
-        // Gunakan getBoundingClientRect dari canvas untuk menghitung posisi yg tepat
-        // meski canvas di-scale via CSS transform
-        const r = canvas.getBoundingClientRect();
-        return {
-            mx: (e.clientX - r.left) * (800 / r.width),
-            my: (e.clientY - r.top)  * (600 / r.height)
-        };
+        const p = getGamePos(e);
+        return { mx: p.x, my: p.y };
     }
     input(e, type) {
-        if(!this.active) return; // Prevent input if paused
+        if(!this.active) return;
         const {mx, my} = this.getCanvasCoords(e); this.mx = mx; this.my = my;
-        if (type === 'down') { for (let i = 0; i < this.tasks.length; i++) { if (!this.tasks[i].completed && Math.hypot(mx - (this.tasks[i].sX + 40), my - (this.tasks[i].sY + 40)) < 40) { this.dragged = i; AudioMgr.playSFX('sfx-click'); return; } } }
+        if (type === 'down') { for (let i = 0; i < this.tasks.length; i++) { if (!this.tasks[i].completed && Math.hypot(mx - (this.tasks[i].sX + 40), my - (this.tasks[i].sY + 40)) < 55) { this.dragged = i; AudioMgr.playSFX('sfx-click'); return; } } }
         else if (type === 'up' && this.dragged !== null) {
             const t = this.tasks[this.dragged];
-            if(Math.hypot(mx - (t.tX + 40), my - (t.tY + 40)) < 60) {
+            if(Math.hypot(mx - (t.tX + 40), my - (t.tY + 40)) < 70) {
                 t.completed = true; t.connected = true; this.game.addScore(100); AudioMgr.playSFX('sfx-correct'); 
                 if(this.tasks.every(task => task.completed)) { this.cleanup(); showMessage("JARINGAN AKTIF", `Koneksi Stabil! Bonus Waktu: ${this.timeLeft * 2}`); setTimeout(() => this.game.triggerPostCablingNarrative(), 3000); }
             } else { AudioMgr.playSFX('sfx-wrong'); }
@@ -6067,11 +6056,11 @@ class Chapter2 {
         this.timeLeft = 60; 
         document.getElementById('hud-timer').innerText = this.timeLeft;
         
-        this.handleMove = (e) => { if(!this.active) return; const r = canvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; this.pX = (clientX - r.left) * (800/r.width); if(this.pX < 30) this.pX = 30; if(this.pX > 770) this.pX = 770; };
+        this.handleMove = (e) => { if(!this.active) return; const pos = getGamePos(e); this.pX = Math.max(30, Math.min(770, pos.x)); };
         this.handleStart = (e) => { if(!this.active) return; this.isShooting = true; this.handleMove(e); }; this.handleEnd = (e) => { this.isShooting = false; };
         canvas.addEventListener('mousemove', this.handleMove); canvas.addEventListener('mousedown', this.handleStart); canvas.addEventListener('mouseup', this.handleEnd);
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this.handleMove(e); }, {passive: false});
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e); }, {passive: false});
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this.handleMove(e.touches[0]); }, {passive: false});
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e.touches[0]); }, {passive: false});
         canvas.addEventListener('touchend', (e) => { e.preventDefault(); this.handleEnd(e); }, {passive: false});
 
         // Virtual joystick horizontal untuk mobile
@@ -6288,14 +6277,8 @@ class ChapterFirewallConfig {
         this.zoneAllow = { x: 50, y: 150, w: 200, h: 300, color: 'rgba(0, 255, 0, 0.2)', label: "ALLOW (Aman)" };
         this.zoneBlock = { x: 550, y: 150, w: 200, h: 300, color: 'rgba(255, 0, 0, 0.2)', label: "BLOCK (Virus)" };
 
-        // Helper untuk normalisasi input (Mouse & Touch)
-        const getPos = (e) => {
-            const r = canvas.getBoundingClientRect();
-            return {
-                x: (e.clientX - r.left) * (800/r.width),
-                y: (e.clientY - r.top) * (600/r.height)
-            };
-        };
+        // Helper untuk normalisasi input (Mouse & Touch) — gunakan global getGamePos
+        const getPos = (e) => getGamePos(e);
 
         this.evDown = (e) => {
             if(!this.active) return;
@@ -6304,7 +6287,7 @@ class ChapterFirewallConfig {
             // Loop reverse agar yang paling atas (terakhir digambar) yang terpilih
             for(let i=this.packets.length-1; i>=0; i--) {
                 const p = this.packets[i];
-                if(Math.hypot(pos.x - p.x, pos.y - p.y) < 40) { // Radius hit diperbesar sedikit
+                if(Math.hypot(pos.x - p.x, pos.y - p.y) < 50) { // Hit radius diperbesar untuk HP
                     this.draggedPacket = p;
                     AudioMgr.playSFX('sfx-click');
                     return;
@@ -6350,7 +6333,7 @@ class ChapterFirewallConfig {
                 if(processed) {
                     this.packets = this.packets.filter(pkt => pkt !== p);
                     if(this.score >= this.targetScore) {
-                        this.active = false; // Stop immediately
+                        this.active = false;
                         this.cleanup();
                         showMessage("FIREWALL TERKONFIGURASI", "Aturan Packet Filtering berhasil diterapkan. Sistem sekarang mampu membedakan paket data aman dan berbahaya secara otomatis.");
                         setTimeout(() => this.game.startChapter2Quiz(), 2000);
@@ -6364,17 +6347,16 @@ class ChapterFirewallConfig {
         canvas.addEventListener('mousedown', this.evDown);
         canvas.addEventListener('mousemove', this.evMove);
         canvas.addEventListener('mouseup', this.evUp);
-        // Bind ke window juga agar drag tidak nyangkut jika lepas di luar canvas
         window.addEventListener('mouseup', this.evUp);
 
-        // Bind Touch Events (FIX for Mobile Drag & Drop)
+        // Bind Touch Events — pass event langsung ke handler, getGamePos handle konversinya
         this.evTouchStart = (e) => { e.preventDefault(); this.evDown(e.touches[0]); };
-        this.evTouchMove = (e) => { e.preventDefault(); this.evMove(e.touches[0]); };
-        this.evTouchEnd = (e) => { e.preventDefault(); this.evUp(e.changedTouches[0]); }; 
+        this.evTouchMove  = (e) => { e.preventDefault(); if(e.touches[0]) this.evMove(e.touches[0]); };
+        this.evTouchEnd   = (e) => { e.preventDefault(); this.evUp(e.changedTouches[0]); };
 
         canvas.addEventListener('touchstart', this.evTouchStart, {passive: false});
-        canvas.addEventListener('touchmove', this.evTouchMove, {passive: false});
-        canvas.addEventListener('touchend', this.evTouchEnd, {passive: false});
+        canvas.addEventListener('touchmove',  this.evTouchMove,  {passive: false});
+        canvas.addEventListener('touchend',   this.evTouchEnd,   {passive: false});
 
         // SPAWN 1 PACKET IMMEDIATELY (Agar tidak terlihat kosong)
         this.spawnPacket();
