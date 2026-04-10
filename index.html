@@ -179,17 +179,164 @@
         #char-3 img { animation-delay: 2s; }
         .char-card.selected { border-color: var(--tech-cyan); background: linear-gradient(135deg, rgba(0, 168, 255, 0.1), rgba(0, 86, 179, 0.3)); transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 168, 255, 0.4); }
 
-        #screen-story { justify-content: flex-end; background-color: #000; }
-        #story-bg { position: absolute; top:0; left:0; width:100%; height:100%; background-size: cover; background-position: center; opacity: 0.6; background-image: url('images/bg_server.png'); transition: background-image 0.5s ease-in-out; }
-        .dialogue-box { position: relative; width: 90%; min-height: 160px; background: linear-gradient(90deg, rgba(5, 20, 40, 0.95), rgba(10, 30, 60, 0.9)); border: 2px solid var(--tech-cyan); margin-bottom: 20px; padding: 20px; box-sizing: border-box; display: flex; align-items: flex-end; border-radius: 12px; box-shadow: 0 -5px 30px rgba(0,0,0,0.5); }
-        .char-portrait { width: 100px; height: 100px; background: #000; border: 2px solid var(--primary-blue); margin-right: 20px; flex-shrink: 0; overflow: hidden; border-radius: 8px; margin-bottom: 10px; }
-        @keyframes talkBreath { 0% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.05); filter: brightness(1.2); } 100% { transform: scale(1); filter: brightness(1); } }
-        .char-portrait img { width: 100%; height: 100%; object-fit: cover; object-position: top center; animation: talkBreath 2.5s infinite ease-in-out; }
+        /* ===== CINEMATIC STORY SCREEN ===== */
+        #screen-story { justify-content: flex-end; background-color: #000; cursor: pointer; }
+
+        /* Background cinematic dengan efek pan/zoom */
+        #story-bg {
+            position: absolute; top: -10%; left: -10%;
+            width: 120%; height: 120%;
+            background-size: cover; background-position: center;
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 8s linear;
+            transform: scale(1.08);
+            will-change: transform, opacity;
+        }
+
+        /* Letterbox bars atas dan bawah */
+        #cinematic-bar-top, #cinematic-bar-bottom {
+            position: absolute; left: 0; width: 100%;
+            background: #000; z-index: 8;
+            transition: height 0.7s cubic-bezier(0.4,0,0.2,1);
+        }
+        #cinematic-bar-top    { top: 0;    height: 0; }
+        #cinematic-bar-bottom { bottom: 0; height: 0; }
+
+        /* Vignette overlay */
+        #story-vignette {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.85) 100%);
+            z-index: 3; pointer-events: none;
+        }
+
+        /* Flash overlay untuk transisi */
+        #story-flash {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: #fff; opacity: 0; z-index: 9; pointer-events: none;
+            transition: opacity 0.15s;
+        }
+
+        /* Dialogue box baru - lebih sinematik */
+        .dialogue-box {
+            position: relative; width: 100%; min-height: 150px;
+            background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.92) 30%);
+            padding: 20px 30px 25px; box-sizing: border-box;
+            display: flex; align-items: flex-end;
+            z-index: 10;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .dialogue-box.visible { opacity: 1; transform: translateY(0); }
+
+        /* Portrait karakter lebih besar dan dramatis */
+        .char-portrait {
+            width: 110px; height: 130px;
+            border: none; margin-right: 18px; flex-shrink: 0;
+            overflow: hidden; border-radius: 4px; margin-bottom: 5px;
+            filter: drop-shadow(0 0 12px rgba(0,168,255,0.5));
+            position: relative;
+        }
+        @keyframes talkBreath { 0%,100%{transform:scale(1) translateY(0);} 50%{transform:scale(1.04) translateY(-3px);} }
+        .char-portrait img { width:100%; height:100%; object-fit:cover; object-position:top center; animation:talkBreath 2.5s infinite ease-in-out; }
+
+        /* Nama speaker */
         .dialogue-text { width: 100%; }
-        .dialogue-text h3 { margin: 0 0 5px 0; color: var(--tech-cyan); font-family: 'Orbitron'; font-size: 1.2rem; }
-        .dialogue-text p { margin: 0; font-size: 1.1rem; line-height: 1.4; color: #eee; }
-        .next-arrow { position: absolute; bottom: 15px; right: 20px; color: var(--accent-gold); animation: bounce 1s infinite; font-size: 1.5rem; cursor: pointer; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+        .dialogue-text h3 {
+            margin: 0 0 6px 0; color: var(--accent-gold);
+            font-family: 'Orbitron'; font-size: 1rem;
+            text-transform: uppercase; letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255,215,0,0.6);
+        }
+        /* Teks dialog */
+        .dialogue-text p {
+            margin: 0; font-size: 1.05rem; line-height: 1.6;
+            color: #f0f0f0; font-family: 'Rajdhani';
+            min-height: 2.5em;
+        }
+
+        /* Indikator ketuk */
+        .next-arrow {
+            position: absolute; bottom: 20px; right: 25px;
+            color: var(--accent-gold); font-size: 1.2rem;
+            animation: bounceArrow 0.8s infinite;
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .next-arrow.show { opacity: 1; }
+        @keyframes bounceArrow { 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+
+        /* Caption sinematik (teks tanpa portrait, di tengah layar) */
+        #cinematic-caption {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; z-index: 10;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.6s;
+            width: 85%;
+        }
+        #cinematic-caption p {
+            font-family: 'Orbitron'; font-size: 1.1rem; color: #FFFFFF;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                         0 0 20px rgba(255,255,255,0.6);
+            line-height: 1.7; letter-spacing: 1px;
+        }
+        /* Caption khusus mode alert/merah */
+        #cinematic-caption.alert p {
+            color: #FF4444;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000,
+                         0 0 25px rgba(255,68,68,0.9), 0 0 50px rgba(255,0,0,0.5);
+            animation: alertPulse 0.4s infinite alternate;
+        }
+        @keyframes alertPulse {
+            from { text-shadow: 2px 2px 0 #000,-2px -2px 0 #000, 0 0 20px rgba(255,68,68,0.9); }
+            to   { text-shadow: 2px 2px 0 #000,-2px -2px 0 #000, 0 0 50px rgba(255,0,0,1), 0 0 80px rgba(255,0,0,0.4); }
+        }
+        /* Red alert screen overlay */
+        #alert-overlay {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: rgba(255,0,0,0); z-index: 7; pointer-events: none;
+            transition: background 0.2s;
+        }
+        #alert-overlay.active {
+            animation: redAlertFlash 0.5s infinite;
+        }
+        @keyframes redAlertFlash {
+            0%,100% { background: rgba(180,0,0,0); }
+            50%      { background: rgba(180,0,0,0.18); }
+        }
+        /* Scan line effect saat alert */
+        #alert-scanlines {
+            position: absolute; top:0; left:0; width:100%; height:100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(255,0,0,0.04) 3px, rgba(255,0,0,0.04) 4px);
+            z-index: 6; pointer-events: none; opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #alert-scanlines.active { opacity: 1; }
+        #cinematic-caption.show { opacity: 1; }
+
+        /* Skip button */
+        #btn-story-skip {
+            position: absolute; top: 55px; right: 15px;
+            background: rgba(0,0,0,0.5); border: 1px solid #555;
+            color: #777; font-family: 'Orbitron'; font-size: 0.65rem;
+            padding: 5px 10px; border-radius: 4px; cursor: pointer;
+            z-index: 15; transition: 0.2s;
+        }
+        #btn-story-skip:hover { color: #fff; border-color: #aaa; }
+
+        /* Progress dots */
+        #story-progress {
+            position: absolute; bottom: 165px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 8px; z-index: 11;
+        }
+        .story-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            transition: background 0.3s, transform 0.3s;
+        }
+        .story-dot.active { background: var(--accent-gold); transform: scale(1.4); }
+        .story-dot.done   { background: rgba(255,215,0,0.4); }
 
         #hud { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; display: none; justify-content: space-between; pointer-events: none; z-index: 20; }
         .hud-top-left { display:flex; gap:10px; flex-direction: column; align-items: flex-start; }
@@ -924,14 +1071,7 @@
 
     <div id="screen-title" class="ui-screen">
         
-        <!-- --- TOMBOL DEBUG (UNTUK TESTING) --- -->
-        <div style="position: absolute; top: 10px; left: 10px; display: flex; flex-direction: column; gap: 5px; z-index: 9999;">
-            <div style="background:red; color:white; font-size:0.7rem; padding:2px 5px; font-weight:bold;">DEBUG MODE</div>
-            <button class="btn-ml" style="font-size: 0.7rem; padding: 5px; width: auto; background: #800000; border-color: red;" onclick="app.debugJumpBoss()">LOMPAT KE BOSS</button>
-            <button class="btn-ml" style="font-size: 0.7rem; padding: 5px; width: auto; background: #004d00; border-color: #00ff00;" onclick="app.debugJumpBomber()">LOMPAT KE BOMBER</button>
-            <button class="btn-ml" style="font-size: 0.7rem; padding: 5px; width: auto; background: #4B0082; border-color: violet;" onclick="app.startEndingCinematic()">LOMPAT KE ENDING</button>
-        </div>
-        <!-- ----------------------------------- -->
+
 
         <div id="logo-container">
             <img id="logo-img" src="images/logo_main.png" alt="TOYA GUARDIANS" onerror="this.style.display='none'">
@@ -955,8 +1095,13 @@
             <div class="form-group"><label>PROVINSI</label><select id="reg-prov" onchange="app.populateCities()"><option value="">Pilih Provinsi...</option></select></div>
             <div class="form-group"><label>KOTA / KAB</label><select id="reg-city" disabled onchange="app.populateDistricts()"><option>-</option></select></div>
             <div class="form-group"><label>KECAMATAN</label><select id="reg-district" disabled><option>-</option></select></div>
-            <div class="form-group"><label>SEKOLAH</label><input type="text" id="reg-school" placeholder="Nama Sekolah..." oninput="this.value = this.value.toUpperCase()"></div>
+            <div class="form-group">
+                <label>SEKOLAH</label>
+                <input type="text" id="reg-school" placeholder="Nama Sekolah Lengkap..." oninput="this.value = this.value.toUpperCase()" autocomplete="off">
+                <div style="font-size:0.7rem; color:#aaa; margin-top:3px;">✏️ Periksa & edit jika nama sekolah belum lengkap</div>
+            </div>
             <button class="btn-ml" onclick="app.submitRegistration()">LANJUT</button>
+            <button class="btn-ml" onclick="app.resetProfile()" style="background:transparent; border-color:#444; color:#888; box-shadow:none; font-size:0.8rem; margin-top:3px; padding:7px;">🔄 RESET DATA PROFIL</button>
         </div>
     </div>
 
@@ -979,12 +1124,38 @@
         </div>
     </div>
 
-    <div id="screen-story" class="ui-screen" onclick="story.next()">
+    <div id="screen-story" class="ui-screen" onclick="story.handleTap()">
+        <!-- Background sinematik -->
         <div id="story-bg"></div>
-        <div class="dialogue-box">
+
+        <!-- Overlay effects -->
+        <div id="story-vignette"></div>
+        <div id="story-flash"></div>
+        <!-- Alert overlays -->
+        <div id="alert-overlay"></div>
+        <div id="alert-scanlines"></div>
+
+        <!-- Letterbox bars -->
+        <div id="cinematic-bar-top"></div>
+        <div id="cinematic-bar-bottom"></div>
+
+        <!-- Caption teks di tengah (mode sinematik tanpa portrait) -->
+        <div id="cinematic-caption"><p id="cinematic-caption-text"></p></div>
+
+        <!-- Progress dots -->
+        <div id="story-progress"></div>
+
+        <!-- Skip button -->
+        <div id="btn-story-skip" onclick="event.stopPropagation(); story.skip()">SKIP ⏭</div>
+
+        <!-- Dialogue box bawah -->
+        <div class="dialogue-box" id="dialogue-box">
             <div class="char-portrait"><img id="story-portrait" src="images/npc_rex.png"></div>
-            <div class="dialogue-text"><h3 id="story-speaker">NAME</h3><p id="story-text">...</p></div>
-            <div class="next-arrow">▼</div>
+            <div class="dialogue-text">
+                <h3 id="story-speaker">NAME</h3>
+                <p id="story-text"></p>
+            </div>
+            <div class="next-arrow" id="story-arrow">▼</div>
         </div>
     </div>
 
@@ -1222,208 +1393,369 @@ for(let i=1; i<=14; i++) {
 //DATA WILAYAH INDONESIA
 const DATA_INDONESIA = {
     "Aceh": {
-        "Banda Aceh": ["Baiturrahman", "Banda Raya", "Jaya Baru", "Kuta Alam", "Kuta Raja", "Lueng Bata", "Meuraxa", "Syiah Kuala", "Ulee Kareng"],
-        "Sabang": ["Sukakarya", "Sukajaya"],
-        "Lhokseumawe": ["Banda Sakti", "Blang Mangat", "Muara Dua", "Muara Satu"],
-        "Langsa": ["Langsa Barat", "Langsa Baro", "Langsa Kota", "Langsa Lama", "Langsa Timur"],
-        "Subulussalam": ["Longkib", "Penanggalan", "Rundeng", "Simpang Kiri", "Sultan Daulat"]
+        "Banda Aceh": ["Baiturrahman","Banda Raya","Jaya Baru","Kuta Alam","Kuta Raja","Lueng Bata","Meuraxa","Syiah Kuala","Ulee Kareng"],
+        "Sabang": ["Sukakarya","Sukajaya"],
+        "Lhokseumawe": ["Banda Sakti","Blang Mangat","Muara Dua","Muara Satu"],
+        "Langsa": ["Langsa Barat","Langsa Baro","Langsa Kota","Langsa Lama","Langsa Timur"],
+        "Subulussalam": ["Longkib","Penanggalan","Rundeng","Simpang Kiri","Sultan Daulat"],
+        "Kabupaten Aceh Besar": ["Ingin Jaya","Krueng Barona Jaya","Kuta Baro","Lembah Seulawah","Peukan Bada","Pulo Aceh","Simpang Tiga","Suka Makmur"],
+        "Kabupaten Aceh Barat": ["Johan Pahlawan","Arongan Lambalek","Bubon","Kaway XVI","Meurebo","Panton Reu","Samatiga","Sungai Mas","Woyla","Woyla Barat","Woyla Timur"],
+        "Kabupaten Aceh Selatan": ["Kota Bahagia","Labuhanhaji","Labuhanhaji Barat","Labuhanhaji Timur","Meukek","Pasie Raja","Samadua","Sawang","Tapaktuan","Trumon"],
+        "Kabupaten Aceh Utara": ["Banda Baro","Baktiya","Baktiya Barat","Dewantara","Geureudong Pase","Kuta Makmur","Lhoksukon","Muara Batu","Nisam","Samudera","Simpang Kramat","Syamtalira Aron"],
+        "Kabupaten Bireuen": ["Bireuen","Gandapura","Juli","Kota Juang","Kuala","Kutablang","Makmur","Peudada","Peusangan","Peusangan Selatan","Peusangan Siblah Krueng","Samalanga","Simpang Mamplam"],
+        "Kabupaten Pidie": ["Batee","Delima","Geumpang","Glumpang Baro","Glumpang Tiga","Grong Grong","Indrajaya","Kembang Tanjong","Keumala","Kota Sigli","Mila","Mutiara","Mutiara Timur","Padang Tiji","Peukan Baro","Pidie","Sakti","Tiro/Truseb"],
+        "Kabupaten Aceh Tengah": ["Atu Lintang","Bebesen","Bies","Bintang","Bukit","Celala","Jagong Jeget","Ketol","Kute Panang","Linge","Lut Tawar","Pegasing","Rusip Antara","Silih Nara"],
+        "Kabupaten Aceh Tenggara": ["Babul Makmur","Babul Rahmah","Bambel","Badar","Bukit Tusam","Darul Hasanah","Deleng Pokhkisen","Ketambe","Lawe Alas","Lawe Bulan","Lawe Sigala-Gala","Semadam"],
+        "Kabupaten Aceh Timur": ["Birem Bayeun","Darul Aman","Darul Falah","Darul Ihsan","Idi Rayeuk","Idi Timur","Idi Tunong","Julok","Madat","Nurussalam","Pante Bidari","Peunaron","Peureulak","Ranto Peureulak","Simpang Jernih","Sungai Raya"]
     },
-    "Jawa Timur": {
-    "Kabupaten Bangkalan": [
-      "Arosbaya", "Bangkalan", "Blega", "Burneh", "Galis",
-      "Geger", "Kamal", "Klampis", "Kokop", "Konang",
-      "Labang", "Modung", "Sepulu", "Socah", "Tanah Merah",
-      "Tanjung Bumi", "Tragah"
-    ],
-    "Kabupaten Banyuwangi": [
-      "Bangorejo", "Banyuwangi", "Blimbingsari", "Cluring",
-      "Gambiran", "Genteng", "Giri", "Glagah", "Glenmore",
-      "Kab. Kalibaru", "Kalipuro", "Licin", "Muncar", "Pesanggaran",
-      "Purwoharjo", "Rogojampi", "Sempu", "Siliragung",
-      "Singojuruh", "Songgon", "Srono", "Tegaldlimo",
-      "Tegalsari", "Wongsorejo"
-    ],
-    "Kabupaten Blitar": [
-      "Bakung", "Binangun", "Doko", "Gandusari", "Garum",
-      "Kademangan", "Kanigoro", "Kesamben", "Nglegok",
-      "Panggungrejo", "Ponggok", "Sanankulon",
-      "Sananwetan", "Selopuro", "Selorejo", "Srengat",
-      "Sutojayan", "Talun", "Udanawu", "Wates", "Wonodadi",
-      "Wonotirto"
-    ],
-    "Kabupaten Bojonegoro": [
-      "Balen", "Baureno", "Bojonegoro", "Bubulan", "Dander",
-      "Gayam", "Gondang", "Kapas", "Kasiman", "Kedewan",
-      "Kedungadem", "Kepohbaru", "Malo", "Margomulyo",
-      "Ngambon", "Ngasem", "Ngraho", "Padangan",
-      "Purwosari", "Sekar", "Sugihwaras", "Sukosewu",
-      "Sumberrejo", "Tambakrejo", "Temayang", "Trucuk"
-    ],
-    "Kabupaten Bondowoso": [
-      "Binakal", "Bondowoso", "Botolinggo", "Cermee",
-      "Curahdami", "Grujugan", "Jambe Sari Darus Sholah",
-      "Klabang", "Maesan", "Pakem", "Prajekan",
-      "Pujer", "Sempol", "Sukosari", "Sumber Wringin",
-      "Taman Krocok", "Tamanan", "Tapen", "Tenggarang",
-      "Tlogosari", "Wonosari", "Wringin"
-    ],
-    "Kabupaten Gresik": [
-      "Balongpanggang", "Benjeng", "Bungah", "Cerme",
-      "Driyorejo", "Duduk Sampeyan", "Dukun", "Gresik",
-      "Kedamean", "Kebomas", "Manyar", "Menganti",
-      "Panceng", "Sangkapura", "Sidayu", "Tambak",
-      "Ujungpangkah", "Wringinanom"
-    ],
-	"Kabupaten Jember": [
-    "Ajung", "Ambulu", "Arjasa", "Balung", "Bangsalsari",
-    "Gumukmas", "Jelbuk", "Jenggawah", "Jombang",
-    "Kalisat", "Kaliwates", "Kencong", "Ledokombo",
-    "Mayang", "Mumbulsari", "Pakusari", "Panti",
-    "Patrang", "Puger", "Rambipuji", "Semboro",
-    "Silo", "Sukorambi", "Sukowono", "Sumberbaru",
-    "Sumberjambe", "Sumbersari", "Tanggul", "Tempurejo",
-    "Umbulsari", "Wuluhan"
-  ],
-  "Kabupaten Jombang": [
-    "Bareng", "Diwek", "Gudo", "Jogoroto", "Jombang",
-    "Kabuh", "Kesamben", "Kudu", "Megah", "Mojoagung",
-    "Mojowarno", "Ngoro", "Ngusikan", "Perak",
-    "Peterongan", "Plandaan", "Ploso", "Sumobito",
-    "Tembelang", "Wonosalam"
-  ],
-  "Kabupaten Kediri": [
-    "Badas", "Gurah", "Kandangan", "Kandat",
-    "Kayen Kidul", "Kepung", "Kras", "Kunjang",
-    "Mojo", "Ngadiluwih", "Ngancar", "Ngasem",
-    "Pagu", "Papar", "Pare", "Plemahan", "Purwoasri",
-    "Ringinrejo", "Semen", "Tarokan", "Wates"
-  ],
-  "Kabupaten Lamongan": [
-    "Babat", "Bluluk", "Brondong", "Deket", "Glagah",
-    "Kalitengah", "Karangbinangun", "Kedungpring",
-    "Kembangbahu", "Lamongan", "Laren", "Maduran",
-    "Mantup", "Modo", "Ngimbang", "Pucuk", "Sambeng",
-    "Sarirejo", "Sekaran", "Solokuro", "Sugio",
-    "Sukodadi", "Sukorame", "Tikung", "Turi"
-  ],
-  "Kabupaten Lumajang": [
-    "Candipuro", "Gucialit", "Jatiroto", "Kedungjajang",
-    "Klakah", "Kunir", "Lumajang", "Padang", "Pasirian",
-    "Pasrujambe", "Pronojiwo", "Randuagung", "Ranuyoso",
-    "Rowokangkung", "Senduro", "Sukodono", "Sumbersuko",
-    "Tekung", "Tempursari", "Tempeh", "Yosowilangun"
-  ],
-  "Kabupaten Madiun": [
-    "Balerejo", "Dagangan", "Dolopo", "Geger", "Gemarang",
-    "Jiwan", "Kare", "Madiun", "Mejayan", "Pilangkenceng",
-    "Saradan", "Sawahan", "Wonoasri", "Wungu"
-  ],
-  "Kabupaten Magetan": [
-    "Barat", "Bendo", "Karangrejo", "Karas", "Kartoharjo",
-    "Kawedanan", "Lembeyan", "Magetan", "Maospati",
-    "Ngariboyo", "Nguntoronadi", "Panekan", "Parang",
-    "Plaosan", "Poncol", "Sidorejo", "Sukomoro",
-    "Takeran"
-  ],
-  "Kabupaten Malang": [
-    "Ampelgading", "Bantur", "Bululawang", "Dau",
-    "Donomulyo", "Gedangan", "Gondanglegi", "Jabung",
-    "Kalipare", "Karangploso", "Kasembon", "Kepanjen",
-    "Kromengan", "Lawang", "Ngajum", "Ngantang",
-    "Pagak", "Pagelaran", "Pakis", "Pakisaji",
-    "Poncokusumo", "Pujon", "Singosari", "Sumbermanjing",
-    "Sumberpucung", "Tirtoyudo", "Tumpang", "Turen",
-    "Wagir", "Wajak", "Wonosari"
-  ],
-  "Kabupaten Mojokerto": [
-    "Bangsal", "Dawarblandong", "Dlanggu", "Gedeg",
-    "Gondang", "Jatirejo", "Jetis", "Kemlagi",
-    "Kutorejo", "Mojoanyar", "Mojosari", "Ngoro",
-    "Pacet", "Pungging", "Sooko", "Trawas", "Trowulan"
-  ],
-  "Kabupaten Nganjuk": [
-    "Bagor", "Baron", "Berbek", "Gondang", "Jatikalen",
-    "Kertosono", "Lengkong", "Loceret", "Nganjuk",
-    "Ngetos", "Ngluyu", "Ngronggot", "Pace", "Patianrowo",
-    "Prambon", "Rejoso", "Sawahan", "Sukomoro",
-    "Tanjunganom", "Wilangan"
-  ],
-  "Kabupaten Ngawi": [
-    "Bringin", "Geneng", "Gerih", "Jogorogo", "Karanganyar",
-    "Karangjati", "Kasreman", "Kedunggalar", "Kendal",
-    "Mantingan", "Ngawi", "Ngrambe", "Padas", "Pangkur",
-    "Paron", "Pitu", "Sine", "Widodaren"
-  ],
-  "Kabupaten Pacitan": [
-    "Arjosari", "Bandar", "Donorojo", "Kebonagung",
-    "Nawangan", "Ngadirojo", "Pacitan", "Pringkuku",
-    "Punung", "Sudimoro", "Tegalombo", "Tulakan"
-  ],
-  "Kabupaten Pamekasan": [
-    "Batumarmar", "Galis", "Kadur", "Larangan", "Pademawu",
-    "Pakalongan", "Palengaan", "Pamekasan", "Pasean",
-    "Pegantenan", "Proppo", "Tlanakan", "Waru"
-  ],
-  "Kabupaten Pasuruan": [
-    "Bangil", "Beji", "Gempol", "Gondangwetan", "Grati",
-    "Kejayan", "Kraton", "Lekok", "Lumbang", "Nguling",
-    "Pandaan", "Pasrepan", "Pohjentrek", "Prigen",
-    "Purwodadi", "Purwosari", "Puspo", "Rejoso",
-    "Rembang", "Sukorejo", "Tosari", "Tutur",
-    "Wonorejo"
-  ],
-  "Kabupaten Ponorogo": [
-    "Babadan", "Badegan", "Balong", "Bungkal", "Jambon",
-    "Jenangan", "Jetis", "Kauman", "Mlarak", "Ngebel",
-    "Ngrayun", "Ponorogo", "Pudak", "Pulung", "Sambit",
-    "Sampung", "Sawoo", "Siman", "Slahung", "Sooko",
-    "Sukorejo"
-  ],
-  "Kabupaten Probolinggo": [
-    "Bantaran", "Banyuanyar", "Besuk", "Dringu",
-    "Gading", "Gending", "Kotaanyar", "Kraksaan",
-    "Krejengan", "Krucil", "Kuripan", "Leces",
-    "Lumbang", "Maron", "Paiton", "Pajarakan",
-    "Pakuniran", "Sukapura", "Sumber", "Tegal Siwalan",
-    "Tiris", "Tongas", "Wonomerto"
-  ],
-  "Kabupaten Sampang": [
-    "Banyuates", "Camplong", "Jrengik", "Karangpenang",
-    "Kedungdung", "Ketapang", "Omben", "Pangarengan",
-    "Robatal", "Sampang", "Sokobanah", "Sreseh",
-    "Tambelangan", "Torjun"
-  ],
-  "Kabupaten Sidoarjo": [
-    "Balongbendo", "Buduran", "Candi", "Gedangan",
-    "Jabon", "Krembung", "Krian", "Porong",
-    "Prambon", "Sedati", "Sidoarjo", "Sukodono",
-    "Taman", "Tanggulangin", "Tulangan", "Waru",
-    "Wonoayu"
-  ],
-  "Kabupaten Situbondo": [
-    "Asembagus", "Banyuglugur", "Banyuputih", "Besuki",
-    "Bungatan", "Jangkar", "Jatibanteng", "Kapongan",
-    "Kendit", "Mangaran", "Mlandingan", "Panarukan",
-    "Panji", "Situbondo", "Suboh"
-  ],
-  "Kabupaten Sumenep": [
-    "Ambunten", "Arjasa", "Batang-Batang", "Batuan",
-    "Batuputih", "Bluto", "Dasuk", "Dungkek", "Ganding",
-    "Gapura", "Gayam", "Gili Genting", "Guluk-guluk",
-    "Kalianget", "Kangayan", "Kota Sumenep",
-    "Lenteng", "Manding", "Masalembu", "Nonggunong",
-    "Pasongsongan", "Pragaan", "Ra'as", "Rubaru",
-    "Sapeken", "Saronggi", "Talango"
-  ]
-  },
-    "Jawa Barat": {
-        "Bandung": ["Cicendo", "Coblong", "Andir", "Buahbatu", "Kiaracondong"],
-        "Bekasi": ["Bekasi Barat", "Bekasi Timur", "Bekasi Selatan", "Jatiasih"],
-        "Bogor": ["Bogor Tengah", "Bogor Barat", "Bogor Selatan"]
+    "Sumatera Utara": {
+        "Medan": ["Medan Amplas","Medan Area","Medan Barat","Medan Baru","Medan Belawan","Medan Deli","Medan Denai","Medan Helvetia","Medan Johor","Medan Kota","Medan Labuhan","Medan Maimun","Medan Marelan","Medan Perjuangan","Medan Petisah","Medan Polonia","Medan Selayang","Medan Sunggal","Medan Tembung","Medan Timur","Medan Tuntungan"],
+        "Binjai": ["Binjai Barat","Binjai Kota","Binjai Selatan","Binjai Timur","Binjai Utara"],
+        "Tebing Tinggi": ["Bajenis","Padang Hilir","Padang Hulu","Rambutan","Tebing Tinggi Kota"],
+        "Pematangsiantar": ["Martoba","Pematangsiantar Barat","Siantar","Siantar Marihat","Siantar Marimbun","Siantar Selatan","Siantar Timur","Siantar Utara"],
+        "Kabupaten Deli Serdang": ["Batang Kuis","Beringin","Biru-Biru","Galang","Hamparan Perak","Labuhan Deli","Lubuk Pakam","Namo Rambe","Namorambe","Pagar Merbau","Pancur Batu","Patumbak","Percut Sei Tuan","Sibolangit","STM Hilir","STM Hulu","Sunggal","Tanjung Morawa"],
+        "Kabupaten Langkat": ["Babalan","Batang Serangan","Binjai","Brandan Barat","Gebang","Hinai","Kutambaru","Padang Tualang","Pangkalan Susu","Salapian","Sawit Seberang","Secanggang","Sei Bingai","Sei Lepan","Selesai","Stabat","Tanjung Pura","Wampu"],
+        "Kabupaten Asahan": ["Air Batu","Air Joman","Aek Kuasan","Aek Ledong","Aek Songsongan","Bandar Pasir Mandoge","Bandar Pulau","Buntu Pane","Kisaran Barat","Kisaran Timur","Meranti","Pulau Rakyat","Pulo Bandring","Rahuning","Rawang Panca Arga","Sei Dadap","Setia Janji","Silau Laut","Simpang Empat","Teluk Dalam","Torgamba"],
+        "Kabupaten Simalungun": ["Bandar","Bandar Huluan","Bandar Marsilam","Bosar Maligas","Dolok Batu Nanggar","Dolok Panribuan","Dolok Pardamean","Dolok Silou","Girsang Sipangan Bolon","Gunung Malela","Gunung Maligas","Haranggaol Horison","Hatonduhan","Huta Bayu Raja","Jawa Maraja Bah Jambi","Jorlang Hataran","Lnagkat Bayu","Pane","Panei","Panei Tongah","Pamatang Bandar","Pamatang Raya","Pamatang Sidamanik","Pematang Silima Huta","Purba","Raya","Raya Kahean","Silimakuta","Siantar","Sidamanik","Tanah Jawa","Ujung Padang"],
+        "Kabupaten Tapanuli Utara": ["Garoga","Pagaran","Pahae Jae","Pahae Julu","Pangaribuan","Parmonangan","Purba Tua","Siatas Barita","Siborongborong","Simangumban","Sipoholon","Tarutung"],
+        "Kabupaten Tapanuli Selatan": ["Angkola Barat","Angkola Muaratais","Angkola Sangkunur","Angkola Selatan","Angkola Timur","Aek Bilah","Batang Angkola","Batang Toru","Dolok","Dolok Sigompulon","Marancar","Muara Batang Toru","Padang Bolak","Sayur Matinggi","Sipirok","Siais"]
+    },
+    "Sumatera Barat": {
+        "Padang": ["Bungus Teluk Kabung","Koto Tangah","Kuranji","Lubuk Begalung","Lubuk Kilangan","Nanggalo","Padang Barat","Padang Selatan","Padang Timur","Padang Utara","Pauh"],
+        "Bukittinggi": ["Aur Birugo Tigo Baleh","Guguk Panjang","Mandiangin Koto Selayan","MKS","Payakumbuh"],
+        "Padang Panjang": ["Padang Panjang Barat","Padang Panjang Timur"],
+        "Payakumbuh": ["Lamposi Tigo Nagori","Latina","Payakumbuh Barat","Payakumbuh Selatan","Payakumbuh Timur","Payakumbuh Utara"],
+        "Solok": ["Lubuk Sikarah","Tanjung Harapan"],
+        "Sawah Lunto": ["Barangin","Lembah Segar","Silungkang","Talawi"],
+        "Pariaman": ["Pariaman Selatan","Pariaman Tengah","Pariaman Timur","Pariaman Utara"],
+        "Kabupaten Agam": ["Ampek Angkek","Banuhampu","Baso","Canduang","IV Angkek","Kamang Magek","Lubuk Basung","Malalak","Matur","Palembayan","Palupuah","Sungai Pua","Tanjung Mutiara","Tanjung Raya","Tilatang Kamang"],
+        "Kabupaten Pesisir Selatan": ["Airpura","Basa Ampek Balai Tapan","Bayang","Bayang Utara","IV Jurai","IV Nagari Bayang Utara","Koto XI Tarusan","Lenggayang","Linggo Sari Baganti","Lunang","Pancung Soal","Ranah Ampek Hulu Tapan","Ranah Pesisir","Silaut","Sutera"],
+        "Kabupaten Solok": ["Bukit Sundi","Danau Kembar","Gunung Talang","Hiliran Gumanti","IX Koto Sungai Lasi","Junjung Sirih","Kubung","Lembah Gumanti","Lembang Jaya","Pantai Cermin","Payung Sekaki","Tigo Lurah","X Koto Diatas","X Koto Singkarak"]
+    },
+    "Riau": {
+        "Pekanbaru": ["Binawidya","Bukit Raya","Lima Puluh","Marpoyan Damai","Payung Sekaki","Pekanbaru Kota","Rumbai","Rumbai Pesisir","Sail","Senapelan","Sukajadi","Tampan","Tenayan Raya"],
+        "Dumai": ["Bukit Kapur","Dumai Barat","Dumai Kota","Dumai Selatan","Dumai Timur","Medang Kampai","Sungai Sembilan"],
+        "Kabupaten Kampar": ["Bangkinang","Bangkinang Seberang","Kampar","Kampar Kiri","Kampar Kiri Hilir","Kampar Kiri Hulu","Kampar Kiri Tengah","Kampar Timur","Kampar Utara","Kuok","Perhentian Raja","Rumbio Jaya","Salo","Siak Hulu","Tambang","Tapung","Tapung Hilir","Tapung Hulu"],
+        "Kabupaten Rokan Hulu": ["Bonai Darussalam","Kabun","Kepenuhan","Kepenuhan Hulu","Kunto Darussalam","Pagaran Tapah Darussalam","Pendalian IV Koto","Rambah","Rambah Hilir","Rambah Samo","Rokan IV Koto","Tandun","Ujung Batu"],
+        "Kabupaten Rokan Hilir": ["Bagan Sinembah","Bangko","Bangko Pusako","Bagansiapi-api","Kubu","Kubu Babussalam","Pasir Limau Kapas","Pujud","Rantau Kopar","Rimba Melintang","Simpang Kanan","Sinaboi","Tanah Putih","Tanah Putih Tanjung Melawan"],
+        "Kabupaten Bengkalis": ["Bantan","Bengkalis","Bukit Batu","Mandau","Pinggir","Rupat","Rupat Utara","Siak Kecil"],
+        "Kabupaten Siak": ["Bungaraya","Dayun","Kandis","Kerinci Kanan","Koto Gasib","Lubuk Dalam","Mempura","Minas","Sabak Auh","Siak","Sungai Apit","Tualang"]
+    },
+    "Kepulauan Riau": {
+        "Batam": ["Batu Ampar","Batam Kota","Belakang Padang","Bengkong","Bulang","Galang","Lubuk Baja","Nongsa","Sagulung","Sekupang"],
+        "Tanjung Pinang": ["Bukit Bestari","Tanjungpinang Barat","Tanjungpinang Kota","Tanjungpinang Timur"],
+        "Kabupaten Bintan": ["Bintan Pesisir","Bintan Timur","Bintan Utara","Gunung Kijang","Mantang","Numbing","Seri Kuala Lobam","Sri Bintan","Tambelan","Teluk Bintan","Teluk Sebong"],
+        "Kabupaten Karimun": ["Buru","Durai","Karimun","Kundur","Kundur Barat","Kundur Utara","Meral","Meral Barat","Moro","Tebing"],
+        "Kabupaten Natuna": ["Bunguran Barat","Bunguran Tengah","Bunguran Timur","Bunguran Timur Laut","Bunguran Utara","Midai","Pulau Laut","Pulau Tiga","Subi","Serasan"]
+    },
+    "Jambi": {
+        "Jambi": ["Danau Sipin","Danau Teluk","Jambi Selatan","Jambi Timur","Jelutung","Kota Baru","Lalang","Pasar","Paal Merah","Pelayangan","Telanaipura"],
+        "Sungai Penuh": ["Hamparan Rawang","Koto Baru","Kumun Debai","Pesisir Bukit","Pondok Tinggi","Sungai Bungkal","Sungai Penuh","Tanah Kampung","Hamparan Rawang","Koto Baru"],
+        "Kabupaten Batanghari": ["Bajubang","Batin XXIV","Maro Sebo Ilir","Maro Sebo Ulu","Mersam","Muara Bulian","Muara Tembesi","Pemayung"],
+        "Kabupaten Bungo": ["Bathin II Babeko","Bathin II Pelayang","Bathin III","Bathin III Ulu","Bungo Dani","Jujuhan","Jujuhan Ilir","Muko-Muko Bathin VII","Pasar Muara Bungo","Pelepat","Pelepat Ilir","Rantau Pandan","Rimbo Tengah","Tanah Sepenggal","Tanah Sepenggal Lintas"],
+        "Kabupaten Merangin": ["Bangko","Bangko Barat","Batang Masumai","Bukit Kerman","Jangkat","Jangkat Timur","Lembah Masurai","Margo Tabir","Muara Siau","Nalo Tantan","Pamenang","Pamenang Barat","Pamenang Selatan","Renah Pembarap","Sungai Manau","Tabir","Tabir Barat","Tabir Ilir","Tabir Lintas","Tabir Selatan","Tabir Timur","Tabir Ulu"],
+        "Kabupaten Sarolangun": ["Air Hitam","Batang Asai","Bathin VIII","Cermin Nan Gedang","Limun","Pauh","Pelawan","Rawas Ilir","Sarolangun","Singkut"]
+    },
+    "Sumatera Selatan": {
+        "Palembang": ["Alang-Alang Lebar","Bukit Kecil","Gandus","Ilir Barat I","Ilir Barat II","Ilir Timur I","Ilir Timur II","Ilir Timur III","Jakabaring","Kalidoni","Kemuning","Kertapati","Plaju","Sako","Seberang Ulu I","Seberang Ulu II","Sematang Borang","Sukarame"],
+        "Lubuk Linggau": ["Lubuk Linggau Barat I","Lubuk Linggau Barat II","Lubuk Linggau Selatan I","Lubuk Linggau Selatan II","Lubuk Linggau Timur I","Lubuk Linggau Timur II","Lubuk Linggau Utara I","Lubuk Linggau Utara II"],
+        "Prabumulih": ["Cambai","Prabumulih Barat","Prabumulih Selatan","Prabumulih Timur","Prabumulih Utara","Rambang Kapak Tengah"],
+        "Pagar Alam": ["Dempo Selatan","Dempo Tengah","Dempo Utara","Pagar Alam Selatan","Pagar Alam Utara"],
+        "Kabupaten Banyuasin": ["Air Kumbang","Air Salek","Banyuasin I","Banyuasin II","Banyuasin III","Betung","Makarti Jaya","Muara Padang","Muara Sugihan","Muara Telang","Pulau Rimau","Rambutan","Rantau Bayur","Sembawa","Talang Kelapa","Tanjung Lago","Tungkal Ilir"],
+        "Kabupaten Musi Banyuasin": ["Babat Supat","Babat Toman","Bayung Lencir","Batanghari Leko","Lais","Lalan","Lawang Wetan","Muara Kelingi","Plakat Tinggi","Sanga Desa","Sekayu","Sungai Keruh","Sungai Lilin"],
+        "Kabupaten Ogan Komering Ilir": ["Air Sugihan","Cengal","Jejawi","Kayuagung","Lempuing","Lempuing Jaya","Mesuji","Mesuji Makmur","Mesuji Raya","Pampangan","Pangkalan Lampam","Pedamaran","Pedamaran Timur","Sungai Menang","Tanjung Lubuk","Tulung Selapan"]
+    },
+    "Bengkulu": {
+        "Bengkulu": ["Gading Cempaka","Kampung Melayu","Muara Bangka Hulu","Ratu Agung","Ratu Samban","Selebar","Singaran Pati","Sungai Serut","Teluk Segara"],
+        "Kabupaten Bengkulu Utara": ["Air Besi","Air Napal","Argamakmur","Enggano","Giri Mulya","Hulu Palik","Ketahun","Kerkap","Lais","Putri Hijau","Tanjung Agung Palik","Ulok Kupai"],
+        "Kabupaten Bengkulu Selatan": ["Air Nipis","Bunga Mas","Kedurang","Kedurang Ilir","Kota Manna","Manna","Pino","Pino Raya","Seginim","Ulu Manna"],
+        "Kabupaten Kepahiang": ["Bermani Ilir","Kabawetan","Kepahiang","Merigi","Muara Kemumu","Tebat Karai","Ujan Mas"],
+        "Kabupaten Rejang Lebong": ["Bermani Ulu","Bermani Ulu Raya","Binduriang","Curup","Curup Selatan","Curup Tengah","Curup Timur","Curup Utara","Kota Padang","Padang Ulak Tanding","Selupu Rejang","Sindang Beliti Ilir","Sindang Dataran","Sindang Kelingi"]
+    },
+    "Lampung": {
+        "Bandar Lampung": ["Bumi Waras","Enggal","Kedamaian","Kedaton","Kemiling","Labuhan Ratu","Langkapura","Panjang","Rajabasa","Sukabumi","Sukarame","Tanjung Karang Barat","Tanjung Karang Pusat","Tanjung Karang Timur","Tanjung Senang","Teluk Betung Barat","Teluk Betung Selatan","Teluk Betung Timur","Teluk Betung Utara","Way Halim"],
+        "Metro": ["Metro Barat","Metro Pusat","Metro Selatan","Metro Timur","Metro Utara"],
+        "Kabupaten Lampung Selatan": ["Bakauheni","Candipuro","Jati Agung","Katibung","Kalianda","Ketapang","Merbau Mataram","Natar","Palas","Rajabasa","Sidomulyo","Sragi","Tanjung Bintang","Tanjung Sari","Way Panji","Way Sulan"],
+        "Kabupaten Lampung Tengah": ["Anak Ratu Aji","Anak Tuha","Bandar Mataram","Bandar Surabaya","Bumi Ratu Nuban","Buyut Udik","Kalirejo","Kota Gajah","Padang Ratu","Pubian","Punggur","Rumbia","Selagai Lingga","Sendang Agung","Seputih Agung","Seputih Banyak","Seputih Mataram","Seputih Raman","Seputih Surabaya","Seputih Warmasing","Terbanggi Besar","Terusan Nunyai","Trimurjo","Way Pengubuan","Way Seputih"],
+        "Kabupaten Lampung Utara": ["Abung Barat","Abung Kunang","Abung Pekurun","Abung Selatan","Abung Semuli","Abung Surakarta","Abung Tengah","Abung Timur","Abung Tinggi","Blambangan Pagar","Bukit Kemuning","Bunga Mayang","Hulu Sungkai","Kotabumi","Kotabumi Selatan","Kotabumi Utara","Muara Sungkai","Sungkai Barat","Sungkai Jaya","Sungkai Selatan","Sungkai Tengah","Sungkai Utara","Tanjung Raja"]
+    },
+    "Bangka Belitung": {
+        "Pangkal Pinang": ["Bukit Intan","Gabek","Gerunggang","Girimaya","Pangkalbalam","Rangkui","Taman Sari"],
+        "Kabupaten Bangka": ["Bakam","Belinyu","Mendo Barat","Merawang","Pemali","Puding Besar","Riausilip","Riau Silip","Sungailiat","Tempilang"],
+        "Kabupaten Bangka Barat": ["Jebus","Kelapa","Mentok","Muntok","Parittiga","Simpang Teritip","Tempilang"],
+        "Kabupaten Bangka Selatan": ["Air Gegas","Kepulauan Pongok","Lepar Pongok","Payung","Pulau Besar","Simpang Rimba","Tukak Sadai","Toboali"],
+        "Kabupaten Bangka Tengah": ["Koba","Lubuk Besar","Namang","Pangkalan Baru","Simpang Katis","Sungaiselan"],
+        "Kabupaten Belitung": ["Badau","Membalong","Selat Nasik","Sijuk","Tanjung Pandan"],
+        "Kabupaten Belitung Timur": ["Damar","Dendang","Gantung","Kelapa Kampit","Manggar","Simpang Pesak","Simpang Renggiang"]
     },
     "DKI Jakarta": {
-        "Jakarta Pusat": ["Gambir", "Tanah Abang", "Menteng", "Senen", "Cempaka Putih"],
-        "Jakarta Selatan": ["Kebayoran Baru", "Kebayoran Lama", "Cilandak", "Pasar Minggu", "Tebet"]
+        "Jakarta Pusat": ["Cempaka Putih","Gambir","Johar Baru","Kemayoran","Menteng","Sawah Besar","Senen","Tanah Abang"],
+        "Jakarta Utara": ["Cilincing","Koja","Kelapa Gading","Pademangan","Penjaringan","Tanjung Priok"],
+        "Jakarta Barat": ["Cengkareng","Grogol Petamburan","Kalideres","Kebon Jeruk","Kembangan","Palmerah","Taman Sari","Tambora"],
+        "Jakarta Selatan": ["Cilandak","Jagakarsa","Kebayoran Baru","Kebayoran Lama","Mampang Prapatan","Pancoran","Pasar Minggu","Pesanggrahan","Setia Budi","Tebet"],
+        "Jakarta Timur": ["Cakung","Cipayung","Ciracas","Duren Sawit","Jatinegara","Kramat Jati","Makasar","Matraman","Pasar Rebo","Pulo Gadung"],
+        "Kepulauan Seribu": ["Kepulauan Seribu Selatan","Kepulauan Seribu Utara"]
+    },
+    "Jawa Barat": {
+        "Bandung": ["Andir","Antapani","Arcamanik","Astana Anyar","Babakan Ciparay","Bandung Kidul","Bandung Kulon","Bandung Wetan","Batununggal","Bojongloa Kaler","Bojongloa Kidul","Buah Batu","Cibeunying Kaler","Cibeunying Kidul","Cicendo","Cidadap","Cinambo","Coblong","Gedebage","Kiaracondong","Lengkong","Mandalajati","Panyileukan","Rancasari","Regol","Sukajadi","Sukasari","Sumur Bandung","Ujungberung"],
+        "Bekasi": ["Bantargebang","Bekasi Barat","Bekasi Selatan","Bekasi Timur","Bekasi Utara","Jatiasih","Jatisampurna","Medan Satria","Mustika Jaya","Pondok Gede","Pondok Melati","Rawalumbu"],
+        "Bogor": ["Bogor Barat","Bogor Selatan","Bogor Tengah","Bogor Timur","Bogor Utara","Tanah Sareal"],
+        "Cimahi": ["Cimahi Selatan","Cimahi Tengah","Cimahi Utara"],
+        "Cirebon": ["Kejaksan","Kesambi","Lemahwungkuk","Pekalipan","Harjamukti"],
+        "Depok": ["Beji","Bojongsari","Cilodong","Cimanggis","Cinere","Cipayung","Limo","Pancoran Mas","Sawangan","Sukmajaya","Tapos"],
+        "Sukabumi": ["Baros","Cibeureum","Cikole","Citamiang","Gunungpuyuh","Lembursitu","Warudoyong"],
+        "Tasikmalaya": ["Bungursari","Cibeureum","Cihideung","Cipedes","Indihiang","Kawalu","Mangkubumi","Purbaratu","Tamansari","Tawang"],
+        "Kabupaten Bandung": ["Arjasari","Baleendah","Banjaran","Bojongsoang","Cangkuang","Cicalengka","Cikancung","Cilengkrang","Cileunyi","Cimaung","Cimenyan","Ciparay","Ciwidey","Dayeuhkolot","Ibun","Katapang","Kertasari","Kutawaringin","Majalaya","Margaayu","Margaasih","Nagreg","Pameungpeuk","Pangalengan","Paseh","Pasirjambu","Rancaekek","Rancabali","Solokanjeruk","Soreang"],
+        "Kabupaten Bogor": ["Babakan Madang","Babakanmadang","Caringin","Cariu","Cibinong","Cigombong","Cigudeg","Cijeruk","Cileungsi","Ciomas","Cisarua","Citeureup","Dramaga","Gunung Putri","Gunung Sindur","Jonggol","Kemang","Klapa Nunggal","Leuwiliang","Leuwisadeng","Megamendung","Nanggung","Pamijahan","Parung","Parung Panjang","Rumpin","Sukamakmur","Sukaraja","Sukajaya","Tanjungsari","Tajur Halang","Tenjo"],
+        "Kabupaten Karawang": ["Batujaya","Ciampel","Cibuaya","Cikampek","Cilamaya Kulon","Cilamaya Wetan","Cilebar","Jatisari","Jayakerta","Karawang Barat","Karawang Timur","Klari","Kotabaru","Kutawaluya","Lemahabang","Majalaya","Pakisjaya","Pangkalan","Pedes","Purwasari","Rawamerta","Rengasdengklok","Tegalwaru","Telukjambe Barat","Telukjambe Timur","Tempuran","Tirtajaya","Tirtamulya"],
+        "Kabupaten Sukabumi": ["Caringin","Cibadak","Cibitung","Cicurug","Cidahu","Cidolog","Ciemas","Ciracap","Cikembar","Cikidang","Cikole","Cilampuyang","Cisolok","Curugkembar","Gegerbitung","Gunungguruh","Jampang Kulon","Jampang Tengah","Kabandungan","Kadudampit","Kalibunder","Kebonpedes","Kecamatan Sukaraja","Lengkong","Nagrak","Nyalindung","Pabuaran","Palabuhanratu","Parakan Salak","Parungkuda","Pelabuhan Ratu","Purabaya","Sagaranten","Simpenan","Sukabumi","Sukalarang","Surade","Tegalbuleud","Waluran"]
+    },
+    "Banten": {
+        "Serang": ["Cipocok Jaya","Curug","Kasemen","Serang","Taktakan","Walantaka"],
+        "Cilegon": ["Citangkil","Cibeber","Cilegon","Grogol","Jombang","Pulomerak","Purwakarta","Tengkurak"],
+        "Tangerang": ["Batuceper","Benda","Cibodas","Ciledug","Cipondoh","Jatiuwung","Karang Tengah","Karawaci","Larangan","Neglasari","Periuk","Pinang","Tangerang"],
+        "Tangerang Selatan": ["Ciputat","Ciputat Timur","Pamulang","Pondok Aren","Serpong","Serpong Utara","Setu"],
+        "Kabupaten Tangerang": ["Balaraja","Cikupa","Cisauk","Curug","Gunung Kaler","Jambe","Jayanti","Kemiri","Kosambi","Kronjo","Kresek","Legok","Mauk","Mekar Baru","Pagedangan","Pakuhaji","Panongan","Pasar Kemis","Rajeg","Sepatan","Sepatan Timur","Sindang Jaya","Solear","Sukadiri","Sukamulya","Teluknaga","Tigaraksa"],
+        "Kabupaten Serang": ["Anyer","Baros","Bandung","Binuang","Bojonegara","Carenang","Cikeusal","Cinangka","Ciomas","Ciruas","Gunungsari","Jawilan","Kibin","Kopo","Kragilan","Kramatwatu","Lebak Wangi","Mancak","Nyomplong","Pabuaran","Padarincang","Petir","Pontang","Pulo Ampel","Tirtayasa","Tunjung Teja","Waringin Kurung"],
+        "Kabupaten Lebak": ["Banjarsari","Bayah","Bojong Manik","Cibadak","Cibeber","Cigemblong","Cihara","Cijaku","Cikulur","Cileles","Cimarga","Cipanas","Cirinten","Curugbitung","Gunung Kencana","Kalanganyar","Lebak Gedong","Leuwidamar","Maja","Malingping","Muncang","Panggarangan","Rangkasbitung","Sajira","Sobang","Warunggunung","Wanasalam"],
+        "Kabupaten Pandeglang": ["Angsana","Banjar","Bojong","Cadasari","Carita","Cikedal","Cimanuk","Cimanggu","Cipecang","Cisata","Jiput","Kaduhejo","Karang Tanjung","Labuan","Majasari","Mandalawangi","Menes","Mekarjaya","Munjul","Pandeglang","Pagelaran","Patia","Picung","Pulosari","Saketi","Sindangresmi","Sukaresmi","Sumur"]
+    },
+    "Jawa Tengah": {
+        "Semarang": ["Banyumanik","Candisari","Gajahmungkur","Gayamsari","Genuk","Gunungpati","Mijen","Ngaliyan","Pedurungan","Semarang Barat","Semarang Selatan","Semarang Tengah","Semarang Timur","Semarang Utara","Tembalang","Tugu"],
+        "Solo": ["Banjarsari","Jebres","Laweyan","Pasar Kliwon","Serengan"],
+        "Magelang": ["Magelang Selatan","Magelang Tengah","Magelang Utara"],
+        "Pekalongan": ["Buaran","Dukuh","Pekalongan Barat","Pekalongan Selatan","Pekalongan Timur","Pekalongan Utara"],
+        "Salatiga": ["Argomulyo","Sidorejo","Sidomukti","Tingkir"],
+        "Tegal": ["Margadana","Tegal Barat","Tegal Selatan","Tegal Timur"],
+        "Kabupaten Banyumas": ["Ajibarang","Baturraden","Cilongok","Gumelar","Jatilawang","Kalibagor","Karanglewas","Kebasen","Kedungbanteng","Kemranjen","Kesugihan","Kembaran","Lumbir","Patikraja","Pekuncen","Purwojati","Purwokerto Barat","Purwokerto Selatan","Purwokerto Timur","Purwokerto Utara","Rawalo","Sokaraja","Somagede","Sumbang","Sumpiuh","Tambak","Wangon"],
+        "Kabupaten Brebes": ["Banjarharjo","Bantarkawung","Brebes","Bulakamba","Bumiayu","Jatibarang","Ketanggungan","Larangan","Losari","Paguyangan","Salem","Sirampog","Songgom","Tanjung","Tonjong","Wanasari"],
+        "Kabupaten Cilacap": ["Adipala","Bantarsari","Binangun","Cilacap Selatan","Cilacap Tengah","Cilacap Utara","Cimanggu","Cipari","Dayeuhluhur","Gandrungmangu","Jeruklegi","Kampung Laut","Karangpucung","Kawunganten","Kedungreja","Kesugihan","Kroya","Majenang","Maos","Nusawungu","Patimuan","Sampang","Sidareja","Wanareja"],
+        "Kabupaten Demak": ["Bonang","Demak","Dempet","Gajah","Guntur","Karangawen","Karanganyar","Karangtengah","Kebonagung","Mijen","Mranggen","Sayung","Wedung","Wonosalam"],
+        "Kabupaten Grobogan": ["Brati","Grobogan","Godong","Geyer","Gabus","Klambu","Karangrayung","Kradenan","Ngaringan","Penawangan","Pulokulon","Purwodadi","Tambakromo","Tawangharjo","Toroh","Wirosari"],
+        "Kabupaten Kebumen": ["Adimulyo","Alian","Ambal","Ayah","Bonorowo","Buayan","Buluspesantren","Gombong","Karanggayam","Karanganyar","Kebumen","Klirong","Kutowinangun","Kuwarasan","Mirit","Padureso","Pejagoan","Petanahan","Poncowarno","Prembun","Rowokele","Sadang","Sempor","Sruweng"],
+        "Kabupaten Klaten": ["Bayat","Cawas","Ceper","Delanggu","Gantiwarno","Jatinom","Jogonalan","Juwiring","Kalikotes","Karanganom","Karangdowo","Karangnongko","Kebonarum","Kemalang","Klaten Selatan","Klaten Tengah","Klaten Utara","Manisrenggo","Ngawen","Pedan","Polanharjo","Prambanan","Trucuk","Tulung","Wedi","Wonosari"],
+        "Kabupaten Purbalingga": ["Bobotsari","Bojongsari","Bukateja","Kaligondang","Kalimanah","Karanganyar","Kertanegara","Kemangkon","Kutasari","Mrebet","Pengadegan","Purbalingga","Padamara","Rembang","Sokaraja","Sukmanah","Karangjambu"],
+        "Kabupaten Purworejo": ["Bagelen","Banyuurip","Bener","Berjan","Bruno","Butuh","Gebang","Grabag","Kaligesing","Kemiri","Kutoarjo","Loano","Ngombol","Pituruh","Purworejo","Purwodadi"],
+        "Kabupaten Wonosobo": ["Garung","Kalibawang","Kaliwiro","Kejajar","Kepil","Kalikajar","Leksono","Mojotengah","Sapuran","Selomerto","Sukoharjo","Wadaslintang","Watumalang","Wonosobo"]
+    },
+    "DI Yogyakarta": {
+        "Yogyakarta": ["Danurejan","Gedongtengen","Gondokusuman","Gondomanan","Jetis","Kotagede","Kraton","Mantrijeron","Mergangsan","Ngampilan","Pakualaman","Tegalrejo","Umbulharjo","Wirobrajan"],
+        "Kabupaten Sleman": ["Berbah","Cangkringan","Depok","Gamping","Godean","Kalasan","Minggir","Mlati","Moyudan","Ngaglik","Ngemplak","Pakem","Prambanan","Sayegan","Seyegan","Sleman","Tempel","Turi"],
+        "Kabupaten Bantul": ["Bambanglipuro","Banguntapan","Bantul","Dlingo","Imogiri","Jetis","Kasihan","Kretek","Pajangan","Pandak","Piyungan","Pleret","Pundong","Sanden","Sedayu","Sewon","Srandakan"],
+        "Kabupaten Gunungkidul": ["Gedangsari","Girisubo","Karangmojo","Ngawen","Nglipar","Paliyan","Panggang","Patuk","Playen","Ponjong","Purwosari","Rongkop","Sawit","Semin","Semanu","Saptosari","Tepus","Tanjungsari","Wonosari"],
+        "Kabupaten Kulon Progo": ["Galur","Girimulyo","Kalibawang","Kokap","Lendah","Nanggulan","Panjatan","Pengasih","Samigaluh","Sentolo","Temon","Wates"]
+    },
+    "Jawa Timur": {
+    "Kabupaten Bangkalan": ["Arosbaya","Bangkalan","Blega","Burneh","Galis","Geger","Kamal","Klampis","Kokop","Konang","Labang","Modung","Sepulu","Socah","Tanah Merah","Tanjung Bumi","Tragah"],
+    "Kabupaten Banyuwangi": ["Bangorejo","Banyuwangi","Blimbingsari","Cluring","Gambiran","Genteng","Giri","Glagah","Glenmore","Kalibaru","Kalipuro","Licin","Muncar","Pesanggaran","Purwoharjo","Rogojampi","Sempu","Siliragung","Singojuruh","Songgon","Srono","Tegaldlimo","Tegalsari","Wongsorejo"],
+    "Kabupaten Blitar": ["Bakung","Binangun","Doko","Gandusari","Garum","Kademangan","Kanigoro","Kesamben","Nglegok","Panggungrejo","Ponggok","Sanankulon","Sananwetan","Selopuro","Selorejo","Srengat","Sutojayan","Talun","Udanawu","Wates","Wonodadi","Wonotirto"],
+    "Kabupaten Bojonegoro": ["Balen","Baureno","Bojonegoro","Bubulan","Dander","Gayam","Gondang","Kapas","Kasiman","Kedewan","Kedungadem","Kepohbaru","Malo","Margomulyo","Ngambon","Ngasem","Ngraho","Padangan","Purwosari","Sekar","Sugihwaras","Sukosewu","Sumberrejo","Tambakrejo","Temayang","Trucuk"],
+    "Kabupaten Bondowoso": ["Binakal","Bondowoso","Botolinggo","Cermee","Curahdami","Grujugan","Jambe Sari","Klabang","Maesan","Pakem","Prajekan","Pujer","Sempol","Sukosari","Sumber Wringin","Taman Krocok","Tamanan","Tapen","Tenggarang","Tlogosari","Wonosari","Wringin"],
+    "Kabupaten Gresik": ["Balongpanggang","Benjeng","Bungah","Cerme","Driyorejo","Duduk Sampeyan","Dukun","Gresik","Kedamean","Kebomas","Manyar","Menganti","Panceng","Sangkapura","Sidayu","Tambak","Ujungpangkah","Wringinanom"],
+    "Kabupaten Jember": ["Ajung","Ambulu","Arjasa","Balung","Bangsalsari","Gumukmas","Jelbuk","Jenggawah","Jombang","Kalisat","Kaliwates","Kencong","Ledokombo","Mayang","Mumbulsari","Pakusari","Panti","Patrang","Puger","Rambipuji","Semboro","Silo","Sukorambi","Sukowono","Sumberbaru","Sumberjambe","Sumbersari","Tanggul","Tempurejo","Umbulsari","Wuluhan"],
+    "Kabupaten Jombang": ["Bareng","Diwek","Gudo","Jogoroto","Jombang","Kabuh","Kesamben","Kudu","Megaluh","Mojoagung","Mojowarno","Ngoro","Ngusikan","Perak","Peterongan","Plandaan","Ploso","Sumobito","Tembelang","Wonosalam"],
+    "Kabupaten Kediri": ["Badas","Gurah","Kandangan","Kandat","Kayen Kidul","Kepung","Kras","Kunjang","Mojo","Ngadiluwih","Ngancar","Ngasem","Pagu","Papar","Pare","Plemahan","Purwoasri","Ringinrejo","Semen","Tarokan","Wates"],
+    "Kabupaten Lamongan": ["Babat","Bluluk","Brondong","Deket","Glagah","Kalitengah","Karangbinangun","Kedungpring","Kembangbahu","Lamongan","Laren","Maduran","Mantup","Modo","Ngimbang","Pucuk","Sambeng","Sarirejo","Sekaran","Solokuro","Sugio","Sukodadi","Sukorame","Tikung","Turi"],
+    "Kabupaten Lumajang": ["Candipuro","Gucialit","Jatiroto","Kedungjajang","Klakah","Kunir","Lumajang","Padang","Pasirian","Pasrujambe","Pronojiwo","Randuagung","Ranuyoso","Rowokangkung","Senduro","Sukodono","Sumbersuko","Tekung","Tempursari","Tempeh","Yosowilangun"],
+    "Kabupaten Madiun": ["Balerejo","Dagangan","Dolopo","Geger","Gemarang","Jiwan","Kare","Madiun","Mejayan","Pilangkenceng","Saradan","Sawahan","Wonoasri","Wungu"],
+    "Kabupaten Magetan": ["Barat","Bendo","Karangrejo","Karas","Kartoharjo","Kawedanan","Lembeyan","Magetan","Maospati","Ngariboyo","Nguntoronadi","Panekan","Parang","Plaosan","Poncol","Sidorejo","Sukomoro","Takeran"],
+    "Kabupaten Malang": ["Ampelgading","Bantur","Bululawang","Dau","Donomulyo","Gedangan","Gondanglegi","Jabung","Kalipare","Karangploso","Kasembon","Kepanjen","Kromengan","Lawang","Ngajum","Ngantang","Pagak","Pagelaran","Pakis","Pakisaji","Poncokusumo","Pujon","Singosari","Sumbermanjing","Sumberpucung","Tirtoyudo","Tumpang","Turen","Wagir","Wajak","Wonosari"],
+    "Kabupaten Mojokerto": ["Bangsal","Dawarblandong","Dlanggu","Gedeg","Gondang","Jatirejo","Jetis","Kemlagi","Kutorejo","Mojoanyar","Mojosari","Ngoro","Pacet","Pungging","Sooko","Trawas","Trowulan"],
+    "Kabupaten Nganjuk": ["Bagor","Baron","Berbek","Gondang","Jatikalen","Kertosono","Lengkong","Loceret","Nganjuk","Ngetos","Ngluyu","Ngronggot","Pace","Patianrowo","Prambon","Rejoso","Sawahan","Sukomoro","Tanjunganom","Wilangan"],
+    "Kabupaten Ngawi": ["Bringin","Geneng","Gerih","Jogorogo","Karanganyar","Karangjati","Kasreman","Kedunggalar","Kendal","Mantingan","Ngawi","Ngrambe","Padas","Pangkur","Paron","Pitu","Sine","Widodaren"],
+    "Kabupaten Pacitan": ["Arjosari","Bandar","Donorojo","Kebonagung","Nawangan","Ngadirojo","Pacitan","Pringkuku","Punung","Sudimoro","Tegalombo","Tulakan"],
+    "Kabupaten Pamekasan": ["Batumarmar","Galis","Kadur","Larangan","Pademawu","Pakalongan","Palengaan","Pamekasan","Pasean","Pegantenan","Proppo","Tlanakan","Waru"],
+    "Kabupaten Pasuruan": ["Bangil","Beji","Gempol","Gondangwetan","Grati","Kejayan","Kraton","Lekok","Lumbang","Nguling","Pandaan","Pasrepan","Pohjentrek","Prigen","Purwodadi","Purwosari","Puspo","Rejoso","Rembang","Sukorejo","Tosari","Tutur","Wonorejo"],
+    "Kabupaten Ponorogo": ["Babadan","Badegan","Balong","Bungkal","Jambon","Jenangan","Jetis","Kauman","Mlarak","Ngebel","Ngrayun","Ponorogo","Pudak","Pulung","Sambit","Sampung","Sawoo","Siman","Slahung","Sooko","Sukorejo"],
+    "Kabupaten Probolinggo": ["Bantaran","Banyuanyar","Besuk","Dringu","Gading","Gending","Kotaanyar","Kraksaan","Krejengan","Krucil","Kuripan","Leces","Lumbang","Maron","Paiton","Pajarakan","Pakuniran","Sukapura","Sumber","Tegal Siwalan","Tiris","Tongas","Wonomerto"],
+    "Kabupaten Sampang": ["Banyuates","Camplong","Jrengik","Karangpenang","Kedungdung","Ketapang","Omben","Pangarengan","Robatal","Sampang","Sokobanah","Sreseh","Tambelangan","Torjun"],
+    "Kabupaten Sidoarjo": ["Balongbendo","Buduran","Candi","Gedangan","Jabon","Krembung","Krian","Porong","Prambon","Sedati","Sidoarjo","Sukodono","Taman","Tanggulangin","Tulangan","Waru","Wonoayu"],
+    "Kabupaten Situbondo": ["Arjasa","Asembagus","Banyuglugur","Banyuputih","Besuki","Bungatan","Jangkar","Jatibanteng","Kapongan","Kendit","Mangaran","Mlandingan","Panarukan","Panji","Situbondo","Sumbermalang","Suboh"],
+    "Kabupaten Sumenep": ["Arjasa","Batang-Batang","Batuan","Batuputih","Bluto","Dasuk","Dungkek","Ganding","Gapura","Gayam","Giligenting","Guluk-Guluk","Kalianget","Kangayan","Lenteng","Manding","Masalembu","Nonggunong","Pasongsongan","Pragaan","Raas","Rubaru","Sapeken","Sumenep","Talango"],
+    "Kabupaten Trenggalek": ["Bendungan","Dongko","Durenan","Gandusari","Kampak","Karangan","Munjungan","Panggul","Pogalan","Pule","Suruh","Trenggalek","Tugu","Watulimo"],
+    "Kabupaten Tuban": ["Bangilan","Bancar","Grabagan","Jatirogo","Kenduruan","Kerek","Merakurak","Montong","Palang","Parengan","Plumpang","Rengel","Semanding","Senori","Singgahan","Soko","Tambakboyo","Tuban","Widang"],
+    "Kabupaten Tulungagung": ["Bandung","Besuki","Boyolangu","Campur Darat","Gondang","Kalidawir","Karangrejo","Kauman","Kedungwaru","Ngantru","Ngunut","Pakel","Pagerwojo","Pucanglaban","Rejotangan","Sendang","Sumbergempol","Tanggunggunung","Tulungagung"],
+    "Kota Batu": ["Batu","Bumiaji","Junrejo"],
+    "Kota Blitar": ["Kepanjenkidul","Sananwetan","Sukorejo"],
+    "Kota Kediri": ["Kota","Mojoroto","Pesantren"],
+    "Kota Madiun": ["Kartoharjo","Mangunharjo","Taman"],
+    "Kota Malang": ["Blimbing","Kedungkandang","Klojen","Lowokwaru","Sukun"],
+    "Kota Mojokerto": ["Magersari","Prajurit Kulon"],
+    "Kota Pasuruan": ["Bugul Kidul","Gadingrejo","Pohjentrek","Purworejo"],
+    "Kota Probolinggo": ["Kanigaran","Kedopok","Kademangan","Mayangan","Wonoasih"],
+    "Kota Surabaya": ["Asemrowo","Benowo","Bubutan","Bulak","Dukuh Pakis","Gayungan","Genteng","Gubeng","Gunung Anyar","Jambangan","Karang Pilang","Kenjeran","Krembangan","Lakarsantri","Mulyorejo","Pabean Cantikan","Pakal","Rungkut","Sambikerep","Sawahan","Semampir","Simokerto","Sukolilo","Sukomanunggal","Tambaksari","Tandes","Tegalsari","Tenggilis Mejoyo","Wiyung","Wonocolo","Wonokromo"],
+    "Kota Madiun": ["Kartoharjo","Mangunharjo","Taman"]
+    },
+    "Bali": {
+        "Denpasar": ["Denpasar Barat","Denpasar Selatan","Denpasar Timur","Denpasar Utara"],
+        "Kabupaten Badung": ["Abiansemal","Kuta","Kuta Selatan","Kuta Utara","Mengwi","Petang"],
+        "Kabupaten Gianyar": ["Blahbatuh","Gianyar","Payangan","Sukawati","Tampaksiring","Tegallalang","Ubud"],
+        "Kabupaten Tabanan": ["Baturiti","Kerambitan","Marga","Penebel","Pupuan","Selemadeg","Selemadeg Barat","Selemadeg Timur","Tabanan","Kediri"],
+        "Kabupaten Buleleng": ["Banjar","Busungbiu","Gerokgak","Kubutambahan","Sawan","Seririt","Sukasada","Tejakula","Singaraja"],
+        "Kabupaten Karangasem": ["Abang","Bebandem","Karangasem","Kubu","Manggis","Rendang","Selat","Sidemen"],
+        "Kabupaten Klungkung": ["Banjarangkan","Dawan","Klungkung","Nusa Penida"],
+        "Kabupaten Bangli": ["Bangli","Kintamani","Susut","Tembuku"],
+        "Kabupaten Jembrana": ["Jembrana","Melaya","Mendoyo","Negara","Pekutatan"]
+    },
+    "Nusa Tenggara Barat": {
+        "Mataram": ["Ampenan","Cakranegara","Mataram","Sandubaya","Sekarbela","Selaparang"],
+        "Bima": ["Asakota","Mpunda","Rasanae Barat","Rasanae Timur","Raba"],
+        "Kabupaten Lombok Barat": ["Batu Layar","Batulayar","Gerung","Gunung Sari","Kediri","Kuripan","Labuapi","Lembar","Lingsar","Narmada","Sekotong"],
+        "Kabupaten Lombok Tengah": ["Batukliang","Batukliang Utara","Janapria","Jonggat","Kopang","Praya","Praya Barat","Praya Barat Daya","Praya Tengah","Praya Timur","Pringgarata","Pujut"],
+        "Kabupaten Lombok Timur": ["Aikmel","Jerowaru","Keruak","Labuhan Haji","Lenek","Masbagik","Montong Gading","Pringgabaya","Pringgasela","Sakra","Sakra Barat","Sakra Timur","Sambalia","Sembalun","Selong","Sikur","Sukamulia","Suralaga","Terara","Wanasaba"],
+        "Kabupaten Lombok Utara": ["Bayan","Gangga","Kayangan","Pemenang","Tanjung"],
+        "Kabupaten Sumbawa": ["Alas","Alas Barat","Batu Lanteh","Buer","Empang","Labuan Badas","Lantung","Lenangguar","Lopok","Lunyuk","Maronge","Moyo Hilir","Moyo Hulu","Moyo Utara","Orong Telu","Plampang","Rhee","Ropang","Sumbawa","Tarano","Unter Iwes","Utan"],
+        "Kabupaten Dompu": ["Dompu","Huu","Kempo","Kilo","Manggalewa","Pajo","Pekat","Woja"],
+        "Kabupaten Bima": ["Belo","Bolo","Donggo","Lambitu","Lambu","Langgudu","Madapangga","Monta","Palibelo","Parado","Sanggar","Sape","Soromandi","Tambora","Wawo","Wera","Woha"]
+    },
+    "Nusa Tenggara Timur": {
+        "Kupang": ["Alak","Kelapa Lima","Kota Lama","Kota Raja","Maulafa","Oebobo"],
+        "Kabupaten Kupang": ["Amarasi","Amarasi Barat","Amarasi Selatan","Amarasi Timur","Amfoang Barat Daya","Amfoang Barat Laut","Amfoang Selatan","Amfoang Tengah","Amfoang Timur","Amfoang Utara","Fatuleu","Fatuleu Barat","Fatuleu Tengah","Kupang Barat","Kupang Tengah","Kupang Timur","Nekamese","Semau","Semau Selatan","Sulamu","Taebenu","Takari"],
+        "Kabupaten Timor Tengah Selatan": ["Amanuban Barat","Amanuban Selatan","Amanuban Tengah","Amanuban Timur","Amanatun Selatan","Amanatun Utara","Batu Putih","Boking","Fatumnasi","Fautmolo","Ki'e","Koli","Kot'olin","Kuatnana","Mollo Barat","Mollo Selatan","Mollo Tengah","Mollo Utara","Noebana","Noebeba","Nunkolo","Oenino","Polen","Santian","Soe","Tobu","Toianas","Kolbano"],
+        "Kabupaten Ende": ["Detukeli","Detusoko","Ende","Ende Selatan","Ende Tengah","Ende Timur","Ende Utara","Lio Timur","Maukaro","Maurole","Nangapanda","Ndona","Ndona Timur","Ndori","Pulau Ende","Wewaria","Wolojita","Wolowaru"],
+        "Kabupaten Flores Timur": ["Adonara","Adonara Barat","Adonara Tengah","Adonara Timur","Demon Pagong","Ile Bura","Ile Mandiri","Kelubagolit","Larantuka","Lewolema","Nubatukan","Solor Barat","Solor Selatan","Solor Timur","Titehena","Wulanggitang"],
+        "Kabupaten Sikka": ["Alok","Alok Barat","Alok Timur","Bola","Doreng","Hewokloang","Kewapante","Koting","Lela","Magepanda","Mapitara","Mego","Maumere","Nelle","Paga","Palue","Talibura","Tana Wawo","Waiblama","Waigete"]
+    },
+    "Kalimantan Barat": {
+        "Pontianak": ["Pontianak Barat","Pontianak Kota","Pontianak Selatan","Pontianak Tenggara","Pontianak Timur","Pontianak Utara"],
+        "Singkawang": ["Singkawang Barat","Singkawang Selatan","Singkawang Tengah","Singkawang Timur","Singkawang Utara"],
+        "Kabupaten Kubu Raya": ["Batu Ampar","Kuala Mandor B","Kubu","Rasau Jaya","Sei Ambawang","Sei Kakap","Sei Raya","Sungai Raya","Teluk Pakedai","Terentang"],
+        "Kabupaten Mempawah": ["Anjongan","Mempawah Hilir","Mempawah Hulu","Sadaniang","Segedong","Siantan","Sungai Kunyit","Sungai Pinyuh","Toho"],
+        "Kabupaten Sambas": ["Galing","Jawai","Jawai Selatan","Paloh","Pemangkat","Sajad","Sajingan Besar","Sambas","Samalantan","Sebawi","Sejangkung","Selakau","Selakau Timur","Semparuk","Subah","Tangaran","Tebas","Tekarang","Teluk Keramat"],
+        "Kabupaten Ketapang": ["Air Upas","Benua Kayong","Delta Pawan","Hulu Sungai","Jelai Hulu","Kendawangan","Manis Mata","Marau","Matan Hilir Selatan","Matan Hilir Utara","Muara Pawan","Nanga Tayap","Pemahan","Sandai","Simpang Dua","Simpang Hulu","Singkup","Sungai Laur","Sungai Melayu Rayak","Tumbang Titi"]
+    },
+    "Kalimantan Tengah": {
+        "Palangka Raya": ["Bukit Batu","Jekan Raya","Pahandut","Rakumpit","Sabangau"],
+        "Kabupaten Kotawaringin Barat": ["Arut Selatan","Arut Utara","Kotawaringin Lama","Kumai","Pangkalan Banteng","Pangkalan Lada"],
+        "Kabupaten Kotawaringin Timur": ["Antang Kalang","Baamang","Bukit Santuai","Cempaga","Cempaga Hulu","Kota Besi","Mentawa Baru","Mentaya Hilir Selatan","Mentaya Hilir Utara","Mentaya Hulu","Parenggean","Pasir Putih","Pulau Hanaut","Seranau","Telaga Antang","Telawang","Teluk Sampit"],
+        "Kabupaten Kapuas": ["Basarang","Bataguh","Dadahup","Kapuas Barat","Kapuas Hilir","Kapuas Hulu","Kapuas Kuala","Kapuas Murung","Kapuas Tengah","Kapuas Timur","Mandau Talawang","Mantangai","Pulau Petak","Selat","Tamban Catur"],
+        "Kabupaten Barito Selatan": ["Dusun Hilir","Dusun Selatan","Dusun Tengah","Dusun Utara","Gunung Bintang Awai","Jenamas","Karau Kuala","Pematang Karau"],
+        "Kabupaten Barito Utara": ["Gunung Timang","Lahei","Lahei Barat","Montalat","Montallat","Teweh Baru","Teweh Selatan","Teweh Tengah","Teweh Timur"],
+        "Kabupaten Katingan": ["Bukit Raya","Kamipang","Katingan Hilir","Katingan Hulu","Katingan Kuala","Katingan Tengah","Marikit","Mendawai","Petak Malai","Pulau Malan","Sanaman Mantikei","Tewang Sangalang Garing"]
+    },
+    "Kalimantan Selatan": {
+        "Banjarmasin": ["Banjarmasin Barat","Banjarmasin Selatan","Banjarmasin Tengah","Banjarmasin Timur","Banjarmasin Utara"],
+        "Banjarbaru": ["Banjarbaru Selatan","Banjarbaru Utara","Cempaka","Landasan Ulin","Liang Anggang"],
+        "Kabupaten Banjar": ["Aluh-Aluh","Aranio","Astambul","Beruntung Baru","Cintapuri Darussalam","Gambut","Karang Intan","Kertak Hanyar","Kelampaian","Mataraman","Martapura","Martapura Barat","Martapura Timur","Pengaron","Peramasan","Sambung Makmur","Simpang Empat","Sungai Pinang","Sungai Tabuk"],
+        "Kabupaten Barito Kuala": ["Alalak","Anjir Muara","Anjir Pasar","Bakumpai","Belawang","Cerbon","Jejangkit","Kuripan","Marabahan","Mandastana","Mekarsari","Rantau Badauh","Tabukan","Tabunganen","Tamban"],
+        "Kabupaten Tanah Laut": ["Bajuin","Batu Ampar","Bumi Makmur","Jorong","Kintap","Kurau","Panyipatan","Pelaihari","Takisung","Tambang Ulang"],
+        "Kabupaten Tanah Bumbu": ["Angsana","Batulicin","Karang Bintang","Kuranji","Kusan Hilir","Kusan Hulu","Mantewe","Satui","Sungai Loban"],
+        "Kabupaten Kotabaru": ["Hampang","Hilir Muara","Kelumpang Hilir","Kelumpang Hulu","Kelumpang Barat","Kelumpang Selatan","Kelumpang Tengah","Kelumpang Timur","Pamukan Barat","Pamukan Selatan","Pamukan Utara","Pulau Laut Barat","Pulau Laut Selatan","Pulau Laut Tanjung Selayar","Pulau Laut Tengah","Pulau Laut Timur","Pulau Laut Utara","Pulau Sembilan","Hampang","Sungai Durian"]
+    },
+    "Kalimantan Timur": {
+        "Samarinda": ["Loa Janan Ilir","Palaran","Samarinda Ilir","Samarinda Kota","Samarinda Seberang","Samarinda Ulu","Samarinda Utara","Sambutan","Sungai Kunjang","Sungai Pinang"],
+        "Balikpapan": ["Balikpapan Barat","Balikpapan Kota","Balikpapan Selatan","Balikpapan Tengah","Balikpapan Timur","Balikpapan Utara"],
+        "Bontang": ["Bontang Barat","Bontang Selatan","Bontang Utara"],
+        "Kabupaten Kutai Kartanegara": ["Anggana","Kota Bangun","Loa Janan","Loa Kulu","Marang Kayu","Muara Badak","Muara Jawa","Muara Kaman","Muara Muntai","Muara Wis","Samboja","Sanga-Sanga","Sebulu","Tabang","Tenggarong","Tenggarong Seberang"],
+        "Kabupaten Berau": ["Batu Putih","Biduk-Biduk","Biatan","Gunung Tabur","Kelay","Maratua","Pulau Derawan","Sambaliung","Segah","Tabalar","Talisayan","Teluk Bayur"],
+        "Kabupaten Paser": ["Batu Engau","Batu Sopang","Kuaro","Long Ikis","Long Kali","Muara Komam","Muara Samu","Paser Belengkong","Tanah Grogot"],
+        "Kabupaten Penajam Paser Utara": ["Babulu","Penajam","Sepaku","Waru"]
+    },
+    "Kalimantan Utara": {
+        "Tarakan": ["Tarakan Barat","Tarakan Tengah","Tarakan Timur","Tarakan Utara"],
+        "Kabupaten Bulungan": ["Bunyu","Peso","Peso Hilir","Sekatak","Tanjung Palas","Tanjung Palas Barat","Tanjung Palas Tengah","Tanjung Palas Timur","Tanjung Palas Utara","Tanjung Selor"],
+        "Kabupaten Malinau": ["Bahau Hulu","Kayan Hilir","Kayan Hulu","Kayan Selatan","Malinau Barat","Malinau Kota","Malinau Selatan","Malinau Selatan Hilir","Malinau Selatan Hulu","Malinau Utara","Mentarang","Mentarang Hulu","Pujungan","Sungai Boh","Sungai Tubu"],
+        "Kabupaten Nunukan": ["Krayan","Krayan Selatan","Lumbis","Lumbis Ogong","Nunukan","Nunukan Selatan","Sebatik","Sebatik Barat","Sebatik Tengah","Sebatik Timur","Sebatik Utara","Sei Menggaris","Sembakung","Sembakung Atulai","Tulin Onsoi"],
+        "Kabupaten Tana Tidung": ["Betayau","Muruk Rian","Sesayap","Sesayap Hilir","Tana Lia"]
+    },
+    "Sulawesi Utara": {
+        "Manado": ["Bunaken","Malalayang","Mapanget","Paal Dua","Sario","Singkil","Tikala","Tuminting","Wanea","Wenang"],
+        "Bitung": ["Aertembaga","Girian","Lembeh Selatan","Lembeh Utara","Madidir","Maesa","Matuari","Ranowulu"],
+        "Tomohon": ["Tomohon Barat","Tomohon Selatan","Tomohon Tengah","Tomohon Timur","Tomohon Utara"],
+        "Kotamobagu": ["Kotamobagu Barat","Kotamobagu Selatan","Kotamobagu Timur","Kotamobagu Utara"],
+        "Kabupaten Minahasa": ["Airmadidi","Dimembe","Eris","Kakas","Kakas Barat","Kawangkoan","Kawangkoan Barat","Kawangkoan Utara","Kombi","Langowan Barat","Langowan Selatan","Langowan Timur","Langowan Utara","Mandolang","Pineleng","Remboken","Sonder","Tombulu","Tombariri","Tompaso","Tompaso Barat","Tondano Barat","Tondano Selatan","Tondano Timur","Tondano Utara"],
+        "Kabupaten Kepulauan Sangihe": ["Manganitu","Manganitu Selatan","Nusa Tabukan","Tabukan Selatan","Tabukan Selatan Tengah","Tabukan Tengah","Tabukan Utara","Tamako","Tatoareng","Tidore"],
+        "Kabupaten Bolaang Mongondow": ["Bolaang","Bolaang Timur","Dumoga","Dumoga Barat","Dumoga Tengah","Dumoga Timur","Dumoga Utara","Kinolow","Lolak","Lolayan","Passi Barat","Passi Timur","Poigar","Sangtombolang"]
+    },
+    "Sulawesi Tengah": {
+        "Palu": ["Mantikulore","Tatanga","Ulujadi","Palu Barat","Palu Selatan","Palu Timur","Palu Utara","Tawaeli"],
+        "Kabupaten Donggala": ["Banawa","Banawa Selatan","Banawa Tengah","Balaesang","Balaesang Tanjung","Damsol","Labuan","Pinembani","Rio Pakava","Sindue","Sindue Rombo","Sindue Tobata","Sirenja","Sojol","Sojol Utara","Tanantovea"],
+        "Kabupaten Sigi": ["Biromaru","Dolo","Dolo Barat","Dolo Selatan","Gumbasa","Kinovaro","Kulawi","Kulawi Selatan","Lindu","Marawola","Marawola Barat","Nokilalaki","Palolo","Pipikoro","Sigi Biromaru","Tanambulava"],
+        "Kabupaten Parigi Moutong": ["Ampibabo","Balinggi","Bolano","Bolano Lambunu","Kasimbar","Moutong","Ongka Malino","Palasa","Parigi","Parigi Barat","Parigi Selatan","Parigi Tengah","Parigi Utara","Sidoan","Sausu","Tinombo","Tinombo Selatan","Tomini","Torue"],
+        "Kabupaten Poso": ["Lage","Lore Barat","Lore Peore","Lore Piore","Lore Selatan","Lore Timur","Lore Utara","Pamona Barat","Pamona Puselemba","Pamona Selatan","Pamona Tenggara","Pamona Timur","Pamona Utara","Poso Kota","Poso Kota Selatan","Poso Kota Utara"],
+        "Kabupaten Tolitoli": ["Baolan","Dakopemean","Dondo","Galang","Lampasio","Ogodeide","Shalimah","Tolitoli Utara"]
+    },
+    "Sulawesi Selatan": {
+        "Makassar": ["Biringkanaya","Bontoala","Makassar","Mamajang","Manggala","Mappala","Mariso","Panakkukang","Rappocini","Tallo","Tamalanrea","Tamalate","Ujung Pandang","Ujung Tanah","Wajo"],
+        "Parepare": ["Bacukiki","Bacukiki Barat","Soreang","Ujung"],
+        "Palopo": ["Bara","Mungkajang","Sendana","Telluwanua","Wara","Wara Barat","Wara Selatan","Wara Timur","Wara Utara"],
+        "Kabupaten Gowa": ["Bajeng","Bajeng Barat","Barombong","Biringbulu","Bontomarannu","Bontonompo","Bontonompo Selatan","Bontolempangan","Bungaya","Manuju","Pallangga","Parangloe","Parigi","Pattallassang","Somba Opu","Tinggimoncong","Tombolo Pao"],
+        "Kabupaten Bone": ["Amali","Awangpone","Barebbo","Bengo","Bontocani","Cenrana","Cina","Dua Boccoe","Duaboccoe","Kahu","Kajuara","Lamuru","Lappariaja","Libureng","Mare","Palakka","Patimpeng","Ponre","Salomekko","Sibulue","Tellu Limpoe","Tellu Siattinge","Tonra","Ulaweng"],
+        "Kabupaten Wajo": ["Bola","Belawa","Gilireng","Keera","Majauleng","Maniangpajo","Pammana","Penrang","Pitumpanua","Sabbangparu","Sajoanging","Takkalalla","Tanasitolo","Tempe"],
+        "Kabupaten Luwu": ["Basse Sang Tempe","Bastem Utara","Belopa","Belopa Utara","Bupon","Kamanre","Larompong","Larompong Selatan","Latimojong","Ponrang","Ponrang Selatan","Suli","Suli Barat","Under Iwes","Walenrang","Walenrang Barat","Walenrang Timur","Walenrang Utara"],
+        "Kabupaten Maros": ["Bantimurung","Bontoa","Camba","Cenrana","Lau","Mandai","Maros Baru","Marusu","Moncongloe","Simbang","Tanralili","Tompobulu","Turikale"]
+    },
+    "Sulawesi Tenggara": {
+        "Kendari": ["Abeli","Baruga","Kadia","Kambu","Kendari","Kendari Barat","Mandonga","Poasia","Puuwatu","Wua-Wua"],
+        "Baubau": ["Batupoaro","Betoambari","Bungi","Kokalukuna","Lea-Lea","Murhum","Sorawolio","Wajo"],
+        "Kabupaten Konawe": ["Abuki","Anggaberi","Besulutu","Bondoala","Kapoiala","Konawe","Lalonggasumeeto","Lambuya","Meluhu","Onembute","Padangguni","Palangga","Puriala","Routa","Sampara","Soropia","Tongauna","Unaaha","Uepai","Wawotobi","Wonggeduku"],
+        "Kabupaten Muna": ["Batalaiworu","Bone","Duruka","Kabawo","Kabangka","Katobu","Kontunaga","Lasalepa","Lawa","Lohia","Maginti","Maligano","Marobo","Pasir Putih","Pasi Kolaga","Tiworo Kepulauan","Towea","Wakorumba Selatan","Watopute"]
+    },
+    "Gorontalo": {
+        "Gorontalo": ["Dungingi","Dumbo Raya","Hulawa","Hulonthalangi","Kota Barat","Kota Selatan","Kota Tengah","Kota Timur","Kota Utara","Sipatana"],
+        "Kabupaten Gorontalo": ["Asparaga","Batudaa","Batudaa Pantai","Biluhu","Bilato","Boliyohuto","Bongomeme","Dungaliyo","Limboto","Limboto Barat","Mootilango","Pulubala","Tabongo","Talaga Jaya","Telaga","Telaga Biru","Telaga Jaya","Tibawa","Tilango","Tolangohula"],
+        "Kabupaten Bone Bolango": ["Bulango Selatan","Bulango Timur","Bulango Ulu","Bulango Utara","Bulawa","Botupingge","Kabila","Kabila Bone","Pinogu","Suwawa","Suwawa Selatan","Suwawa Tengah","Suwawa Timur","Tapa","Tilongkabila"],
+        "Kabupaten Pohuwato": ["Buntulia","Dengilo","Duhiadaa","Lemito","Marisa","Paguat","Patilanggio","Popayato","Popayato Barat","Popayato Timur","Randangan","Taluditi","Wanggarasi"],
+        "Kabupaten Boalemo": ["Botumoito","Dulupi","Mananggu","Paguyaman","Paguyaman Pantai","Tilamuta","Wonosari"]
+    },
+    "Sulawesi Barat": {
+        "Mamuju": ["Balabalakang","Bonehau","Kalukku","Kalumpang","Mamuju","Papalang","Sampaga","Simboro","Tapalang","Tapalang Barat","Tommo"],
+        "Kabupaten Polewali Mandar": ["Alu","Anreapi","Balanipa","Binuang","Bulo","Campalagian","Limboro","Luyo","Mapilli","Matangnga","Tinambung","Tubbi Taramanu","Wonomulyo"],
+        "Kabupaten Majene": ["Banggae","Banggae Timur","Malunda","Pamboang","Sendana","Tammerodo Sendana","Ulumanda"],
+        "Kabupaten Mamasa": ["Aralle","Bambang","Balla","Buntumalangka","Mamasa","Mambi","Mehalaan","Messawa","Nosu","Pana","Rantebulahan Timur","Sesena Padang","Sumarorong","Tabang","Tanduk Kalua","Tabulahan"],
+        "Kabupaten Pasangkayu": ["Baras","Bambaira","Bambalamotu","Bulu Taba","Dapurang","Duripoku","Lariang","Pasangkayu","Pedongga","Sarjo","Tikke Raya"]
+    },
+    "Maluku": {
+        "Ambon": ["Baguala","Leitimur Selatan","Nusaniwe","Sirimau","Teluk Ambon","Teluk Ambon Baguala"],
+        "Tual": ["Dullah Selatan","Dullah Utara","Kur Selatan","Pulau-Pulau Kur","Taylor"],
+        "Kabupaten Maluku Tengah": ["Amahai","Banda","Elpaputih","Kota Masohi","Leihitu","Leihitu Barat","Nusalaut","Pearaja","Pulau Haruku","Salahutu","Saparua","Saparua Timur","Seram Utara","Seram Utara Barat","Tehoru","Teluti","Teon Nila Serua","Teluk Elpaputih"],
+        "Kabupaten Maluku Tenggara": ["Hoat Sorbay","Kei Besar","Kei Besar Selatan","Kei Besar Selatan Barat","Kei Besar Utara Barat","Kei Besar Utara Timur","Kei Kecil","Kei Kecil Barat","Kei Kecil Timur","Kei Kecil Timur Selatan"],
+        "Kabupaten Buru": ["Airbuaya","Bata Bual","Fena Leisela","Fenaleisela","Gardener","Lolong Guba","Lilialy","Namlea","Teluk Kaiely","Waplau"],
+        "Kabupaten Seram Bagian Barat": ["Elpaputih","Huamual","Huamual Belakang","Inamosol","Kairatu","Kairatu Barat","Kepulauan Manipa","Pulau Sembilan","Seram Barat","Taniwel","Taniwel Timur"]
+    },
+    "Maluku Utara": {
+        "Ternate": ["Moti","Pulau Ternate","Pulau Batang Dua","Pulau Moti","Ternate Selatan","Ternate Tengah","Ternate Utara"],
+        "Tidore Kepulauan": ["Oba","Oba Selatan","Oba Tengah","Oba Utara","Tidore","Tidore Selatan","Tidore Timur","Tidore Utara"],
+        "Kabupaten Halmahera Barat": ["Ibu","Ibu Selatan","Ibu Utara","Jailolo","Jailolo Selatan","Jailolo Timur","Loloda","Sahu","Sahu Timur"],
+        "Kabupaten Halmahera Utara": ["Kao","Kao Barat","Kao Teluk","Kao Utara","Loloda Utara","Malifut","Morotai Selatan","Morotai Selatan Barat","Morotai Timur","Morotai Utara","Tobelo","Tobelo Barat","Tobelo Selatan","Tobelo Tengah","Tobelo Timur"],
+        "Kabupaten Halmahera Selatan": ["Bacan","Bacan Barat","Bacan Barat Utara","Bacan Selatan","Bacan Timur","Bacan Timur Selatan","Bacan Timur Tengah","Gane Barat","Gane Barat Selatan","Gane Barat Utara","Gane Timur","Gane Timur Selatan","Gane Timur Tengah","Kayoa","Kayoa Barat","Kayoa Selatan","Kayoa Utara","Kepulauan Botanglomang","Makian","Makian Barat","Obi","Obi Barat","Obi Selatan","Obi Timur","Obi Utara"],
+        "Kabupaten Kepulauan Sula": ["Bobong","Mangoli Barat","Mangoli Tengah","Mangoli Timur","Mangoli Utara","Mangoli Utara Timur","Sanana","Sanana Utara","Sulabesi Barat","Sulabesi Selatan","Sulabesi Tengah","Sulabesi Timur","Taliabu Barat","Taliabu Barat Laut"]
+    },
+    "Papua": {
+        "Jayapura": ["Abepura","Heram","Jayapura Selatan","Jayapura Utara","Muara Tami"],
+        "Kabupaten Jayapura": ["Airu","Depapre","Demta","Ebungfauw","Kemtuk","Kemtuk Gresi","Kaureh","Nimboran","Nimbokrang","Namblong","Ravinerara","Sentani","Sentani Barat","Sentani Timur","Skanto","Unurum Guay","Waibu","Yokari"],
+        "Kabupaten Biak Numfor": ["Biak Kota","Biak Timur","Biak Utara","Bondifuar","Bruyadori","Numfor Barat","Numfor Timur","Oridek","Padaido","Samofa","Swandiwe","Warsa","Yawosi","Yendidori"],
+        "Kabupaten Mimika": ["Agimuga","Amar","Hoya","Iwaka","Jila","Jita","Kuala Kencana","Mimika Barat","Mimika Barat Jauh","Mimika Barat Tengah","Mimika Baru","Mimika Tengah","Mimika Timur","Mimika Timur Jauh","Tembagapura","Wania"],
+        "Kabupaten Merauke": ["Animha","Eligobel","Jagebob","Kaptel","Kimaam","Kurik","Malind","Merauke","Muting","Naukenjerai","Ngguti","Okaba","Semangga","Sota","Tanah Miring","Tubang","Ulilin","Waan"]
+    },
+    "Papua Barat": {
+        "Manokwari": ["Manokwari Barat","Manokwari Selatan","Manokwari Timur","Manokwari Utara","Prafi","Sidey","Tanah Rubuh","Warmare"],
+        "Sorong": ["Sorong","Sorong Barat","Sorong Kepulauan","Sorong Manoi","Sorong Timur","Sorong Utara"],
+        "Kabupaten Sorong": ["Aimas","Beraur","Mariat","Maudus","Mayamuk","Seget","Segun","Salawati","Salawati Selatan","Salawati Tengah","Sayosa","Klabot"],
+        "Kabupaten Manokwari Selatan": ["Dataran Isim","Kabouw","Kebar","Membey","Menyambouw","Ransiki","Tahota","Testega"],
+        "Kabupaten Raja Ampat": ["Ayau","Batanta Selatan","Batanta Utara","Kepulauan Ayau","Kofiau","Meos Mansar","Misool","Misool Barat","Misool Selatan","Misool Timur","Salawati Barat","Salawati Tengah","Salawati Timur","Teluk Mayalibit","Tiplol Mayalibit","Waigeo Barat","Waigeo Selatan","Waigeo Timur","Waigeo Utara","Wawarbomi"],
+        "Kabupaten Teluk Bintuni": ["Aroba","Babo","Bintuni","Dataran Beimes","Fafurwar","Kamundan","Kaitaro","Kuri","Manimeri","Merdey","Moskona Barat","Moskona Selatan","Moskona Timur","Moskona Utara","Tembuni","Tomu","Weriagar","Wamesa"]
+    },
+    "Papua Barat Daya": {
+        "Kota Sorong": ["Sorong","Sorong Barat","Sorong Kepulauan","Sorong Manoi","Sorong Timur","Sorong Utara"],
+        "Kabupaten Sorong Selatan": ["Beraur","Kokoda","Kokoda Utara","Kais","Kais Darat","Matemani","Moswaren","Seremuk","Teminabuan","Wayer"],
+        "Kabupaten Maybrat": ["Aifat","Aifat Selatan","Aifat Timur","Aifat Timur Jauh","Aifat Timur Tengah","Aifat Utara","Aitinyo","Aitinyo Barat","Aitinyo Raya","Aitinyo Tengah","Ayamaru","Ayamaru Barat","Ayamaru Selatan","Ayamaru Tengah","Ayamaru Timur","Ayamaru Timur Selatan","Mare-Mare"],
+        "Kabupaten Tambrauw": ["Abun","Amberbaken","Fef","Ireres","Kebar","Kwoor","Manyamsaman","Miyah","Mubrani","Senopi","Sausapor","Syujak","Tobouw"]
+    },
+    "Papua Pegunungan": {
+        "Kabupaten Jayawijaya": ["Abenaho","Asologaima","Assologaima","Hubikiak","Hubikosi","Kurulu","Libarek","Maima","Mulia","Napua","Pelebaga","Piramid","Tagineri","Walelagama","Wame","Welesi","Wita Waya","Wollo","Wunin"],
+        "Kabupaten Puncak Jaya": ["Ilu","Jigonikme","Kembu","Mewoluk","Mulia","Numbukwari","Pagaleme","Sinak","Tingginambut","Torere","Yamoneri","Yamo"],
+        "Kabupaten Lanny Jaya": ["Bpiri","Buguk Gona","Gamelia","Guna","Kambu","Makki","Mbua","Mbua Tengah","Pirime","Poga","Tiom","Tolikara","Werima","Yiluk"]
+    },
+    "Papua Selatan": {
+        "Kabupaten Merauke": ["Animha","Eligobel","Jagebob","Kaptel","Kimaam","Kurik","Malind","Merauke","Muting","Naukenjerai","Ngguti","Okaba","Semangga","Sota","Tanah Miring","Tubang","Ulilin","Waan"],
+        "Kabupaten Boven Digoel": ["Arimop","Bomakia","Iniyandit","Jair","Ki","Kombay","Kouh","Manggelum","Mindiptana","Minyamur","Ninati","Obaa","Subur","Sesnuk","Waropko","Yaniruma"],
+        "Kabupaten Mappi": ["Assue","Citak Mitak","Edera","Haju","Minyamur","Nambioman Bapai","Obaa","Passue","Passue Bawah","Syiah Utama","Ti Zain","Venaha","Yakomi"]
+    },
+    "Papua Tengah": {
+        "Kabupaten Mimika": ["Agimuga","Amar","Hoya","Iwaka","Jila","Jita","Kuala Kencana","Mimika Barat","Mimika Barat Jauh","Mimika Barat Tengah","Mimika Baru","Mimika Tengah","Mimika Timur","Mimika Timur Jauh","Tembagapura","Wania"],
+        "Kabupaten Nabire": ["Makimi","Menou","Moora","Nabire","Nabire Barat","Napan","Siriwo","Teluk Kimi","Teluk Umar","Uwapa","Wanggar"],
+        "Kabupaten Paniai": ["Aradide","Bogobaida","Dogiyai","Ekadide","Kebo","Obano","Paniai Barat","Paniai Timur","Siriwo","Tigi","Tigi Barat","Tigi Timur"]
     }
 };
 
@@ -2476,6 +2808,22 @@ class GameApp {
 
 
 	// --- STEP 10: FUNGSI RESET GAME ---
+    // Reset seluruh profil tersimpan agar user bisa isi ulang dari awal
+    resetProfile() {
+        if(!confirm('Reset semua data profil? Kamu harus isi ulang nama & sekolah.')) return;
+        localStorage.removeItem(SaveSystem.PROFILE_KEY);
+        this.player = { name: "", charId: 1, score: 0, toyaPurity: 10, school: "", prov: "", city: "", district: "", chapter: 0 };
+        document.getElementById('reg-name').value = '';
+        document.getElementById('reg-school').value = '';
+        document.getElementById('reg-prov').value = '';
+        const cityEl = document.getElementById('reg-city');
+        cityEl.innerHTML = '<option value="-">-</option>';
+        cityEl.disabled = true;
+        const distEl = document.getElementById('reg-district');
+        distEl.innerHTML = '<option value="-">-</option>';
+        distEl.disabled = true;
+    }
+
    resetGame() {
         this.player.score = 0;
         this.player.toyaPurity = 10; // Start Merah
@@ -2517,6 +2865,17 @@ class GameApp {
             const btn = document.querySelector('.btn-music-toggle'); 
             btn.style.opacity="0.5"; 
             btn.innerHTML='🔇';
+        }
+        // Auto fullscreen setelah pilih audio (butuh user gesture, works di HP & desktop)
+        if (!document.fullscreenElement) {
+            const el = document.documentElement;
+            const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+            if (req) {
+                req.call(el).then(() => {
+                    document.body.classList.add('fullscreen-mode');
+                    setTimeout(() => this.resizeGame(), 100);
+                }).catch(() => {});
+            }
         }
         this.switchScreen('screen-title'); 
         this.state = AppState.TITLE; 
@@ -2733,9 +3092,9 @@ class GameApp {
                 setTimeout(() => {
                     this.state = AppState.AUDIO_SETUP;
                     this.switchScreen('screen-audio');
-                }, 800);
+                }, 300);
             }
-        }, 600);
+        }, 200);
     }
 
     initUI() {
@@ -2858,19 +3217,33 @@ class GameApp {
     }
 
     goToRegister() { 
-        // Reset player jika mulai baru, tapi pertahankan nama jika pernah main
         // Gunakan profil yang tersimpan jika ada
         const saved = SaveSystem.loadProfile();
         if(saved && saved.name) {
             this.player = saved;
-            // FIX: Reset selection to Default (Male/1) agar sesuai dengan tampilan visual HTML
-            // yang secara default memilih card pertama (Male).
-            // Ini mencegah ketidaksesuaian antara visual (Male selected) dan memori (Hijab selected dari save lama).
             this.player.charId = 1; 
 
-            // Pre-fill form
+            // Pre-fill semua data form dari profil tersimpan
             document.getElementById('reg-name').value = saved.name || "";
             document.getElementById('reg-school').value = saved.school || "";
+
+            // Auto-fill Provinsi, lalu trigger cascade Kota dan Kecamatan
+            const provEl = document.getElementById('reg-prov');
+            if(saved.prov) {
+                provEl.value = saved.prov;
+                // Trigger populate kota
+                this.populateCities();
+                const cityEl = document.getElementById('reg-city');
+                if(saved.city) {
+                    cityEl.value = saved.city;
+                    // Trigger populate kecamatan
+                    this.populateDistricts();
+                    const distEl = document.getElementById('reg-district');
+                    if(saved.district) {
+                        distEl.value = saved.district;
+                    }
+                }
+            }
         } else {
             this.player = { name: "", charId: 1, score: 0, toyaPurity: 10, school: "", prov: "", city: "", district: "", chapter: 0 };
         }
@@ -2972,11 +3345,30 @@ class GameApp {
     startStory() {
         AudioMgr.playSFX('sfx-click'); this.state = AppState.STORY; this.switchScreen('screen-story');
         story.start([
-           { speaker: "Dewi Air", text: "Tirtatelaga, kota digital yang dilindungi oleh TOYA—energi suci dari Telaga Dunia.", char: 'narrator', bg: 'bg_open1' },
-            { speaker: "Dewi Air", text: "Tapi ancaman datang... Malware Genderuwo menyerang, mencoba mengkontaminasi Toya.", char: 'narrator', bg: 'bg_open2' },
-            { speaker: "Dewi Air", text: "Semua senior hero sedang bertarung di garis depan. Kamu, Guardian muda, adalah harapan terakhir kami!", char: 'narrator', bg: 'bg_open3' },
-            { speaker: "Dewi Air", text: "Misi mu adalah Lindungi server kota dan murnikan Toya dari kontaminasi malware!", char: 'narrator', bg: 'bg_open4' },
-			 { speaker: "Dewi Air", text: "Kamu akan dipandu oleh Master Rex - Mentor kamu di SMK Nusantara Muda Tech.", char: 'narrator', bg: 'bg_open5' }
+            // SCENE 1 — Pembuka sinematik
+            { mode: 'caption', text: "Di atas awan digital...", bg: 'bg_open1', delay: 2400, sound: 'whoosh' },
+            // SCENE 2 — Lokasi kota
+            { mode: 'caption', text: "TIRTATELAGA — Kota Data Terakhir yang Masih Berdiri", bg: 'bg_open1', delay: 3000, sound: 'dramatic' },
+            // SCENE 3 — Dewi Air narasi TOYA
+            { speaker: "DEWI AIR", text: "TOYA... energi suci dari Telaga Dunia. Ia yang menjaga kemurnian setiap bit dan byte kota ini.", char: 'narrator', bg: 'bg_open2' },
+            // SCENE 4 — Ancaman datang
+            { speaker: "DEWI AIR", text: "Tapi malam ini... serangan datang dari celah yang tidak pernah kami duga.", char: 'narrator', bg: 'bg_open2' },
+            // SCENE 5 — ⚠ ALERT MERAH: Malware terdeteksi
+            { mode: 'caption', text: "[ PERINGATAN SISTEM ]  MALWARE GENDERUWO TERDETEKSI", bg: 'bg_open3', delay: 3200, alert: true },
+            // SCENE 6 — ⚠ ALERT MERAH: Kontaminasi
+            { mode: 'caption', text: "KONTAMINASI TOYA : 47% ... 61% ... 78%", bg: 'bg_open3', delay: 3000, alert: true },
+            // SCENE 7 — Kembali normal, narasi serangan
+            { speaker: "DEWI AIR", text: "Genderuwo Malware... entitas jahat yang memakan data dan mencemari Toya dari dalam!", char: 'narrator', bg: 'bg_open3' },
+            // SCENE 8 — Situasi gawat
+            { speaker: "DEWI AIR", text: "Semua Guardian senior telah gugur di garis depan. Server utama hampir jatuh...", char: 'narrator', bg: 'bg_open4' },
+            // SCENE 9 — ⚠ ALERT: Server kritis
+            { mode: 'caption', text: "[ STATUS SERVER UTAMA ]  KRITIS — SHUTDOWN DALAM 00:59", bg: 'bg_open4', delay: 3000, alert: true },
+            // SCENE 10 — Panggilan aksi
+            { speaker: "DEWI AIR", text: "Kamu... Guardian muda. Kamu adalah harapan terakhir Tirtatelaga. Bangkitlah!", char: 'narrator', bg: 'bg_open4' },
+            // SCENE 11 — Rex muncul
+            { speaker: "MASTER REX", text: "Aku Rex, mentormu. Kamu akan belajar cepat — atau kota ini akan lenyap selamanya.", char: 'rex', bg: 'bg_open5', sound: 'dramatic' },
+            // SCENE 12 — Caption misi penutup
+            { mode: 'caption', text: "MISI: Lindungi Server — Murnikan TOYA — Selamatkan Tirtatelaga", bg: 'bg_open5', delay: 3500, sound: 'dramatic' },
         ], () => { this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
     }
 
@@ -4167,273 +4559,323 @@ class ChapterEndingCinematic {
     constructor(game) {
         this.game = game;
         this.slideIdx = 1;
-        this.totalSlides = 14; // DIPERBARUI: Menjadi 14 Slide
+        this.totalSlides = 14;
         this.timer = 0;
-        this.slideDuration = 300; // Frames per slide (~5 detik)
+        this.slideDuration = 330; // ~5.5 detik per slide
         this.alpha = 0;
-        this.state = 'fade-in'; // fade-in, hold, fade-out
-        
-        // --- VISUAL EFFECTS SYSTEM ---
+        this.state = 'fade-in';
+
+        // Efek visual
         this.particles = [];
-        this.flashAlpha = 0; // Untuk efek kilatan kamera
-        this.animFrame = 0;  // Counter global untuk animasi
-        
-        // --- MATRIX RAIN SYSTEM ---
+        this.flashAlpha = 0;
+        this.animFrame = 0;
+        this.typeBuffer = '';       // teks yang sudah muncul (typewriter)
+        this.typeIdx = 0;           // posisi karakter typewriter
+        this.typeTimer = 0;         // counter typewriter
+        this.captionReady = false;  // sudah selesai diketik
+        this.letterboxH = 0;        // tinggi letterbox bar (0→55)
+        this.slideSound = false;    // sudah play synth sound untuk slide ini
+
+        // Matrix rain
         this.matrixDrops = [];
-        // Inisialisasi kolom matrix
         for(let x = 0; x < 800; x += 20) {
             this.matrixDrops.push({
-                x: x,
-                y: Math.random() * -600, // Mulai dari atas layar random
+                x, y: Math.random() * -600,
                 speed: 2 + Math.random() * 5,
-                char: String.fromCharCode(0x30A0 + Math.random() * 96), // Katakana/Simbol Matrix
+                char: Math.random() > 0.5 ? '1' : '0',
                 opacity: Math.random() * 0.5 + 0.1
             });
         }
-        // ----------------------------------
 
-        this.captions = [
-            "", // index 0 dummy
-            "Ledakan energi terakhir menandai kekalahan Genderuwo.",
-            "Kabut gelap malware perlahan terangkat dari Core Server.",
-            "Sistem Pertahanan Tirtatelaga mulai melakukan reboot otomatis.",
-            "Protokol pemulihan menyebar ke seluruh jaringan kota.",
-            "Jalur data yang merah kini berubah menjadi biru murni.",
-            "Firewall kembali tegak, membentuk perisai tak terlihat.",
-            "Energi Toya mengalir deras, menyembuhkan sektor yang rusak.",
-            "Di seluruh kota, lampu-lampu digital kembali menyala terang.",
-            "Warga Tirtatelaga bersorak, koneksi mereka telah pulih.",
-            "Master Rex tersenyum, bangga pada murid barunya.",
-            "Keseimbangan antara teknologi dan tradisi telah kembali.",
-            "Kamu, Guardian, telah membuktikan keberanianmu.",
-            "Namamu kini terukir dalam sejarah digital Tirtatelaga.",
-            "TIRTATELAGA AMAN KEMBALI. MISI SELESAI."
+        // Data per slide: caption + warna + efek khusus
+        this.slides = [
+            null, // 0 dummy
+            { cap: "Serangan terakhir dilepaskan...",           color: '#FF4444', sound: 'boom',     shake: true  },
+            { cap: "Ledakan energi menandai kekalahan Genderuwo.", color: '#FF8800', sound: 'boom',  shake: true  },
+            { cap: "Kabut malware perlahan terangkat...",        color: '#AA88FF', sound: 'whoosh',  shake: false },
+            { cap: "Core Server memulai reboot otomatis.",       color: '#88AAFF', sound: 'beep',    shake: false },
+            { cap: "Protokol pemulihan menyebar ke seluruh jaringan.", color: '#00D9FF', sound: 'beep', shake: false },
+            { cap: "Jalur data merah kini berubah biru murni.",  color: '#00D9FF', sound: 'whoosh',  shake: false },
+            { cap: "Firewall kembali tegak — perisai tak terlihat.", color: '#00FF88', sound: 'beep', shake: false },
+            { cap: "Energi TOYA mengalir deras, menyembuhkan setiap sektor.", color: '#00FF88', sound: 'rise', shake: false },
+            { cap: "Di seluruh kota, lampu-lampu digital menyala terang.", color: '#FFD700', sound: 'rise', shake: false },
+            { cap: "Warga Tirtatelaga bersorak — koneksi mereka telah pulih.", color: '#FFD700', sound: 'rise', shake: false },
+            { cap: "Master Rex tersenyum. Bangga pada muridnya.",color: '#FFFFFF', sound: 'beep',    shake: false },
+            { cap: "Keseimbangan teknologi dan tradisi telah kembali.", color: '#FFFFFF', sound: 'whoosh', shake: false },
+            { cap: "Kamu, Guardian, telah membuktikan keberanianmu.", color: '#FFD700', sound: 'rise', shake: false },
+            { cap: "TIRTATELAGA AMAN. MISI SELESAI.",            color: '#00FF88', sound: 'victory', shake: false },
         ];
+
+        // Buka letterbox
+        setTimeout(() => { this.letterboxH = 55; }, 200);
+    }
+
+    // ── Synth sound engine (sama seperti story, standalone) ──
+    _synth(type) {
+        try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if(!AC) return;
+            const ctx = new AC();
+            const play = (cfg) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = cfg.type || 'sine';
+                osc.frequency.setValueAtTime(cfg.freq || 440, ctx.currentTime + (cfg.start||0));
+                if(cfg.freqEnd) osc.frequency.exponentialRampToValueAtTime(cfg.freqEnd, ctx.currentTime + (cfg.start||0) + (cfg.dur||0.3));
+                gain.gain.setValueAtTime(cfg.vol || 0.15, ctx.currentTime + (cfg.start||0));
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (cfg.start||0) + (cfg.dur||0.3));
+                osc.start(ctx.currentTime + (cfg.start||0));
+                osc.stop(ctx.currentTime + (cfg.start||0) + (cfg.dur||0.3) + 0.05);
+            };
+            if(type==='boom') {
+                play({type:'sine',   freq:80,  freqEnd:30,  vol:0.3, dur:0.8});
+                play({type:'square', freq:220, freqEnd:110, vol:0.12,dur:0.3});
+            } else if(type==='whoosh') {
+                play({type:'sine',   freq:300, freqEnd:80,  vol:0.1, dur:0.5});
+            } else if(type==='beep') {
+                play({type:'square', freq:1100,freqEnd:900, vol:0.07,dur:0.12});
+            } else if(type==='rise') {
+                play({type:'sine',   freq:330, freqEnd:660, vol:0.12,dur:0.6});
+                play({type:'sine',   freq:440, freqEnd:880, vol:0.08,dur:0.6,start:0.05});
+            } else if(type==='victory') {
+                [523,659,784,1047].forEach((f,i) => play({type:'sine',freq:f,vol:0.15,dur:0.35,start:i*0.18}));
+                play({type:'sine',freq:1047,freqEnd:1568,vol:0.12,dur:0.5,start:0.7});
+            }
+        } catch(e) {}
     }
 
     update(dt) {
         this.animFrame++;
 
-        // 1. UPDATE FLASH TRANSITION
-        if(this.flashAlpha > 0) {
-            this.flashAlpha = Math.max(0, this.flashAlpha - 0.05);
-        }
+        // Letterbox animasi buka
+        if(this.letterboxH < 55) this.letterboxH = Math.min(55, this.letterboxH + 3);
 
-        // 2. UPDATE MATRIX RAIN (Hujan Kode Digital)
+        // Flash fade
+        if(this.flashAlpha > 0) this.flashAlpha = Math.max(0, this.flashAlpha - 0.04);
+
+        // Matrix rain
         this.matrixDrops.forEach(drop => {
             drop.y += drop.speed;
-            
-            // Randomly change character
-            if(Math.random() < 0.05) {
-                drop.char = Math.random() > 0.5 ? '1' : '0'; // Binary effect
-            }
-
-            // Reset jika lewat bawah
-            if(drop.y > 600) {
-                drop.y = Math.random() * -100;
-                drop.speed = 2 + Math.random() * 5;
-            }
+            if(Math.random() < 0.06) drop.char = Math.random() > 0.5 ? '1' : '0';
+            if(drop.y > 600) { drop.y = Math.random() * -100; drop.speed = 2 + Math.random() * 5; }
         });
 
-        // 3. UPDATE PARTICLES (Toya Energy Rising)
-        // Spawn particles (2 particles every 4 frames)
-        if(this.animFrame % 4 === 0 && this.particles.length < 30) {
-            for(let i=0; i<2; i++) {
-                this.particles.push({
-                    x: Math.random() * 800,
-                    y: 620, // Spawn below screen
-                    vx: 0, 
-                    vy: -2 - Math.random(), // Move Up
-                    offset: Math.random() * 100, // For wobble
-                    size: 3 + Math.random() * 5,
-                    color: 'white',
-                    opacity: 1.0,
-                    life: 1.0
-                });
-            }
+        // Particles (Toya energy)
+        const maxP = this.slideIdx >= 8 ? 50 : 20;
+        if(this.animFrame % 3 === 0 && this.particles.length < maxP) {
+            const col = this.slideIdx <= 3 ? '#FF6600' : (this.slideIdx <= 7 ? '#AA88FF' : '#00D9FF');
+            this.particles.push({
+                x: Math.random() * 800, y: 620,
+                vy: -1.5 - Math.random() * 2,
+                offset: Math.random() * 100,
+                size: 2 + Math.random() * 5,
+                col, opacity: 1.0
+            });
         }
-
-        // Move particles
         for(let i = this.particles.length - 1; i >= 0; i--) {
-            let p = this.particles[i];
+            const p = this.particles[i];
             p.y += p.vy;
-            // Wobble effect
-            p.x += Math.cos(this.animFrame * 0.05 + p.offset) * 0.5;
-            
-            // Fade out near top
-            if(p.y < 300) {
-                p.opacity -= 0.02;
-            }
-
-            // Remove dead particles
-            if(p.y < -50 || p.opacity <= 0) {
-                this.particles.splice(i, 1);
-            }
+            p.x += Math.cos(this.animFrame * 0.05 + p.offset) * 0.6;
+            if(p.y < 350) p.opacity -= 0.018;
+            if(p.y < -30 || p.opacity <= 0) this.particles.splice(i, 1);
         }
 
-        // 4. EXISTING SLIDE LOGIC
+        // Typewriter caption
+        const slide = this.slides[this.slideIdx];
+        if(slide && this.state === 'hold') {
+            this.typeTimer++;
+            if(this.typeTimer % 2 === 0 && this.typeIdx < slide.cap.length) {
+                this.typeBuffer = slide.cap.substring(0, ++this.typeIdx);
+            }
+            if(this.typeIdx >= slide.cap.length) this.captionReady = true;
+        }
+
+        // Synth per slide (sekali saja)
+        if(slide && !this.slideSound && this.state === 'hold') {
+            this.slideSound = true;
+            this._synth(slide.sound);
+        }
+
+        // Slide state machine
         if(this.state === 'fade-in') {
-            this.alpha += 0.02;
-            if(this.alpha >= 1) { this.alpha = 1; this.state = 'hold'; }
+            this.alpha += 0.025;
+            if(this.alpha >= 1) {
+                this.alpha = 1; this.state = 'hold';
+                // Reset typewriter saat mulai hold
+                this.typeBuffer = ''; this.typeIdx = 0;
+                this.captionReady = false; this.typeTimer = 0;
+                this.slideSound = false;
+            }
         } else if(this.state === 'hold') {
             this.timer++;
-            if(this.timer > this.slideDuration) {
-                this.timer = 0;
-                this.state = 'fade-out';
-            }
+            if(this.timer > this.slideDuration) { this.timer = 0; this.state = 'fade-out'; }
         } else if(this.state === 'fade-out') {
-            this.alpha -= 0.02;
+            this.alpha -= 0.025;
             if(this.alpha <= 0) {
                 this.alpha = 0;
                 this.slideIdx++;
-                
-                // TRIGGER FLASH SAAT GANTI SLIDE
-                this.flashAlpha = 0.6;
-                
-                if(this.slideIdx > this.totalSlides) {
-                    this.finish();
-                } else {
-                    this.state = 'fade-in';
-                }
+                this.flashAlpha = 0.7;
+                if(this.slideIdx > this.totalSlides) this.finish();
+                else this.state = 'fade-in';
             }
         }
     }
 
     draw(ctx) {
-        // Black background base
-        ctx.fillStyle = "black";
+        const slide = this.slides[this.slideIdx] || {};
+        const isEarly = this.slideIdx <= 3;
+        const shakeOff = (slide.shake && this.state === 'fade-in') ? (Math.random()-0.5)*6 : 0;
+
+        ctx.save();
+        if(shakeOff) ctx.translate(shakeOff, shakeOff * 0.5);
+
+        // ── 1. BG hitam ──
+        ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, 800, 600);
 
-        // --- DRAW MATRIX RAIN (LAYER PALING BELAKANG) ---
+        // ── 2. Matrix rain ──
+        const matColors = isEarly ? ['#FF2200','#FF5500'] : (this.slideIdx<=7 ? ['#AA00FF','#CC66FF'] : ['#00D9FF','#00FF88']);
         ctx.save();
-        
-        // Tentukan warna Matrix berdasarkan progress slide (Merah -> Ungu -> Emas/Cyan)
-        let matrixColor = "#00FF00"; // Default
-        
-        if (this.slideIdx <= 3) {
-            // Fase Awal: Merah (Sisa Malware)
-            matrixColor = "#FF0000";
-        } else if (this.slideIdx <= 6) {
-            // Fase Tengah: Transisi (Ungu/Biru)
-            matrixColor = "#AA00FF";
-        } else {
-            // Fase Akhir: Murni (Cyan/Emas)
-            matrixColor = "#00D9FF";
-        }
-
-        ctx.font = "14px monospace";
+        ctx.font = '13px monospace';
         this.matrixDrops.forEach(drop => {
-            // Buat efek fading di ekor drop
-            ctx.globalAlpha = drop.opacity * 0.6; // Agak transparan biar tidak mengganggu gambar utama
-            ctx.fillStyle = matrixColor;
+            ctx.globalAlpha = drop.opacity * 0.55;
+            ctx.fillStyle = matColors[0];
             ctx.fillText(drop.char, drop.x, drop.y);
-            
-            // Efek 'Kepala' drop yang lebih terang
-            ctx.fillStyle = "white";
-            ctx.globalAlpha = drop.opacity * 0.8;
-            if(Math.random() > 0.8) ctx.fillText(drop.char, drop.x, drop.y + 15);
-        });
-        ctx.restore();
-        // ------------------------------------------------
-
-        // 1. DRAW PARTICLES (TOYA ENERGY - LAYER TENGAH)
-        ctx.save();
-        this.particles.forEach(p => {
-            ctx.globalAlpha = p.opacity;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = '#00D9FF'; // Cyan glow
-            
-            // Radial Gradient per particle
-            let grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size);
-            grad.addColorStop(0, "white");
-            grad.addColorStop(0.4, "#00D9FF");
-            grad.addColorStop(1, "rgba(0, 217, 255, 0)");
-            
-            ctx.fillStyle = grad;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
-            ctx.fill();
+            if(Math.random() > 0.85) { ctx.globalAlpha = drop.opacity; ctx.fillStyle = '#fff'; ctx.fillText(drop.char, drop.x, drop.y+14); }
         });
         ctx.restore();
 
-        // 2. DRAW MAIN IMAGE (KEN BURNS EFFECT)
-        const imgKey = `ending${this.slideIdx}`;
-        const img = this.game.imgs[imgKey];
-
-        // PERBAIKAN PENTING: Tambahkan '&& img.naturalWidth > 0'
-        // Ini memastikan jika gambar tidak ditemukan (broken), kode akan lari ke 'else' (menampilkan teks)
-        // bukannya menggambar kotak kosong transparan.
+        // ── 3. Main image (Ken Burns) ──
+        const img = this.game.imgs[`ending${this.slideIdx}`];
         if(img && img.complete && img.naturalWidth > 0) {
             ctx.save();
             ctx.globalAlpha = this.alpha;
-            
-            // Calculate Zoom (Scale 1.05 -> 1.0)
-            let progress = this.timer / this.slideDuration;
-            if(this.state === 'fade-in') progress = 0;
-            if(this.state === 'fade-out') progress = 1;
-            
-            const scale = 1.05 - (0.05 * progress);
-            
-            // Center the zoomed image
-            const w = 800 * scale;
-            const h = 600 * scale;
-            const x = (800 - w) / 2;
-            const y = (600 - h) / 2;
-
-            // Ambient Brightness Pulse (Breathing effect)
-            const brightness = 1.0 + Math.sin(Date.now() / 3000) * 0.05;
-            ctx.filter = `brightness(${brightness})`;
-
-            ctx.drawImage(img, x, y, w, h);
+            const prog = this.state==='hold' ? this.timer/this.slideDuration : (this.state==='fade-out' ? 1 : 0);
+            const scale = 1.06 - 0.06 * prog;
+            // Pan kiri/kanan bergantian tiap slide
+            const panDir = this.slideIdx % 2 === 0 ? 1 : -1;
+            const panX = panDir * prog * 12;
+            const w = 800 * scale, h = 600 * scale;
+            ctx.filter = `brightness(${1 + Math.sin(Date.now()/3000)*0.04})`;
+            ctx.drawImage(img, (800-w)/2 + panX, (600-h)/2, w, h);
             ctx.restore();
         } else {
-            // Fallback text (Akan muncul karena gambar ending belum ada)
-            ctx.fillStyle = "white";
-            ctx.font = "bold 40px Orbitron";
-            ctx.textAlign = "center";
-            ctx.fillText(`SCENE ${this.slideIdx}`, 400, 250);
-            
-            // Tambahan visual untuk fallback agar tidak sepi
-            ctx.font = "20px Rajdhani";
-            ctx.fillStyle = "#00D9FF";
-            ctx.fillText("- CINEMATIC VISUALIZATION -", 400, 290);
-            ctx.textAlign = "left";
-        }
-
-        // 3. VIGNETTE EFFECT (Focus Center)
-        const vig = ctx.createRadialGradient(400, 300, 100, 400, 300, 500);
-        vig.addColorStop(0, "rgba(0,0,0,0)");
-        vig.addColorStop(1, "rgba(0,0,0,0.6)"); // Darken edges
-        ctx.fillStyle = vig;
-        ctx.fillRect(0, 0, 800, 600);
-
-        // 4. DRAW CAPTION
-        if(this.captions[this.slideIdx]) {
-            ctx.save();
-            ctx.globalAlpha = this.alpha; 
-            
-            ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-            ctx.fillRect(0, 480, 800, 120);
-            
-            // Main Text with Glow
-            ctx.fillStyle = "#00D9FF";
-            // FIX: Ukuran font diperkecil dari 24px ke 19px agar teks panjang muat dalam layar
-            ctx.font = "19px 'Orbitron', sans-serif";
-            ctx.textAlign = "center";
-            ctx.shadowColor = "#00A8FF";
-            ctx.shadowBlur = 10;
-            
-            // Menggunakan maxWidth (760px) untuk memastikan browser mengecilkan teks jika masih terlalu panjang
-            ctx.fillText(this.captions[this.slideIdx], 400, 545, 760);
-            
+            // Fallback gradient
+            ctx.save(); ctx.globalAlpha = this.alpha;
+            const grad = ctx.createLinearGradient(0,0,800,600);
+            grad.addColorStop(0, '#050A14'); grad.addColorStop(1, '#0A1F3D');
+            ctx.fillStyle = grad; ctx.fillRect(0,0,800,600);
+            ctx.fillStyle = '#334'; ctx.font = 'bold 32px Orbitron'; ctx.textAlign='center';
+            ctx.fillText('SCENE ' + this.slideIdx, 400, 280);
             ctx.restore();
         }
 
-        // 5. FLASH TRANSITION (TOP LAYER)
+        // ── 4. Colour tint overlay per fase ──
+        ctx.save();
+        if(isEarly) {
+            ctx.fillStyle = `rgba(120,0,0,${0.18 * this.alpha})`;
+        } else if(this.slideIdx >= 13) {
+            ctx.fillStyle = `rgba(0,80,40,${0.12 * this.alpha})`;
+        }
+        ctx.fillRect(0,0,800,600);
+        ctx.restore();
+
+        // ── 5. Particles ──
+        ctx.save();
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.opacity * this.alpha;
+            ctx.shadowBlur = 12; ctx.shadowColor = p.col;
+            const g = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.size);
+            g.addColorStop(0,'#fff'); g.addColorStop(0.4,p.col); g.addColorStop(1,'rgba(0,0,0,0)');
+            ctx.fillStyle = g;
+            ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+        });
+        ctx.restore();
+
+        // ── 6. Vignette ──
+        const vig = ctx.createRadialGradient(400,300,80,400,300,480);
+        vig.addColorStop(0,'rgba(0,0,0,0)');
+        vig.addColorStop(1,'rgba(0,0,0,0.72)');
+        ctx.fillStyle = vig; ctx.fillRect(0,0,800,600);
+
+        // ── 7. Caption box (typewriter, warna per slide) ──
+        if(this.typeBuffer && this.alpha > 0.3) {
+            const capColor = slide.color || '#FFFFFF';
+            const boxH = 100;
+            // Gradient box bawah
+            const boxGrad = ctx.createLinearGradient(0, 600-boxH-20, 0, 600);
+            boxGrad.addColorStop(0, 'rgba(0,0,0,0)');
+            boxGrad.addColorStop(0.35, 'rgba(0,0,0,0.88)');
+            boxGrad.addColorStop(1,   'rgba(0,0,0,0.97)');
+            ctx.fillStyle = boxGrad; ctx.fillRect(0, 600-boxH-20, 800, boxH+20);
+
+            // Garis aksen warna di bawah teks
+            ctx.fillStyle = capColor;
+            ctx.globalAlpha = 0.6 * this.alpha;
+            ctx.fillRect(60, 600-boxH+2, 680, 2);
+            ctx.globalAlpha = 1;
+
+            // Slide number kecil
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = '11px Orbitron'; ctx.textAlign = 'right';
+            ctx.fillText(this.slideIdx + ' / ' + this.totalSlides, 770, 600-boxH-6);
+
+            // Teks caption dengan outline hitam agar terbaca di semua background
+            ctx.save();
+            ctx.globalAlpha = Math.min(1, this.alpha * 1.5);
+            ctx.font = 'bold 18px Orbitron'; ctx.textAlign = 'center';
+            ctx.strokeStyle = '#000'; ctx.lineWidth = 4; ctx.lineJoin = 'round';
+            ctx.strokeText(this.typeBuffer, 400, 600-boxH+52, 720);
+            ctx.fillStyle = capColor;
+            ctx.shadowColor = capColor; ctx.shadowBlur = 16;
+            ctx.fillText(this.typeBuffer, 400, 600-boxH+52, 720);
+            ctx.restore();
+
+            // Cursor berkedip saat typewriter belum selesai
+            if(!this.captionReady && this.animFrame % 30 < 18) {
+                ctx.fillStyle = capColor; ctx.globalAlpha = 0.9;
+                ctx.font = 'bold 20px Orbitron'; ctx.textAlign = 'left';
+                const tw = ctx.measureText(this.typeBuffer).width;
+                ctx.fillText('|', 400 + tw/2 + 3, 600-boxH+52);
+            }
+        }
+
+        // ── 8. Slide terakhir: tampilkan nama player ──
+        if(this.slideIdx === this.totalSlides && this.alpha > 0.5 && this.captionReady) {
+            const pName = (this.game.player.name || 'GUARDIAN').toUpperCase();
+            const pSchool = (this.game.player.school || '').toUpperCase();
+            ctx.save();
+            const nameAlpha = Math.min(1, (this.timer - 60) / 40);
+            if(nameAlpha > 0) {
+                ctx.globalAlpha = nameAlpha;
+                ctx.font = 'bold 28px Orbitron'; ctx.textAlign = 'center';
+                ctx.strokeStyle = '#000'; ctx.lineWidth = 5;
+                ctx.strokeText(pName, 400, 260);
+                ctx.fillStyle = '#FFD700'; ctx.shadowColor = '#FFD700'; ctx.shadowBlur = 25;
+                ctx.fillText(pName, 400, 260);
+                if(pSchool) {
+                    ctx.font = '16px Rajdhani'; ctx.fillStyle = '#aaa'; ctx.shadowBlur = 0;
+                    ctx.strokeStyle = '#000'; ctx.lineWidth = 3;
+                    ctx.strokeText(pSchool, 400, 288);
+                    ctx.fillStyle = '#bbb'; ctx.fillText(pSchool, 400, 288);
+                }
+            }
+            ctx.restore();
+        }
+
+        // ── 9. Letterbox bars ──
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, 800, this.letterboxH);
+        ctx.fillRect(0, 600-this.letterboxH, 800, this.letterboxH);
+
+        // ── 10. Flash putih antar slide ──
         if(this.flashAlpha > 0) {
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.flashAlpha})`;
+            ctx.fillStyle = `rgba(255,255,255,${this.flashAlpha})`;
             ctx.fillRect(0, 0, 800, 600);
         }
+
+        ctx.restore(); // restore shake
     }
 
     finish() {
@@ -4562,19 +5004,284 @@ class ChapterCredits {
 
 const story = {
     data: [], idx: 0, cb: null,
-    start: function(data, cb) { this.data = data; this.idx = 0; this.cb = cb; this.render(); },
-    render: function() {
-        if(this.idx >= this.data.length) { if(this.cb) this.cb(); return; }
-        const d = this.data[this.idx];
-        document.getElementById('story-speaker').innerText = d.speaker; document.getElementById('story-text').innerText = d.text;
-        const bgEl = document.getElementById('story-bg');
-        if(app.imgs[d.bg]) bgEl.style.backgroundImage = `url('${app.imgs[d.bg].src}')`;
-        let charKey = d.char;
-        if(charKey === 'hero') charKey = 'hero'+app.player.charId+'_idle';
-        const img = app.imgs[charKey] || app.imgs['rex'];
-        document.getElementById('story-portrait').src = img.src;
+    _typeTimer: null, _autoTimer: null, _typing: false, _fullText: '',
+
+    start: function(data, cb) {
+        this.data = data; this.idx = 0; this.cb = cb;
+        this._buildDots();
+        this._openLetterbox();
+        setTimeout(() => this.render(), 700);
     },
-    next: function() { AudioMgr.playSFX('sfx-click'); this.idx++; this.render(); }
+
+    _buildDots: function() {
+        const prog = document.getElementById('story-progress');
+        if(!prog) return;
+        prog.innerHTML = '';
+        this.data.forEach((_, i) => {
+            const d = document.createElement('div');
+            d.className = 'story-dot';
+            d.id = 'sdot-' + i;
+            prog.appendChild(d);
+        });
+    },
+
+    _updateDots: function() {
+        this.data.forEach((_, i) => {
+            const el = document.getElementById('sdot-' + i);
+            if(!el) return;
+            el.className = 'story-dot' + (i === this.idx ? ' active' : i < this.idx ? ' done' : '');
+        });
+    },
+
+    _openLetterbox: function() {
+        const top = document.getElementById('cinematic-bar-top');
+        const bot = document.getElementById('cinematic-bar-bottom');
+        if(top) { top.style.height = '0px'; setTimeout(() => { top.style.height = '55px'; }, 50); }
+        if(bot) { bot.style.height = '0px'; setTimeout(() => { bot.style.height = '55px'; }, 50); }
+    },
+
+    _closeLetterbox: function() {
+        const top = document.getElementById('cinematic-bar-top');
+        const bot = document.getElementById('cinematic-bar-bottom');
+        if(top) top.style.height = '0px';
+        if(bot) bot.style.height = '0px';
+    },
+
+    _flash: function() {
+        const f = document.getElementById('story-flash');
+        if(!f) return;
+        f.style.transition = 'none'; f.style.opacity = '0.6';
+        setTimeout(() => { f.style.transition = 'opacity 0.5s'; f.style.opacity = '0'; }, 80);
+    },
+
+    // === SYNTH SOUNDS ===
+    _playSynth: function(type) {
+        try {
+            const ctx = AudioMgr.ctx || new (window.AudioContext || window.webkitAudioContext)();
+            if(!ctx) return;
+            if(type === 'alert') {
+                // Suara alarm/beep merah - dua nada turun
+                [880, 660].forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.18);
+                    osc.frequency.linearRampToValueAtTime(freq * 0.7, ctx.currentTime + i * 0.18 + 0.15);
+                    gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.18);
+                    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.18 + 0.2);
+                    osc.start(ctx.currentTime + i * 0.18);
+                    osc.stop(ctx.currentTime + i * 0.18 + 0.22);
+                });
+            } else if(type === 'whoosh') {
+                // Suara swoosh sinematik
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+                osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.5);
+                filter.type = 'bandpass'; filter.frequency.value = 500;
+                gain.gain.setValueAtTime(0.12, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+            } else if(type === 'beep') {
+                // Beep sci-fi singkat
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'square'; osc.frequency.value = 1200;
+                gain.gain.setValueAtTime(0.08, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.1);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.12);
+            } else if(type === 'dramatic') {
+                // Suara booming sinematik (low rumble + hit)
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.type = 'sine'; osc.frequency.value = 55;
+                gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+                osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 1.3);
+                // Tambah hit high
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.connect(gain2); gain2.connect(ctx.destination);
+                osc2.type = 'square'; osc2.frequency.value = 220;
+                gain2.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc2.start(ctx.currentTime); osc2.stop(ctx.currentTime + 0.35);
+            }
+        } catch(e) {}
+    },
+
+    _setAlert: function(on) {
+        const ao = document.getElementById('alert-overlay');
+        const sl = document.getElementById('alert-scanlines');
+        const cap = document.getElementById('cinematic-caption');
+        if(ao) ao.className = on ? 'active' : '';
+        if(sl) sl.className = on ? 'active' : '';
+        if(cap) {
+            if(on) cap.classList.add('alert');
+            else cap.classList.remove('alert');
+        }
+    },
+
+    _typeText: function(text, el, onDone) {
+        if(this._typeTimer) clearInterval(this._typeTimer);
+        this._typing = true;
+        let i = 0;
+        // Pakai textContent bukan innerText agar spasi tidak hilang
+        el.textContent = '';
+        const arrow = document.getElementById('story-arrow');
+        if(arrow) arrow.classList.remove('show');
+        this._typeTimer = setInterval(() => {
+            if(i < text.length) {
+                el.textContent += text[i++];
+            } else {
+                clearInterval(this._typeTimer);
+                this._typing = false;
+                if(arrow) arrow.classList.add('show');
+                if(onDone) onDone();
+            }
+        }, 32);
+    },
+
+    render: function() {
+        if(this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
+        if(this.idx >= this.data.length) {
+            this._closeLetterbox();
+            const db = document.getElementById('dialogue-box');
+            const cap = document.getElementById('cinematic-caption');
+            if(db)  { db.classList.remove('visible'); }
+            if(cap) { cap.classList.remove('show'); }
+            setTimeout(() => { if(this.cb) this.cb(); }, 600);
+            return;
+        }
+
+        const d = this.data[this.idx];
+        this._updateDots();
+
+        // --- Background transition ---
+        const bgEl = document.getElementById('story-bg');
+        if(bgEl) {
+            const newBg = app.imgs[d.bg];
+            if(newBg && newBg.src) {
+                // Fade out → change → fade in
+                bgEl.style.opacity = '0';
+                bgEl.style.transform = 'scale(1.08)';
+                setTimeout(() => {
+                    bgEl.style.backgroundImage = "url('" + newBg.src + "')";
+                    bgEl.style.opacity = '1';
+                    // Slow Ken Burns pan effect
+                    const panX = (Math.random() > 0.5 ? 1 : -1) * 3;
+                    const panY = (Math.random() > 0.5 ? 1 : -1) * 2;
+                    bgEl.style.transition = 'opacity 0.8s ease, transform 9s linear';
+                    bgEl.style.transform = 'scale(1) translate(' + panX + '%, ' + panY + '%)';
+                }, 200);
+            }
+        }
+
+        // --- Decide mode: cinematic caption (no portrait) or dialogue box ---
+        const db  = document.getElementById('dialogue-box');
+        const cap = document.getElementById('cinematic-caption');
+        const capText = document.getElementById('cinematic-caption-text');
+        const textEl  = document.getElementById('story-text');
+
+        if(d.mode === 'caption') {
+            // Mode caption: teks di tengah layar tanpa kotak dialogue
+            if(db)  db.classList.remove('visible');
+            if(cap) { cap.classList.remove('show'); cap.classList.remove('alert'); }
+
+            // Trigger efek khusus berdasarkan flag scene
+            const isAlert = !!d.alert;
+            this._setAlert(isAlert);
+            if(isAlert) {
+                this._playSynth('alert');
+            } else if(d.sound) {
+                this._playSynth(d.sound);
+            } else {
+                this._playSynth('whoosh');
+            }
+
+            setTimeout(() => {
+                if(cap) cap.classList.add('show');
+                if(capText) this._typeText(d.text, capText, null);
+            }, 300);
+            // Auto-advance setelah delay — matikan alert sebelum pindah
+            const delay = d.delay || (d.text.length * 32 + 2000);
+            this._autoTimer = setTimeout(() => {
+                this._setAlert(false);
+                this.next();
+            }, delay);
+        } else {
+            // Mode dialogue default
+            if(cap) cap.classList.remove('show');
+            this._setAlert(false);
+            // Suara dialogue entry
+            if(d.sound) this._playSynth(d.sound);
+            else this._playSynth('beep');
+            // Portrait
+            let charKey = d.char;
+            if(charKey === 'hero') charKey = 'hero' + app.player.charId + '_idle';
+            const img = app.imgs[charKey] || app.imgs['rex'];
+            if(img) document.getElementById('story-portrait').src = img.src;
+            document.getElementById('story-speaker').innerText = d.speaker;
+
+            // Slide dialogue box in
+            if(db) {
+                db.classList.remove('visible');
+                setTimeout(() => {
+                    db.classList.add('visible');
+                    this._typeText(d.text, textEl, null);
+                }, 250);
+            }
+        }
+    },
+
+    handleTap: function() {
+        if(this._typing) {
+            // Jika masih mengetik: langsung tampilkan teks penuh
+            if(this._typeTimer) clearInterval(this._typeTimer);
+            this._typing = false;
+            const d = this.data[this.idx];
+            if(d.mode === 'caption') {
+                const el = document.getElementById('cinematic-caption-text');
+                if(el) el.innerText = d.text;
+            } else {
+                const el = document.getElementById('story-text');
+                if(el) el.innerText = d.text;
+            }
+            const arrow = document.getElementById('story-arrow');
+            if(arrow) arrow.classList.add('show');
+        } else {
+            // Lanjut ke scene berikutnya
+            this.next();
+        }
+    },
+
+    next: function() {
+        if(this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
+        AudioMgr.playSFX('sfx-click');
+        this._flash();
+        this.idx++;
+        setTimeout(() => this.render(), 180);
+    },
+
+    skip: function() {
+        if(this._typeTimer) clearInterval(this._typeTimer);
+        if(this._autoTimer) clearTimeout(this._autoTimer);
+        this._typing = false;
+        this._closeLetterbox();
+        this._setAlert(false);
+        const db  = document.getElementById('dialogue-box');
+        const cap = document.getElementById('cinematic-caption');
+        if(db)  db.classList.remove('visible');
+        if(cap) { cap.classList.remove('show'); cap.classList.remove('alert'); }
+        AudioMgr.playSFX('sfx-click');
+        setTimeout(() => { if(this.cb) this.cb(); }, 400);
+    }
 };
 
 class CharacterSprite {
@@ -5004,8 +5711,21 @@ class ChapterCabling {
         });
         
         this.dragged = null; this.mx = 0; this.my = 0;
-        this.evDown = (e) => this.input(e, 'down'); this.evMove = (e) => this.input(e, 'move'); this.evUp = (e) => this.input(e, 'up');
-        canvas.addEventListener('mousedown', this.evDown); canvas.addEventListener('mousemove', this.evMove); canvas.addEventListener('mouseup', this.evUp);
+        this.evDown = (e) => this.input(e, 'down');
+        this.evMove = (e) => this.input(e, 'move');
+        this.evUp   = (e) => this.input(e, 'up');
+
+        // Touch wrappers untuk HP/tablet
+        this.evTouchStart = (e) => { e.preventDefault(); this.input(e.touches[0], 'down'); };
+        this.evTouchMove  = (e) => { e.preventDefault(); this.input(e.touches[0], 'move'); };
+        this.evTouchEnd   = (e) => { e.preventDefault(); this.input(e.changedTouches[0], 'up'); };
+
+        canvas.addEventListener('mousedown',  this.evDown);
+        canvas.addEventListener('mousemove',  this.evMove);
+        canvas.addEventListener('mouseup',    this.evUp);
+        canvas.addEventListener('touchstart', this.evTouchStart, {passive: false});
+        canvas.addEventListener('touchmove',  this.evTouchMove,  {passive: false});
+        canvas.addEventListener('touchend',   this.evTouchEnd,   {passive: false});
         
         document.getElementById('hud-timer').innerText = this.timeLeft;
 
@@ -5016,9 +5736,9 @@ class ChapterCabling {
                 `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
                 <strong>🎮 CARA BERMAIN:</strong><br>
                 Hubungkan port perangkat kiri ke kanan dengan kabel yang sesuai.<br>
-                🖱️ <strong>KLIK & TAHAN</strong> pada Port Awal (Kiri).<br>
+                🖱️ <strong>KLIK / SENTUH & TAHAN</strong> pada Port Awal (Kiri).<br>
                 👉 <strong>GESER</strong> kabel ke Port Tujuan (Kanan).<br>
-                ✅ Lepas mouse untuk menghubungkan.
+                ✅ Lepas untuk menghubungkan.
                 </div>`,
                 () => {
                     this.active = true;
@@ -5034,8 +5754,24 @@ class ChapterCabling {
             );
         }, 500);
     }
-    cleanup() { clearInterval(this.timerInterval); canvas.removeEventListener('mousedown', this.evDown); canvas.removeEventListener('mousemove', this.evMove); canvas.removeEventListener('mouseup', this.evUp); }
-    getCanvasCoords(e) { const r = canvas.getBoundingClientRect(); return { mx: (e.clientX - r.left) * (800/r.width), my: (e.clientY - r.top) * (600/r.height) }; }
+    cleanup() {
+        clearInterval(this.timerInterval);
+        canvas.removeEventListener('mousedown',  this.evDown);
+        canvas.removeEventListener('mousemove',  this.evMove);
+        canvas.removeEventListener('mouseup',    this.evUp);
+        canvas.removeEventListener('touchstart', this.evTouchStart);
+        canvas.removeEventListener('touchmove',  this.evTouchMove);
+        canvas.removeEventListener('touchend',   this.evTouchEnd);
+    }
+    getCanvasCoords(e) {
+        // Gunakan getBoundingClientRect dari canvas untuk menghitung posisi yg tepat
+        // meski canvas di-scale via CSS transform
+        const r = canvas.getBoundingClientRect();
+        return {
+            mx: (e.clientX - r.left) * (800 / r.width),
+            my: (e.clientY - r.top)  * (600 / r.height)
+        };
+    }
     input(e, type) {
         if(!this.active) return; // Prevent input if paused
         const {mx, my} = this.getCanvasCoords(e); this.mx = mx; this.my = my;
