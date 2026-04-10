@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Toya Guardians: Tirtatelaga Defense</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=VT323&display=swap" rel="stylesheet">
     
@@ -22,10 +22,14 @@
             overflow: hidden; 
             width: 100vw; 
             height: 100vh;
+            height: 100dvh; /* Support dynamic viewport height di mobile */
+            max-width: 100%;
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            touch-action: none; 
+            touch-action: none;
+            position: fixed;
+            top: 0; left: 0;
         }
         
         /* --- CONTAINER UTAMA (FIXED RATIO SCALING) --- */
@@ -423,6 +427,66 @@
 
         #rpg-controls { position: absolute; bottom: 20px; right: 20px; display: none; gap: 15px; z-index: 50; }
         #dpad-controls { position: absolute; bottom: 20px; left: 20px; width: 150px; height: 150px; display: none; z-index: 50; pointer-events: auto; }
+
+        /* ===== UNIVERSAL VIRTUAL JOYSTICK ===== */
+        #virtual-joystick { 
+            position: absolute; 
+            bottom: 18px; left: 18px; 
+            width: 160px; height: 160px; 
+            display: none; 
+            z-index: 60; 
+            touch-action: none; 
+            pointer-events: auto;
+        }
+        .vjoy-base { 
+            position: absolute; 
+            width: 154px; height: 154px; 
+            left: 3px; top: 3px; 
+            background: radial-gradient(circle, rgba(0,168,255,0.06) 0%, rgba(0,168,255,0.16) 100%);
+            border: 2px solid rgba(0,217,255,0.3); 
+            border-radius: 50%; 
+            box-shadow: 0 0 20px rgba(0,168,255,0.12), inset 0 0 20px rgba(0,168,255,0.05);
+        }
+        .vjoy-base::before, .vjoy-base::after {
+            content: '';
+            position: absolute;
+            background: rgba(0,217,255,0.12);
+            border-radius: 2px;
+        }
+        .vjoy-base::before { width: 2px; height: 100%; top: 0; left: 50%; transform: translateX(-50%); }
+        .vjoy-base::after  { height: 2px; width: 100%; left: 0; top: 50%; transform: translateY(-50%); }
+        .vjoy-ring {
+            position: absolute;
+            width: 154px; height: 154px;
+            left: 3px; top: 3px;
+            border: 1px dashed rgba(0,217,255,0.15);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .vjoy-knob { 
+            position: absolute; 
+            width: 60px; height: 60px; 
+            left: 50px; top: 50px; 
+            background: radial-gradient(circle at 35% 35%, rgba(0,255,255,0.5), rgba(0,80,180,0.7));
+            border: 2px solid rgba(0,217,255,0.75); 
+            border-radius: 50%; 
+            box-shadow: 0 0 18px rgba(0,217,255,0.5), inset 0 0 10px rgba(255,255,255,0.08); 
+            transition: left 0.03s linear, top 0.03s linear;
+            pointer-events: none;
+        }
+        .vjoy-knob::after {
+            content: '';
+            position: absolute;
+            width: 18px; height: 18px;
+            background: radial-gradient(circle, rgba(255,255,255,0.45), transparent);
+            border-radius: 50%;
+            top: 8px; left: 8px;
+        }
+
+        /* JOYSTICK VIRTUAL BOSS BATTLE (legacy - kept for compatibility) */
+        #boss-joystick { position: absolute; bottom: 15px; left: 15px; width: 150px; height: 150px; display: none; z-index: 50; touch-action: none; }
+        .joy-base { position: absolute; width: 140px; height: 140px; left: 5px; top: 5px; background: rgba(0,168,255,0.12); border: 2px solid rgba(0,168,255,0.4); border-radius: 50%; }
+        .joy-knob { position: absolute; width: 54px; height: 54px; left: 48px; top: 48px; background: radial-gradient(circle, rgba(0,217,255,0.9), rgba(0,56,140,0.85)); border: 2px solid var(--tech-cyan); border-radius: 50%; box-shadow: 0 0 14px rgba(0,217,255,0.7); transition: left 0.04s, top 0.04s; }
         .dpad-btn { position: absolute; width: 45px; height: 45px; background: rgba(0, 168, 255, 0.3); border: 2px solid var(--tech-cyan); border-radius: 8px; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; user-select: none; cursor: pointer; backdrop-filter: blur(2px); touch-action: manipulation; }
         .dpad-btn:active { background: var(--tech-cyan); color: black; transform: scale(0.95); }
         .dpad-up { top: 0; left: 50px; }
@@ -986,6 +1050,19 @@
         <div class="dpad-btn dpad-down" data-key="ArrowDown">▼</div>
     </div>
 
+    <!-- JOYSTICK VIRTUAL UNIVERSAL (semua gameplay movement) -->
+    <div id="virtual-joystick">
+        <div class="vjoy-base"></div>
+        <div class="vjoy-ring"></div>
+        <div class="vjoy-knob" id="vjoy-knob"></div>
+    </div>
+
+    <!-- JOYSTICK VIRTUAL (BOSS BATTLE MOBILE) -->
+    <div id="boss-joystick">
+        <div class="joy-base"></div>
+        <div class="joy-knob" id="joy-knob"></div>
+    </div>
+
     <!-- SCREENS -->
     <div id="screen-splash" class="ui-screen active">
         <div style="width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center;">
@@ -1022,7 +1099,8 @@
     
     <!-- NEW: MODE SELECT SCREEN -->
     <div id="screen-mode-select" class="ui-screen">
-        <h2 style="color:var(--tech-cyan); font-family:'Orbitron'; margin-bottom:10px; font-size: 2rem; text-shadow:0 0 10px var(--primary-blue);">PILIH MISI</h2>
+        <h2 style="color:var(--tech-cyan); font-family:'Orbitron'; margin-bottom:5px; font-size: 2rem; text-shadow:0 0 10px var(--primary-blue);">PILIH MODE MISI</h2>
+        <p style="color:#888; font-size:0.85rem; margin-bottom:10px;">Keduanya mengajarkan konsep Keamanan Jaringan yang berbeda!</p>
         
         <div class="mode-container">
             <!-- STORY MODE (TOP BOX) -->
@@ -1031,7 +1109,7 @@
                 <div class="mode-card-bg" id="bg-story-img"></div>
                 <div class="mode-content">
                     <h3 class="mode-title">STORY MODE</h3>
-                    <p class="mode-desc">PETUALANGAN MENYELAMATKAN TOYA</p>
+                    <p class="mode-desc">Pelajari Topologi, Firewall, Forensik Digital & hadapi Boss! (Disarankan untuk pemula)</p>
                 </div>
             </div>
 
@@ -1041,7 +1119,7 @@
                 <div class="mode-card-bg" id="bg-survival-img"></div>
                 <div class="mode-content">
                     <h3 class="mode-title">SURVIVAL</h3>
-                    <p class="mode-desc">BERTAHAN HIDUP (ENDLESS)</p>
+                    <p class="mode-desc">Simulasi serangan siber tak henti — bertahan selama mungkin & uji refleksmu!</p>
                 </div>
             </div>
         </div>
@@ -1211,24 +1289,24 @@
     <div id="screen-title-ch1" class="ui-screen">
         <h1 style="color:var(--primary-blue); font-family:'Orbitron'; font-size:3rem; text-shadow:0 0 10px rgba(0, 168, 255, 0.5);">CHAPTER 1</h1>
         <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">DASAR KEAMANAN JARINGAN</h2>
-        <p style="color:#aaa;">Persiapan Infiltrasi Server Utama</p>
-        <button class="btn-ml" style="width:200px" onclick="app.startChapter1Story()">LANJUT</button>
+        <p style="color:#aaa; max-width:360px; text-align:center; line-height:1.6;">Uji pemahamanmu tentang konsep dasar jaringan, lalu pulihkan koneksi fisik gedung yang rusak akibat serangan malware.</p>
+        <button class="btn-ml" style="width:200px" onclick="app.startChapter1Story()">MULAI MISI</button>
     </div>
 
     <!-- Chapter Title Screen 2 -->
     <div id="screen-title-ch2" class="ui-screen">
         <h1 style="color:var(--danger-red); font-family:'Orbitron'; font-size:3rem; text-shadow:0 0 10px rgba(255, 68, 68, 0.5);">CHAPTER 2</h1>
         <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">PERTAHANAN FIREWALL</h2>
-        <p style="color:#aaa;">Menghalau Serangan Genderuwo</p>
-        <button class="btn-ml" style="width:200px" onclick="app.startChapter2Intro()">LANJUT</button>
+        <p style="color:#aaa; max-width:360px; text-align:center; line-height:1.6;">Terapkan Firewall sebagai garis pertahanan utama — hadang serangan DDoS, konfigurasikan aturan filtering, dan validasi sistemnya.</p>
+        <button class="btn-ml" style="width:200px" onclick="app.startChapter2Intro()">MULAI MISI</button>
     </div>
 
     <!-- Chapter Title Screen 3 -->
     <div id="screen-title-ch3" class="ui-screen">
         <h1 style="color:var(--accent-gold); font-family:'Orbitron'; font-size:3rem; text-shadow:0 0 10px rgba(255, 215, 0, 0.5);">CHAPTER 3</h1>
-        <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">INVESTIGASI SERANGAN</h2>
-        <p style="color:#aaa;">Melacak Posisi Boss & Forensik Digital</p>
-        <button class="btn-ml" style="width:200px" onclick="app.startChapter3Intro()">LANJUT</button>
+        <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">FORENSIK DIGITAL &amp; KONFRONTASI</h2>
+        <p style="color:#aaa; max-width:360px; text-align:center; line-height:1.6;">Deteksi Keylogger tersembunyi, lakukan analisis forensik digital untuk melacak Boss, lalu hadapi Genderuwo dalam pertarungan terakhir!</p>
+        <button class="btn-ml" style="width:200px" onclick="app.startChapter3Intro()">MULAI MISI</button>
     </div>
 
     <!-- Quiz Screen -->
@@ -2795,10 +2873,15 @@ class GameApp {
             };
         }
         this.initUI();
+        this.initVirtualJoystick(); // Universal joystick manager
         this.loop = this.loop.bind(this);
 
         // --- FIXED: ADD RESIZE HANDLER ---
         window.addEventListener('resize', () => this.resizeGame());
+        // Support visualViewport resize untuk mobile (saat address bar muncul/hilang)
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', () => this.resizeGame());
+        }
         this.resizeGame(); // Initial call
 		
 		 // PENTING: Panggil updatePurityDisplay di sini agar visual awal langsung merah
@@ -2840,12 +2923,13 @@ class GameApp {
     // --- NEW FUNCTION: RESIZE GAME (FIXED ASPECT RATIO) ---
     resizeGame() {
         const container = document.getElementById('game-container');
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
+        // Gunakan visualViewport jika tersedia (lebih akurat di mobile browser)
+        const windowWidth = (window.visualViewport ? window.visualViewport.width : window.innerWidth);
+        const windowHeight = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
         const gameWidth = 800;
         const gameHeight = 600;
 
-        // Calculate Scale Factor
+        // Calculate Scale Factor - isi penuh layar
         const scale = Math.min(
             windowWidth / gameWidth,
             windowHeight / gameHeight
@@ -2853,6 +2937,109 @@ class GameApp {
 
         // Apply Scale Transform
         container.style.transform = `scale(${scale})`;
+        
+        // Pastikan body dan container benar-benar memenuhi layar
+        document.body.style.width = windowWidth + 'px';
+        document.body.style.height = windowHeight + 'px';
+    }
+
+    // ===== UNIVERSAL VIRTUAL JOYSTICK MANAGER =====
+    // Gunakan VirtualJoy.show(mode, callback) untuk aktifkan joystick
+    // mode: 'omni' (8-arah bebas), 'horizontal' (kiri-kanan saja)
+    // callback(dx, dy) dipanggil setiap frame saat joystick aktif
+    initVirtualJoystick() {
+        const el    = document.getElementById('virtual-joystick');
+        const knob  = document.getElementById('vjoy-knob');
+        const BASE_R = 47; // max radius knob dari center (dalam px elemen)
+        const CENTER = 80; // center pixel dari elemen 160px
+        const KNOB_HALF = 30;
+
+        let active = false;
+        let jdx = 0, jdy = 0;
+        let mode = 'omni';
+        let cbFn = null;
+        let animFrame = null;
+
+        const resetKnob = () => {
+            knob.style.left = (CENTER - KNOB_HALF) + 'px';
+            knob.style.top  = (CENTER - KNOB_HALF) + 'px';
+            jdx = 0; jdy = 0;
+        };
+
+        const onStart = (e) => {
+            e.preventDefault();
+            active = true;
+        };
+
+        const onMove = (e) => {
+            e.preventDefault();
+            if (!active) return;
+            const touch = e.touches ? e.touches[0] : e;
+            const rect  = el.getBoundingClientRect();
+            // Koordinat relatif ke center elemen (screen coords)
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top  + rect.height / 2;
+            let dx = touch.clientX - cx;
+            let dy = touch.clientY - cy;
+
+            if (mode === 'horizontal') dy = 0;
+
+            const dist  = Math.sqrt(dx * dx + dy * dy);
+            const clamp = Math.min(dist, BASE_R);
+            const angle = Math.atan2(dy, dx);
+            const nx = Math.cos(angle) * clamp;
+            const ny = Math.sin(angle) * clamp;
+
+            knob.style.left = (CENTER - KNOB_HALF + nx) + 'px';
+            knob.style.top  = (CENTER - KNOB_HALF + ny) + 'px';
+
+            jdx = nx / BASE_R;  // -1 .. 1
+            jdy = ny / BASE_R;
+        };
+
+        const onEnd = (e) => {
+            e.preventDefault();
+            active = false;
+            resetKnob();
+        };
+
+        el.addEventListener('touchstart',  onStart, { passive: false });
+        el.addEventListener('touchmove',   onMove,  { passive: false });
+        el.addEventListener('touchend',    onEnd,   { passive: false });
+        el.addEventListener('touchcancel', onEnd,   { passive: false });
+        // mouse fallback untuk testing di desktop
+        el.addEventListener('mousedown',  onStart);
+        el.addEventListener('mousemove',  onMove);
+        el.addEventListener('mouseup',    onEnd);
+
+        // Tick loop — panggil callback tiap frame saat ada callback
+        const tick = () => {
+            if (cbFn && (active || (jdx !== 0 || jdy !== 0))) {
+                cbFn(jdx, jdy);
+            }
+            animFrame = requestAnimationFrame(tick);
+        };
+
+        this.VirtualJoy = {
+            show(newMode, callback) {
+                mode  = newMode || 'omni';
+                cbFn  = callback || null;
+                active = false;
+                resetKnob();
+                el.style.display = 'block';
+                if (!animFrame) animFrame = requestAnimationFrame(tick);
+            },
+            hide() {
+                el.style.display = 'none';
+                cbFn  = null;
+                active = false;
+                resetKnob();
+                if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+            },
+            getDX() { return jdx; },
+            getDY() { return jdy; },
+            isActive() { return active; }
+        };
     }
     
     initAudioContext(enableMusic) {
@@ -3048,7 +3235,7 @@ class GameApp {
         }
         
         // Pesan Akhir
-        document.getElementById('end-msg').innerText = isSurvival ? ("Wave Terakhir: " + (this.player.lastWave||0)) : "Sistem Keamanan Telah Dikuasai Malware!";
+        document.getElementById('end-msg').innerText = isSurvival ? ("Pertahanan bertahan hingga Wave " + (this.player.lastWave||0) + " — Luar biasa!") : "Firewall jebol! Sistem dikuasai Genderuwo. Tapi setiap kegagalan adalah pelajaran — pelajari teorinya dan coba lagi!";
         document.getElementById('end-score').innerText = Math.floor(this.player.score);
         
         this.populateResultInfo();
@@ -3173,10 +3360,14 @@ class GameApp {
         document.getElementById('mission-overlay').style.display = 'none';
         
         document.getElementById('rpg-controls').style.display = 'none';
+        const joystick = document.getElementById('boss-joystick');
+        if(joystick) joystick.style.display = 'none';
         // Hide D-Pad by default, only enabled in specific chapters
         if(document.getElementById('dpad-controls')) {
             document.getElementById('dpad-controls').style.display = 'none';
         }
+        // Hide universal joystick
+        if(this.VirtualJoy) this.VirtualJoy.hide();
 
         const aboutBtn = document.getElementById('btn-about');
         const fsBtn = document.getElementById('btn-fullscreen');
@@ -3346,44 +3537,44 @@ class GameApp {
         AudioMgr.playSFX('sfx-click'); this.state = AppState.STORY; this.switchScreen('screen-story');
         story.start([
             // SCENE 1 — Pembuka sinematik
-            { mode: 'caption', text: "Di atas awan digital...", bg: 'bg_open1', delay: 2400, sound: 'whoosh' },
+            { mode: 'caption', text: "Di suatu tempat di dunia digital...", bg: 'bg_open1', delay: 2400, sound: 'whoosh' },
             // SCENE 2 — Lokasi kota
-            { mode: 'caption', text: "TIRTATELAGA — Kota Data Terakhir yang Masih Berdiri", bg: 'bg_open1', delay: 3000, sound: 'dramatic' },
+            { mode: 'caption', text: "TIRTATELAGA — Kota Data yang Dibangun di Atas Jaringan Komputer", bg: 'bg_open1', delay: 3000, sound: 'dramatic' },
             // SCENE 3 — Dewi Air narasi TOYA
-            { speaker: "DEWI AIR", text: "TOYA... energi suci dari Telaga Dunia. Ia yang menjaga kemurnian setiap bit dan byte kota ini.", char: 'narrator', bg: 'bg_open2' },
-            // SCENE 4 — Ancaman datang
-            { speaker: "DEWI AIR", text: "Tapi malam ini... serangan datang dari celah yang tidak pernah kami duga.", char: 'narrator', bg: 'bg_open2' },
+            { speaker: "DEWI AIR", text: "TOYA... adalah simbol kemurnian data. Seperti air yang jernih mengaliri kota, TOYA menjaga agar setiap data yang mengalir di jaringan ini tetap aman, utuh, dan bisa dipercaya.", char: 'narrator', bg: 'bg_open2' },
+            // SCENE 4 — Penjelasan jaringan
+            { speaker: "DEWI AIR", text: "Kota Tirtatelaga terhubung oleh ribuan kabel dan perangkat jaringan. Router, Switch, dan Server bekerja bersama seperti jantung yang memompa darah — tanpanya, kota ini berhenti berdetak.", char: 'narrator', bg: 'bg_open2' },
             // SCENE 5 — ⚠ ALERT MERAH: Malware terdeteksi
-            { mode: 'caption', text: "[ PERINGATAN SISTEM ]  MALWARE GENDERUWO TERDETEKSI", bg: 'bg_open3', delay: 3200, alert: true },
+            { mode: 'caption', text: "[ PERINGATAN SISTEM ]  MALWARE 'GENDERUWO' MENEROBOS FIREWALL!", bg: 'bg_open3', delay: 3200, alert: true },
             // SCENE 6 — ⚠ ALERT MERAH: Kontaminasi
-            { mode: 'caption', text: "KONTAMINASI TOYA : 47% ... 61% ... 78%", bg: 'bg_open3', delay: 3000, alert: true },
-            // SCENE 7 — Kembali normal, narasi serangan
-            { speaker: "DEWI AIR", text: "Genderuwo Malware... entitas jahat yang memakan data dan mencemari Toya dari dalam!", char: 'narrator', bg: 'bg_open3' },
-            // SCENE 8 — Situasi gawat
-            { speaker: "DEWI AIR", text: "Semua Guardian senior telah gugur di garis depan. Server utama hampir jatuh...", char: 'narrator', bg: 'bg_open4' },
+            { mode: 'caption', text: "KONTAMINASI DATA : 47% ... 61% ... 78%", bg: 'bg_open3', delay: 3000, alert: true },
+            // SCENE 7 — Penjelasan malware
+            { speaker: "DEWI AIR", text: "Genderuwo Malware adalah program jahat yang menyusup melalui celah keamanan jaringan. Ia merusak, mencuri, dan memanipulasi data — seperti racun yang mengotori sumber air bersih.", char: 'narrator', bg: 'bg_open3' },
+            // SCENE 8 — Situasi gawat + koneksi teori
+            { speaker: "DEWI AIR", text: "Firewall yang seharusnya menjadi tembok pelindung... telah ditembus. Para Guardian senior tidak sempat mengkonfigurasi ulang sistem pertahanan sebelum kota ini lumpuh.", char: 'narrator', bg: 'bg_open4' },
             // SCENE 9 — ⚠ ALERT: Server kritis
             { mode: 'caption', text: "[ STATUS SERVER UTAMA ]  KRITIS — SHUTDOWN DALAM 00:59", bg: 'bg_open4', delay: 3000, alert: true },
             // SCENE 10 — Panggilan aksi
-            { speaker: "DEWI AIR", text: "Kamu... Guardian muda. Kamu adalah harapan terakhir Tirtatelaga. Bangkitlah!", char: 'narrator', bg: 'bg_open4' },
-            // SCENE 11 — Rex muncul
-            { speaker: "MASTER REX", text: "Aku Rex, mentormu. Kamu akan belajar cepat — atau kota ini akan lenyap selamanya.", char: 'rex', bg: 'bg_open5', sound: 'dramatic' },
+            { speaker: "DEWI AIR", text: "Kamu adalah Guardian yang masih bisa bergerak. Kamu harus belajar cara kerja jaringan, mengkonfigurasi Firewall, dan mengusir Malware ini. Masa depan kota ada di tanganmu!", char: 'narrator', bg: 'bg_open4' },
+            // SCENE 11 — Rex muncul sebagai mentor/guru
+            { speaker: "MASTER REX", text: "Aku Rex, Network Administrator senior yang tersisa. Aku akan membimbingmu — dari memasang kabel jaringan, mengatur Firewall, hingga menghadapi Genderuwo langsung. Siapkah kamu?", char: 'rex', bg: 'bg_open5', sound: 'dramatic' },
             // SCENE 12 — Caption misi penutup
-            { mode: 'caption', text: "MISI: Lindungi Server — Murnikan TOYA — Selamatkan Tirtatelaga", bg: 'bg_open5', delay: 3500, sound: 'dramatic' },
+            { mode: 'caption', text: "MISI: Pelajari Jaringan — Konfigurasi Firewall — Selamatkan Tirtatelaga", bg: 'bg_open5', delay: 3500, sound: 'dramatic' },
         ], () => { this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
     }
 
     startTutorial() { this.switchScreen('dummy'); document.getElementById('hud').style.display = 'flex'; this.state = AppState.TUTORIAL; this.currentChapter = new ChapterTutorial(this); }
     finishTutorial() {
         this.switchScreen('screen-story'); this.state = AppState.STORY;
-        story.start([ { speaker: "MASTER REX", text: "Kamu siap. Menuju gerbang server sekarang.", char: 'rex', bg: 'bg_siap' } ], () => { this.startChapter1(); });
+        story.start([ { speaker: "MASTER REX", text: "Bagus! Kamu sudah paham cara bergerak. Sekarang saatnya masuk ke Gedung Server. Lantai pertama adalah pusat jaringan fisik — kita mulai dari sana.", char: 'rex', bg: 'bg_siap' } ], () => { this.startChapter1(); });
     }
     
     startChapter1() { AudioMgr.playSFX('sfx-click'); this.switchScreen('screen-title-ch1'); }
     startChapter1Story() {
         AudioMgr.playSFX('sfx-click'); this.state = AppState.STORY; this.switchScreen('screen-story');
         story.start([
-            { speaker: "MASTER REX", text: "Pintu ini dikunci sistem kuantum. Pecahkan Kode Akses!", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Jawab dengan benar dan cepat untuk membuka pintu.", char: 'rex', bg: 'bg_server' }
+            { speaker: "MASTER REX", text: "Ini adalah pintu masuk Ruang Jaringan Lantai 1. Sistem keamanannya mengunci diri secara otomatis saat serangan terjadi.", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Untuk membukanya, kamu harus membuktikan bahwa kamu paham dasar-dasar jaringan komputer. Jawab pertanyaannya dengan benar!", char: 'rex', bg: 'bg_server' }
         ], () => { 
             this.switchScreen('screen-quiz');
             document.getElementById('hud').style.display = 'flex'; 
@@ -3392,7 +3583,7 @@ class GameApp {
             this.state = AppState.GAME_CH1; 
             
             this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH1, () => {
-                showMessage("AKSES DITERIMA", "Pintu Terbuka.");
+                showMessage("AKSES DITERIMA", "Pintu Ruang Jaringan terbuka! Pengetahuanmu tentang jaringan telah diverifikasi oleh sistem.");
                 setTimeout(() => this.triggerCablingNarrative(), 2000); 
             }, null);
         });
@@ -3402,8 +3593,8 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "System AI Gedung Server", text: "PERINGATAN! Koneksi fisik terputus.", char: 'androidtoya', bg: 'bg_masuklt1' },
-            { speaker: "MASTER REX", text: "Sistem keamanan server mengalami gangguan. Kamu harus memasang perangkat dan kabel yang benar agar jaringan kembali menyala.", char: 'rex', bg: 'bg_masuklt1' }
+            { speaker: "System AI Gedung Server", text: "PERINGATAN! Koneksi jaringan fisik terputus. Malware telah merusak konfigurasi perangkat keras di ruang distribusi.", char: 'androidtoya', bg: 'bg_masuklt1' },
+            { speaker: "MASTER REX", text: "Inilah yang terjadi jika jaringan fisik tidak dijaga. Kabel, Switch, dan Router harus terhubung dengan benar agar data bisa mengalir. Pasang ulang semua perangkat dan kabel yang rusak!", char: 'rex', bg: 'bg_masuklt1' }
         ], () => {
             this.startChapterCabling();
         });
@@ -3422,8 +3613,8 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "System AI Gedung Server", text: "Koneksi Stabil. Jaringan Kembali Online.", char: 'androidtoya', bg: 'bg_masuklt1nyala' },
-            { speaker: "MASTER REX", text: "Jaringan Gedung kembali menyala! Kerja bagus. Sekarang menuju lift ke lantai berikutnya.", char: 'rex', bg: 'bg_masuklt1nyala' }
+            { speaker: "System AI Gedung Server", text: "Koneksi Stabil. Semua perangkat jaringan fisik kembali online. Topologi jaringan terdeteksi normal.", char: 'androidtoya', bg: 'bg_masuklt1nyala' },
+            { speaker: "MASTER REX", text: "Hebat! Jaringan fisik kembali berfungsi. Ingat — tanpa koneksi fisik yang benar, tidak ada satu pun sistem keamanan digital yang bisa bekerja. Sekarang kita naik ke lantai Firewall!", char: 'rex', bg: 'bg_masuklt1nyala' }
         ], () => {
             this.startChapter1Bridge();
         });
@@ -3443,8 +3634,8 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "MASTER REX", text: "Kerja bagus Guardian. Kamu telah berada di lantai Ruang Firewall.", char: 'rex', bg: 'bg_monitor' },
-            { speaker: "System AI Gedung Server", text: "Akses Level 2: FIREWALL PERIMETER.", char: 'androidtoya', bg: 'bg_monitor' }
+            { speaker: "MASTER REX", text: "Kita sudah di Lantai Firewall. Firewall adalah sistem keamanan utama yang berfungsi seperti 'pos penjaga' — ia memutuskan paket data mana yang boleh masuk dan mana yang harus diblokir.", char: 'rex', bg: 'bg_monitor' },
+            { speaker: "System AI Gedung Server", text: "Mengakses Level 2: FIREWALL PERIMETER. Terdeteksi gelombang serangan aktif dari luar jaringan. Pertahanan diperlukan segera.", char: 'androidtoya', bg: 'bg_monitor' }
         ], () => { 
             this.switchScreen('screen-title-ch2');
         });
@@ -3455,8 +3646,8 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "System AI Gedung Server", text: "PERINGATAN! Gelombang Malware terdeteksi mencoba menembus Firewall!", char: 'androidtoya', bg: 'bg_firewall' },
-            { speaker: "MASTER REX", text: "Guardian! Aktifkan mode pertahanan. Hancurkan malware itu sebelum mereka masuk ke sistem!", char: 'rex', bg: 'bg_firewall' }
+            { speaker: "System AI Gedung Server", text: "PERINGATAN! Ratusan paket data mencurigakan terdeteksi menghantam lapisan Firewall! Ini serangan DDoS — penyerang mencoba membanjiri sistem agar Firewall kolaps.", char: 'androidtoya', bg: 'bg_firewall' },
+            { speaker: "MASTER REX", text: "Guardian! Setiap paket yang melayang itu adalah ancaman nyata. Hancurkan sebelum mereka menembus pertahanan kita! Bayangkan dirimu sebagai Firewall itu sendiri!", char: 'rex', bg: 'bg_firewall' }
         ], () => {
             this.startChapter2(); // Masuk ke Shooter terlebih dahulu
         });
@@ -3480,8 +3671,8 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "MASTER REX", text: "Area berhasil diamankan. Serangan fisik telah reda.", char: 'rex', bg: 'bg_firewall2' },
-            { speaker: "System AI", text: "Memulai Protokol Konfigurasi Manual.", char: 'androidtoya', bg: 'bg_firewall3' }
+            { speaker: "MASTER REX", text: "Gelombang serangan pertama berhasil diblokir! Tapi itu baru serangan luar. Sekarang kita perlu mengkonfigurasi Firewall secara manual agar sistem bisa menolak ancaman serupa di masa depan.", char: 'rex', bg: 'bg_firewall2' },
+            { speaker: "System AI", text: "Memulai Protokol Konfigurasi Firewall. Pilih paket aturan keamanan yang tepat sesuai kebutuhan sistem. Ingat: konfigurasi yang salah bisa membuka celah bagi penyerang!", char: 'androidtoya', bg: 'bg_firewall3' }
         ], () => {
             this.startChapter2Config(); // Masuk ke Pemilihan Paket
         });
@@ -3505,7 +3696,7 @@ class GameApp {
 
     startChapter2Quiz() {
         AudioMgr.playSFX('sfx-click');
-        showMessage("VERIFIKASI KEAMANAN", "Firewall aktif. Jawab pertanyaan untuk memvalidasi dan mengunci sistem.");
+        showMessage("VALIDASI FIREWALL", "Konfigurasi fisik selesai. Sekarang validasi pengetahuanmu tentang Firewall untuk mengunci sistem pertahanan secara permanen!");
         this.switchScreen('screen-quiz');
         document.getElementById('hud').style.display = 'flex';
         document.getElementById('hud-purity').style.width = this.player.toyaPurity + "%";
@@ -3527,7 +3718,7 @@ class GameApp {
 
         this.state = AppState.GAME_CH2_QUIZ;
         this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH2, () => {
-            showMessage("SYSTEM SECURE", "Semua Port Terkunci Aman. Firewall Valid!");
+            showMessage("FIREWALL TERKUNCI", "Semua aturan Firewall berhasil divalidasi dan dikunci. Sistem pertahanan Lantai 2 aktif 100%!");
             setTimeout(() => this.startChapter2Bridge(), 2000); 
         }, [1,1,1,1,1]);
     }
@@ -3548,9 +3739,9 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "MASTER REX", text: "Kita sudah di lantai teratas sekarang. Boss Monster bersembunyi di dalam.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Kamu harus mencari 'Keylogger' yang disembunyikan virus agar bisa masuk ke ruang server utama.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Hati-hati, labirin ini dipenuhi virus penjaga. Jangan sampai tertangkap!", char: 'rex', bg: 'bg_server' }
+            { speaker: "MASTER REX", text: "Kita sudah di lantai paling atas — Ruang Server Utama. Di sinilah Genderuwo Malware bersembunyi dan mengendalikan seluruh serangan.", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Malware ini memasang 'Keylogger' — program yang merekam dan mencuri setiap data yang diketik. Temukan dan netralkan semua Keylogger itu agar kita bisa membuka akses ke Core Server!", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Hati-hati. Labirin ini dijaga virus-virus kecil. Gunakan pengetahuan jaringanmu untuk menavigasi dengan aman!", char: 'rex', bg: 'bg_server' }
         ], () => {
              this.switchScreen('screen-title-ch3');
         });
@@ -3578,10 +3769,10 @@ class GameApp {
         this.switchScreen('screen-story');
         
         story.start([
-            { speaker: "System AI", text: "Pemindaian Selesai. Seluruh Keylogger berhasil dinetralkan.", char: 'androidtoya', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Kerja bagus Guardian! Jejak digital mereka kini terlihat jelas.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Akhirnya posisi Boss ditemukan! Dia bersembunyi di balik enkripsi tingkat tinggi.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Kita perlu melakukan Forensik Digital untuk mendekripsi koordinatnya. Lakukan sekarang!", char: 'rex', bg: 'bg_monitor' }
+            { speaker: "System AI", text: "Pemindaian Selesai. Seluruh Keylogger berhasil dinetralkan. Data curian tidak berhasil dikirim keluar jaringan.", char: 'androidtoya', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Kerja bagus Guardian! Sekarang kita bisa melacak jejak digital Genderuwo. Ia meninggalkan log aktivitas yang terenkripsi di sistem.", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Kita perlu melakukan Forensik Digital — proses menganalisis bukti digital seperti log sistem dan paket data untuk menemukan koordinat persembunyian si Boss.", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Jawab pertanyaan-pertanyaan forensik ini dengan benar untuk mendekripsi lokasi Genderuwo. Ini adalah langkah terakhir sebelum konfrontasi!", char: 'rex', bg: 'bg_monitor' }
         ], () => {
             // Lanjut ke Quiz setelah narasi
             this.startChapter3Quiz();
@@ -3613,7 +3804,7 @@ class GameApp {
         
         this.state = AppState.GAME_CH3_QUIZ;
         this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH3, () => {
-            showMessage("DATA TERDEKRIPSI", "Kode Kunci: 19019. Sistem pulih... Tapi tunggu!");
+            showMessage("ENKRIPSI BERHASIL DIDEKRIPSI", "Kode kunci forensik: 19019. Lokasi Genderuwo terkonfirmasi — ia berada di Core Server! Bersiaplah untuk konfrontasi terakhir!");
             setTimeout(() => this.triggerBossNarrative(), 2000);
         }, fixedCode);
     }
@@ -3627,10 +3818,10 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "System AI Gedung Server", text: "ALERT! Deteksi anomali energi masif di Core Server!", char: 'androidtoya', bg: 'bg_open4' },
-            { speaker: "GENDERUWO", text: "GRRR... SIAPA YANG BERANI MENGAKTIFKAN KEMBALI FIREWALL?!", char: 'virus', bg: 'bg_open4' },
-            { speaker: "MASTER REX", text: "Itu dia! Genderuwo Sang Pemimipin! Dia marah karena aksesnya kita tutup.", char: 'rex', bg: 'bg_open4' },
-            { speaker: "MASTER REX", text: "Guardian! Gunakan tombol ATK dan SKILL untuk menyerang. HINDARI serangan virus dengan bergerak!", char: 'rex', bg: 'bg_open4' }
+            { speaker: "System AI Gedung Server", text: "ALERT KRITIS! Anomali energi masif terdeteksi di Core Server! Ini bukan serangan biasa — ini adalah entitas Malware tingkat tertinggi yang mengendalikan semua ancaman sebelumnya.", char: 'androidtoya', bg: 'bg_open4' },
+            { speaker: "GENDERUWO", text: "GRRR... SIAPA YANG BERANI MEMULIHKAN FIREWALL DAN MENETRALISIR PASUKANKU?!", char: 'virus', bg: 'bg_open4' },
+            { speaker: "MASTER REX", text: "Itulah Genderuwo — Boss dari semua Malware yang menyerang kota ini. Ia marah karena semua celah keamanan yang ia buka sudah kita tutup satu per satu!", char: 'rex', bg: 'bg_open4' },
+            { speaker: "MASTER REX", text: "Guardian! Gunakan semua yang sudah kamu pelajari. Serang dengan ATK, gunakan SKILL saat terdesak, dan selalu bergerak menghindari serangannya. Ini saat menentukan — selamatkan Tirtatelaga!", char: 'rex', bg: 'bg_open4' }
         ], () => {
             this.startBossBattle();
         });
@@ -3701,6 +3892,7 @@ class GameApp {
         rank.style.color = rankColor;
 
         document.getElementById('end-score').innerText = Math.floor(this.player.score); 
+        document.getElementById('end-msg').innerText = "Toya telah dimurnikan kembali! Kamu telah membuktikan bahwa pemahaman tentang jaringan & keamanan siber adalah kunci menyelamatkan sistem digital.";
         this.populateResultInfo();
 
         // --- PERBAIKAN: Panggil update stats ---
@@ -4078,17 +4270,28 @@ class ChapterSurvival {
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e); }, {passive: false});
         canvas.addEventListener('touchend', (e) => { e.preventDefault(); this.handleEnd(e); }, {passive: false});
 
+        // Virtual joystick horizontal untuk survival shooter
+        if (game.VirtualJoy) {
+            game.VirtualJoy.show('horizontal', (dx, dy) => {
+                if (!this.active) return;
+                this.pX += dx * 5;
+                this.pX = Math.max(30, Math.min(770, this.pX));
+                this.isShooting = game.VirtualJoy.isActive();
+            });
+        }
+
         // Start Tutorial
         showMessage(
-            "ENDLESS DEFENSE", 
+            "MODE SURVIVAL: PERTAHANAN TAK TERBATAS", 
             `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
-            <strong>🛡️ MISI SURVIVAL:</strong><br>
-            Bertahan hidup selama mungkin!<br>
-            Cetak <strong>COMBO</strong> tinggi untuk skor maksimal.<br><br>
-            <strong>🎁 POWER-UPS:</strong><br>
-            🧱 Firewall: Memperlambat Musuh<br>
-            🛡️ Encryption: Kebal Sementara<br>
-            ☢️ Antivirus: Hancurkan Semua<br>
+            Dalam dunia nyata, serangan malware tidak pernah berhenti. Mode ini mensimulasikan pertahanan jaringan tanpa henti!<br><br>
+            <strong>🛡️ CARANYA:</strong><br>
+            Gerakkan mouse/sentuh untuk membidik & tembak otomatis.<br>
+            Cetak <strong>COMBO</strong> tinggi untuk skor maksimal!<br><br>
+            <strong>🎁 POWER-UPS (drop dari musuh):</strong><br>
+            🧱 <strong>Firewall</strong>: Memperlambat semua musuh<br>
+            🛡️ <strong>Enkripsi</strong>: Kebal sementara dari serangan<br>
+            ☢️ <strong>Antivirus</strong>: Hancurkan seluruh layar!<br>
             </div>`,
             () => { this.active = true; }
         );
@@ -4193,14 +4396,14 @@ class ChapterSurvival {
                 if(opt.correct) {
                     AudioMgr.playSFX('sfx-correct');
                     btn.style.background = 'var(--success-green)';
-                    showMessage("JAWABAN BENAR!", "Mendapatkan Random Power-Up!", () => {
+                    showMessage("JAWABAN BENAR!", "Pengetahuanmu tentang keamanan jaringan mengaktifkan Power-Up! Pengetahuan adalah senjata terkuat seorang Guardian.", () => {
                         this.activatePowerUp(['firewall_boost', 'encryption_shield', 'antivirus_nuke'][Math.floor(Math.random()*3)]);
                         this.resumeGame();
                     });
                 } else {
                     AudioMgr.playSFX('sfx-wrong');
                     btn.style.background = 'var(--danger-red)';
-                    showMessage("JAWABAN SALAH", "Tidak ada pinalti. Lanjut berjuang!", () => {
+                    showMessage("BELUM TEPAT", "Tidak ada penalti — tapi pelajari jawaban yang benar agar kamu semakin kuat! Lanjutkan pertahanan!", () => {
                         this.resumeGame();
                     });
                 }
@@ -4545,12 +4748,14 @@ class ChapterSurvival {
         canvas.removeEventListener('mousedown', this.handleStart);
         canvas.removeEventListener('mouseup', this.handleEnd);
         
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
+
         // RESTORE HUD ELEMENTS SAAT KELUAR MODE INI
         const timerEl = document.getElementById('hud-timer');
-        if(timerEl) timerEl.parentElement.style.display = 'flex'; // Restore panel
+        if(timerEl) timerEl.parentElement.style.display = 'flex';
         
         const purityEl = document.getElementById('hud-purity');
-        if(purityEl) purityEl.parentElement.parentElement.style.display = 'flex'; // Restore panel
+        if(purityEl) purityEl.parentElement.parentElement.style.display = 'flex';
     }
 }
 
@@ -4590,20 +4795,20 @@ class ChapterEndingCinematic {
         // Data per slide: caption + warna + efek khusus
         this.slides = [
             null, // 0 dummy
-            { cap: "Serangan terakhir dilepaskan...",           color: '#FF4444', sound: 'boom',     shake: true  },
-            { cap: "Ledakan energi menandai kekalahan Genderuwo.", color: '#FF8800', sound: 'boom',  shake: true  },
-            { cap: "Kabut malware perlahan terangkat...",        color: '#AA88FF', sound: 'whoosh',  shake: false },
-            { cap: "Core Server memulai reboot otomatis.",       color: '#88AAFF', sound: 'beep',    shake: false },
-            { cap: "Protokol pemulihan menyebar ke seluruh jaringan.", color: '#00D9FF', sound: 'beep', shake: false },
-            { cap: "Jalur data merah kini berubah biru murni.",  color: '#00D9FF', sound: 'whoosh',  shake: false },
-            { cap: "Firewall kembali tegak — perisai tak terlihat.", color: '#00FF88', sound: 'beep', shake: false },
-            { cap: "Energi TOYA mengalir deras, menyembuhkan setiap sektor.", color: '#00FF88', sound: 'rise', shake: false },
-            { cap: "Di seluruh kota, lampu-lampu digital menyala terang.", color: '#FFD700', sound: 'rise', shake: false },
-            { cap: "Warga Tirtatelaga bersorak — koneksi mereka telah pulih.", color: '#FFD700', sound: 'rise', shake: false },
-            { cap: "Master Rex tersenyum. Bangga pada muridnya.",color: '#FFFFFF', sound: 'beep',    shake: false },
-            { cap: "Keseimbangan teknologi dan tradisi telah kembali.", color: '#FFFFFF', sound: 'whoosh', shake: false },
-            { cap: "Kamu, Guardian, telah membuktikan keberanianmu.", color: '#FFD700', sound: 'rise', shake: false },
-            { cap: "TIRTATELAGA AMAN. MISI SELESAI.",            color: '#00FF88', sound: 'victory', shake: false },
+            { cap: "Serangan terakhir dilepaskan — Firewall terakhir diaktifkan...",  color: '#FF4444', sound: 'boom',    shake: true  },
+            { cap: "Genderuwo Malware menerima paket data bersih — dan hancur berkeping.",  color: '#FF8800', sound: 'boom',  shake: true  },
+            { cap: "Kabut kontaminasi perlahan terangkat dari seluruh jaringan...",    color: '#AA88FF', sound: 'whoosh',  shake: false },
+            { cap: "Core Server memulai protokol reboot otomatis — sistem pulih.",     color: '#88AAFF', sound: 'beep',    shake: false },
+            { cap: "Paket-paket data yang bersih kembali mengalir melalui setiap router dan switch.", color: '#00D9FF', sound: 'beep', shake: false },
+            { cap: "Jalur data yang merah dan tercemar kini berubah menjadi biru murni.",  color: '#00D9FF', sound: 'whoosh',  shake: false },
+            { cap: "Firewall kembali tegak — tembok tak terlihat yang menjaga seluruh jaringan.", color: '#00FF88', sound: 'beep', shake: false },
+            { cap: "Energi TOYA mengalir deras, memurnikan setiap sektor dan bit data.", color: '#00FF88', sound: 'rise', shake: false },
+            { cap: "Di seluruh Tirtatelaga, server-server kembali online satu per satu.", color: '#FFD700', sound: 'rise', shake: false },
+            { cap: "Warga kota bersorak — koneksi, data, dan privasi mereka telah terlindungi kembali.", color: '#FFD700', sound: 'rise', shake: false },
+            { cap: "Master Rex tersenyum. 'Inilah arti sebenarnya menjadi Guardian Jaringan.'", color: '#FFFFFF', sound: 'beep', shake: false },
+            { cap: "Kamu telah menguasai: Topologi Jaringan, Firewall, Forensik Digital, dan Keamanan Siber.", color: '#00D9FF', sound: 'whoosh', shake: false },
+            { cap: "Ilmu yang kamu pelajari hari ini — adalah perisai nyata di dunia digital.", color: '#FFD700', sound: 'rise', shake: false },
+            { cap: "TIRTATELAGA AMAN. GUARDIAN SEJATI TELAH LAHIR.",   color: '#00FF88', sound: 'victory', shake: false },
         ];
 
         // Buka letterbox
@@ -4913,8 +5118,8 @@ class ChapterCredits {
             { t: "Teman-teman SMKN 1 Brondong", size: "20px", color: "white" },
             { t: "Seluruh Player Toya Guardians", size: "20px", color: "white" },
             { t: "", size: "50px" },
-            { t: "TERIMA KASIH TELAH BERMAIN", size: "30px", color: "#00FF88", bold: true },
-            { t: "Sampai Jumpa di Misi Selanjutnya!", size: "20px", color: "#aaa" },
+            { t: "TERIMA KASIH TELAH BELAJAR SAMBIL BERMAIN", size: "28px", color: "#00FF88", bold: true },
+            { t: "Jadikan ilmu ini perisaimu di dunia digital!", size: "20px", color: "#aaa" },
             { t: "", size: "60px" },
             // --- ADDED: BADGE MADE WITH GEMINI ---
             { t: "POWERED BY", size: "16px", color: "#888" },
@@ -5410,7 +5615,21 @@ class ChapterWalkingScene {
         this.handler = (e) => this.click(e); 
         canvas.addEventListener('mousedown', this.handler);
         this.finished = false;
-        showMessage("AREA LORONG SERVER", "Klik lantai untuk berjalan menuju LIFT di ujung kanan.");
+
+        // Aktifkan universal joystick untuk mobile (gerak kiri-kanan-naik-turun)
+        if (game.VirtualJoy) {
+            game.VirtualJoy.show('omni', (dx, dy) => {
+                const speed = 3;
+                if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
+                    this.hero.moveTo(
+                        Math.max(30, Math.min(790, this.hero.x + dx * speed * 3)),
+                        Math.max(350, Math.min(590, this.hero.y + dy * speed * 2))
+                    );
+                }
+            });
+        }
+
+        showMessage("AREA LORONG SERVER", "Gunakan joystick (HP) atau klik lantai (PC) untuk berjalan menuju LIFT di ujung kanan.");
     }
     click(e) {
         const r = canvas.getBoundingClientRect(); const mx = (e.clientX - r.left) * (800/r.width); const my = (e.clientY - r.top) * (600/r.height);
@@ -5427,7 +5646,10 @@ class ChapterWalkingScene {
         if(!this.finished) { ctx.fillStyle = "rgba(255, 255, 255, 0.5)"; ctx.font = "30px sans-serif"; ctx.fillText(">>>", 400 + (Math.sin(Date.now()/200)*20), 500); }
         this.hero.draw(ctx);
     }
-    cleanup() { canvas.removeEventListener('mousedown', this.handler); }
+    cleanup() { 
+        canvas.removeEventListener('mousedown', this.handler); 
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
+    }
 }
 
 //chapter kuis
@@ -5852,13 +6074,27 @@ class Chapter2 {
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e); }, {passive: false});
         canvas.addEventListener('touchend', (e) => { e.preventDefault(); this.handleEnd(e); }, {passive: false});
 
+        // Virtual joystick horizontal untuk mobile
+        if (game.VirtualJoy) {
+            game.VirtualJoy.show('horizontal', (dx, dy) => {
+                if (!this.active) return;
+                this.pX += dx * 5;
+                if (this.pX < 30) this.pX = 30;
+                if (this.pX > 770) this.pX = 770;
+                // Joystick juga trigger shooting saat ditekan
+                if (game.VirtualJoy.isActive()) this.isShooting = true;
+                else this.isShooting = false;
+            });
+        }
+
         // TUTORIAL OVERLAY SHOOTER
         showMessage(
             "MISI: FIREWALL DEFENSE", 
             `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
-            <strong>🎮 KONTROL:</strong><br>
-            🖱️ GESER MOUSE = Gerakkan Hero<br>
-            🖱️ TAHAN KLIK = Auto Shoot<br><br>
+            <strong>🎮 KONTROL PC:</strong><br>
+            🖱️ GESER MOUSE = Gerakkan Hero | TAHAN KLIK = Auto Shoot<br><br>
+            <strong>📱 KONTROL HP:</strong><br>
+            🕹️ Joystick kiri = Gerak | Tahan joystick = Auto Shoot<br><br>
             <strong>🎯 MISI:</strong><br>
             Target: Hancurkan ${this.targetKills} Malware!<br>
             ⚠️ Jangan biarkan 5+ lolos!
@@ -5879,7 +6115,8 @@ class Chapter2 {
     // ... rest of Chapter2 unchanged ...
     cleanup() { 
         clearInterval(this.timerInterval);
-        canvas.removeEventListener('mousemove', this.handleMove); canvas.removeEventListener('mousedown', this.handleStart); canvas.removeEventListener('mouseup', this.handleEnd); 
+        canvas.removeEventListener('mousemove', this.handleMove); canvas.removeEventListener('mousedown', this.handleStart); canvas.removeEventListener('mouseup', this.handleEnd);
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
     }
     
     spawnEnemy() { 
@@ -6115,7 +6352,7 @@ class ChapterFirewallConfig {
                     if(this.score >= this.targetScore) {
                         this.active = false; // Stop immediately
                         this.cleanup();
-                        showMessage("FIREWALL TERKONFIGURASI", "Aturan filtering berhasil diterapkan. Sistem aman.");
+                        showMessage("FIREWALL TERKONFIGURASI", "Aturan Packet Filtering berhasil diterapkan. Sistem sekarang mampu membedakan paket data aman dan berbahaya secara otomatis.");
                         setTimeout(() => this.game.startChapter2Quiz(), 2000);
                     }
                 }
@@ -6145,14 +6382,15 @@ class ChapterFirewallConfig {
         // TUTORIAL OVERLAY FIREWALL
         setTimeout(() => {
             showMessage(
-                "TUTORIAL: FIREWALL", 
+                "KONFIGURASI FIREWALL — PACKET FILTERING", 
                 `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
-                <strong>🎮 KONTROL:</strong><br>
-                🖱️ KLIK & TAHAN Paket Data<br>
-                📥 GESER ke zona ALLOW (Hijau) jika Aman<br>
-                🚫 GESER ke zona BLOCK (Merah) jika Virus<br><br>
-                <strong>🎯 MISI:</strong><br>
-                Sortir 10 paket data dengan benar!
+                Firewall bekerja dengan <strong>memeriksa setiap paket data</strong> yang masuk ke jaringan.<br><br>
+                <strong>🎮 CARA BERMAIN:</strong><br>
+                🖱️ KLIK & TAHAN paket data yang muncul<br>
+                ✅ GESER ke zona <strong>ALLOW</strong> (Hijau) jika paket aman<br>
+                🚫 GESER ke zona <strong>BLOCK</strong> (Merah) jika paket berbahaya<br><br>
+                <strong>💡 TIPS:</strong> Baca nama protokolnya! HTTP/SSH = aman, SQL Injection/EXE = berbahaya.<br>
+                <strong>🎯 SORTIR 10 paket dengan benar untuk mengunci Firewall!</strong>
                 </div>`,
                 () => { this.active = true; }
             );
@@ -6353,34 +6591,48 @@ class Chapter3Bomber {
         };
         window.addEventListener('keydown', this.keyDown);
         
-        document.getElementById('dpad-controls').style.display = 'block';
-        this.dpadHandler = (e) => {
-            e.preventDefault();
-            const key = e.target.getAttribute('data-key');
-            if(!key) return;
-            
-            if(key === 'ArrowUp') this.move(-1, 0);
-            if(key === 'ArrowDown') this.move(1, 0);
-            if(key === 'ArrowLeft') this.move(0, -1);
-            if(key === 'ArrowRight') this.move(0, 1);
-            if(key === 'Space') this.placeBomb();
-        };
-        
-        this.dpadEl = document.getElementById('dpad-controls');
-        this.dpadEl.addEventListener('touchstart', this.dpadHandler, {passive: false});
-        this.dpadEl.addEventListener('mousedown', this.dpadHandler);
+        // Universal joystick untuk bomber (grid-based movement)
+        this._joyMoveCooldown = 0;
+        this._joyLastDirX = 0;
+        this._joyLastDirY = 0;
+        if (game.VirtualJoy) {
+            game.VirtualJoy.show('omni', (dx, dy) => {
+                if (!this.active) return;
+                this._joyMoveCooldown -= 16; // ~60fps tick
+                if (this._joyMoveCooldown > 0) return;
+                const thresh = 0.45;
+                let movedX = 0, movedY = 0;
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    if (dx >  thresh) movedY =  1;
+                    if (dx < -thresh) movedY = -1;
+                } else {
+                    if (dy >  thresh) movedX =  1;
+                    if (dy < -thresh) movedX = -1;
+                }
+                if (movedX !== 0 || movedY !== 0) {
+                    this.move(movedX, movedY);
+                    this._joyMoveCooldown = 180; // ms between grid steps
+                }
+            });
+        }
+        // Juga tampilkan tombol BOMB di kanan bawah
+        document.getElementById('rpg-controls').style.display = 'flex';
+        document.getElementById('btn-dash').style.display = 'none';
+        document.getElementById('btn-skill').style.display = 'none';
+        document.getElementById('btn-atk').textContent = '💣';
+        document.getElementById('btn-atk').onclick = () => { if(this.active) this.placeBomb(); };
 
         // TUTORIAL OVERLAY BOMBER
         setTimeout(() => {
             showMessage(
-                "TUTORIAL: LABIRIN SERVER",
+                "MISI: DETEKSI & NETRALKAN KEYLOGGER",
                 `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
+                <strong>Keylogger</strong> adalah malware yang merekam ketukan keyboard untuk mencuri password dan data rahasia. Mereka tersembunyi di balik tembok rapuh server!<br><br>
                 <strong>🎮 KONTROL:</strong><br>
-                🕹️ Gunakan <strong>Tombol Panah / WASD</strong> untuk bergerak.<br>
-                💣 Tekan <strong>SPASI</strong> untuk memasang Bom.<br><br>
+                🕹️ Tombol <strong>Panah / WASD</strong> = Bergerak<br>
+                💣 <strong>SPASI / ENTER</strong> = Pasang Bom untuk hancurkan tembok<br><br>
                 <strong>🎯 MISI:</strong><br>
-                Cari 3 Keylogger yang tersembunyi di tembok rapuh!<br>
-                Hindari virus penjaga!
+                Temukan 3 Keylogger tersembunyi & hindari virus penjaga!
                 </div>`,
                 () => {
                     this.active = true;
@@ -6575,8 +6827,8 @@ class Chapter3Bomber {
             
             if(this.level < this.maxLevels) {
                 showMessage(
-                    `LANTAI ${this.level} SELESAI`,
-                    "Data Keylogger berhasil diamankan! Pintu akses ke lantai berikutnya terbuka.",
+                    `LANTAI ${this.level} — KEYLOGGER DINETRALKAN`,
+                    `Keylogger di lantai ini berhasil dihapus dari sistem. Data yang tersimpan tidak dapat lagi dicuri oleh Genderuwo. Lanjutkan ke lantai berikutnya!`,
                     () => {
                         this.level++;
                         this.initLevel(this.level); 
@@ -6585,8 +6837,8 @@ class Chapter3Bomber {
                 );
             } else {
                 showMessage(
-                    "SEMUA DATA DIAMANKAN",
-                    "Seluruh jejak virus berhasil ditemukan. Mengirim data ke markas...",
+                    "SEMUA KEYLOGGER BERHASIL DIDETEKSI",
+                    "Seluruh program pencuri data berhasil ditemukan dan dinetralkan. Jejak digital Genderuwo kini terbuka — saatnya analisis forensik!",
                     () => {
                         this.cleanup(); 
                         if(this.game && typeof this.game.triggerForensicNarrative === 'function') {
@@ -6739,6 +6991,14 @@ class Chapter3Bomber {
         const dpad = document.getElementById('dpad-controls');
         if(dpad) dpad.style.display = 'none';
 
+        // Restore rpg-controls buttons & hide
+        document.getElementById('btn-dash').style.display = '';
+        document.getElementById('btn-skill').style.display = '';
+        document.getElementById('btn-atk').textContent = 'ATK';
+        document.getElementById('btn-atk').onclick = () => app.currentChapter.attack && app.currentChapter.attack();
+        document.getElementById('rpg-controls').style.display = 'none';
+
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
         this.active = false;
     }
 }
@@ -6772,11 +7032,11 @@ class ChapterBossBattle {
 
         this.hero = new CharacterSprite(idle, frames, this.playerX, this.playerY, 96); 
         
-        // Boss Stats
+        // Boss Stats — LEBIH SEIMBANG
         this.bossX = 600;
         this.bossY = 300;
-        this.bossHp = 1500;
-        this.maxBossHp = 1500;
+        this.bossHp = 600;         // Turun dari 1500 → 600 (lebih bisa dikalahkan)
+        this.maxBossHp = 600;
         this.bossState = 'idle'; 
         this.bossDirY = 1;
         this.bossAttackTimer = 0;
@@ -6789,32 +7049,123 @@ class ChapterBossBattle {
         this.damageTexts = [];
         
         this.keys = {};
+
+        // JOYSTICK VIRTUAL (Mobile) - Gunakan universal VirtualJoy
+        this.joyActive = false;
+        this.joyDX = 0;
+        this.joyDY = 0;
+        if (game.VirtualJoy) {
+            game.VirtualJoy.show('omni', (dx, dy) => {
+                this.joyDX = dx;
+                this.joyDY = dy;
+                this.joyActive = Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1;
+            });
+        } else {
+            this._initJoystick(); // fallback ke joystick lama
+        }
         
-        // Input Listeners
+        // Input Listeners (Keyboard)
         this.keyDownHandler = (e) => this.keys[e.key] = true;
         this.keyUpHandler = (e) => this.keys[e.key] = false;
         window.addEventListener('keydown', this.keyDownHandler);
         window.addEventListener('keyup', this.keyUpHandler);
 
+        // AUTO-ATTACK TIMER (untuk HP agar tidak harus terus tekan tombol)
+        this.autoAttackTimer = 0;
+
         // UI Setup
         document.getElementById('rpg-controls').style.display = 'flex'; 
+        // Sembunyikan boss-joystick lama, sudah digantikan virtual joystick universal
+        document.getElementById('boss-joystick').style.display = 'none';
 
         // TUTORIAL OVERLAY BOSS - ADDED TIMEOUT
         setTimeout(() => {
             showMessage(
-                "BOSS BATTLE: FINAL PHASE",
+                "KONFRONTASI AKHIR: GENDERUWO MALWARE",
                 `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
-                <strong>🎮 KONTROL:</strong><br>
-                🏃 WASD / ARAH = Hindari Serangan<br>
-                💨 <strong>SHIFT / DASH</strong> = Dodge Roll (Kebal Sesaat)<br>
-                ⚔️ SPASI / TOMBOL ATK = Serang Boss<br>
-                ⚡ Z / TOMBOL SKILL = Serangan Kuat (Butuh Energi)<br><br>
-                <strong>🎯 MISI:</strong><br>
-                Kalahkan Genderuwo Malware!
+                Genderuwo adalah <strong>Malware tingkat tertinggi</strong> yang mengendalikan seluruh serangan ke Tirtatelaga.<br><br>
+                <strong>🎮 KONTROL PC:</strong><br>
+                🏃 WASD = Bergerak | SHIFT = Dash | SPASI = Serang | Z = Skill<br><br>
+                <strong>📱 KONTROL HP:</strong><br>
+                🕹️ <strong>Joystick Kiri</strong> = Gerak karakter<br>
+                🔴 <strong>ATK</strong> = Serang | 💙 <strong>SKILL</strong> = Serangan kuat | ⚡ <strong>DASH</strong> = Kebal sesaat<br><br>
+                <strong>🎯 TUJUAN:</strong> Habiskan HP Genderuwo untuk menyelamatkan Tirtatelaga!
                 </div>`,
                 () => { this.active = true; }
             );
         }, 500);
+    }
+
+    // ── JOYSTICK VIRTUAL INIT ──
+    _initJoystick() {
+        const joystickEl = document.getElementById('boss-joystick');
+        const knobEl = document.getElementById('joy-knob');
+        if (!joystickEl || !knobEl) return;
+
+        const baseR = 65; // radius area joystick
+        const knobR = 27; // radius knob (setengah lebar knob)
+        let startX = 0, startY = 0;
+
+        const getCenter = () => {
+            const rect = joystickEl.getBoundingClientRect();
+            // Scale balik ke koordinat game
+            const scaleX = 800 / document.getElementById('game-container').offsetWidth;
+            return {
+                cx: rect.left + rect.width / 2,
+                cy: rect.top + rect.height / 2
+            };
+        };
+
+        const onStart = (e) => {
+            e.preventDefault();
+            this.joyActive = true;
+            const touch = e.touches ? e.touches[0] : e;
+            startX = touch.clientX;
+            startY = touch.clientY;
+        };
+
+        const onMove = (e) => {
+            e.preventDefault();
+            if (!this.joyActive) return;
+            const touch = e.touches ? e.touches[0] : e;
+            const { cx, cy } = getCenter();
+            let dx = touch.clientX - cx;
+            let dy = touch.clientY - cy;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const clampedDist = Math.min(dist, baseR);
+            const angle = Math.atan2(dy, dx);
+            const nx = Math.cos(angle) * clampedDist;
+            const ny = Math.sin(angle) * clampedDist;
+
+            // Update knob visual position
+            knobEl.style.left = (70 - knobR + nx) + 'px';
+            knobEl.style.top  = (70 - knobR + ny) + 'px';
+
+            // Normalize -1..1
+            this.joyDX = nx / baseR;
+            this.joyDY = ny / baseR;
+        };
+
+        const onEnd = (e) => {
+            e.preventDefault();
+            this.joyActive = false;
+            this.joyDX = 0;
+            this.joyDY = 0;
+            knobEl.style.left = '48px';
+            knobEl.style.top  = '48px';
+        };
+
+        joystickEl.addEventListener('touchstart', onStart, { passive: false });
+        joystickEl.addEventListener('touchmove',  onMove,  { passive: false });
+        joystickEl.addEventListener('touchend',   onEnd,   { passive: false });
+        joystickEl.addEventListener('touchcancel',onEnd,   { passive: false });
+
+        this._joystickCleanup = () => {
+            joystickEl.removeEventListener('touchstart', onStart);
+            joystickEl.removeEventListener('touchmove',  onMove);
+            joystickEl.removeEventListener('touchend',   onEnd);
+            joystickEl.removeEventListener('touchcancel',onEnd);
+        };
     }
 
     // Helper functions for external calls (Buttons)
@@ -6897,7 +7248,7 @@ class ChapterBossBattle {
             vx: (dx/dist) * 6,
             vy: (dy/dist) * 6,
             type: 'boss',
-            damage: 10,
+            damage: 6,   // Turun dari 10 → 6
             color: '#FF00FF', // Purple
             size: 10
         });
@@ -6961,16 +7312,43 @@ class ChapterBossBattle {
         }
     }
 
-    // 1. Player Movement
+    // 1. Player Movement — Keyboard + Joystick Virtual
     let moved = false;
-    if(this.keys['ArrowUp'] || this.keys['w']) { this.playerY -= currentSpeed; moved = true; }
-    if(this.keys['ArrowDown'] || this.keys['s']) { this.playerY += currentSpeed; moved = true; }
-    if(this.keys['ArrowLeft'] || this.keys['a']) { this.playerX -= currentSpeed; moved = true; }
-    if(this.keys['ArrowRight'] || this.keys['d']) { this.playerX += currentSpeed; moved = true; }
-    
-    // Attack Keys
+    let moveX = 0, moveY = 0;
+
+    if(this.keys['ArrowUp']    || this.keys['w']) moveY -= 1;
+    if(this.keys['ArrowDown']  || this.keys['s']) moveY += 1;
+    if(this.keys['ArrowLeft']  || this.keys['a']) moveX -= 1;
+    if(this.keys['ArrowRight'] || this.keys['d']) moveX += 1;
+
+    // Joystick input (mobile)
+    if(this.joyActive) {
+        const deadzone = 0.15;
+        if(Math.abs(this.joyDX) > deadzone) moveX += this.joyDX;
+        if(Math.abs(this.joyDY) > deadzone) moveY += this.joyDY;
+    }
+
+    if(moveX !== 0 || moveY !== 0) {
+        // Normalize diagonal
+        const len = Math.sqrt(moveX * moveX + moveY * moveY);
+        this.playerX += (moveX / len) * currentSpeed;
+        this.playerY += (moveY / len) * currentSpeed;
+        moved = true;
+    }
+
+    // Attack Keys (keyboard)
     if(this.keys[' ']) { this.attack(); }
     if(this.keys['z']) { this.skill(); }
+
+    // AUTO-ATTACK pada HP (tembak otomatis setiap ~0.8 detik jika tidak tekan keyboard)
+    this.autoAttackTimer++;
+    if(this.autoAttackTimer >= 50) {
+        this.autoAttackTimer = 0;
+        // Hanya auto-attack jika tidak ada input keyboard aktif
+        if(!this.keys[' '] && !this.keys['z']) {
+            this.spawnPlayerProjectile(false);
+        }
+    }
 
     // Clamp Player
     this.playerX = Math.max(20, Math.min(780, this.playerX));
@@ -6991,18 +7369,18 @@ class ChapterBossBattle {
 
     if(this.playerCooldown > 0) this.playerCooldown--;
 
-    // 2. Boss Logic
-    this.bossY += this.bossDirY * 2;
+    // 2. Boss Logic — serangan lebih jarang & damage lebih kecil
+    this.bossY += this.bossDirY * 1.5;
     if(this.bossY < 100 || this.bossY > 500) this.bossDirY *= -1;
 
     this.bossAttackTimer++;
-    if(this.bossAttackTimer > 60) {
+    if(this.bossAttackTimer > 90) {  // Turun dari 60 → 90 frame (~1.5 detik)
         this.spawnBossProjectile();
         this.bossAttackTimer = 0;
     }
 
     this.bossMinionTimer++;
-    if(this.bossMinionTimer > 200) {
+    if(this.bossMinionTimer > 350) {  // Naik dari 200 → 350 frame (lebih jarang)
         this.spawnMinion();
         this.bossMinionTimer = 0;
     }
@@ -7021,8 +7399,8 @@ class ChapterBossBattle {
 
         // 🔥 FIX 1: Collision dengan Minion
         if(!this.invincible && dist < 30) {
-            this.playerHp -= 0.5;
-            this.game.gameStats.damageTaken += 0.5;
+            this.playerHp -= 0.2;  // Turun dari 0.5 → 0.2 (lebih ringan)
+            this.game.gameStats.damageTaken += 0.2;
             
             // Visual feedback sesekali (cegah spam)
             if(Math.random() > 0.8) {
@@ -7090,10 +7468,15 @@ class ChapterBossBattle {
             if(!this.invincible && Math.hypot(p.x - this.playerX, p.y - this.playerY) < 30) {
                 this.playerHp -= p.damage;
                 this.game.gameStats.damageTaken += p.damage;
-                this.game.screenShake = 20;
+                this.game.screenShake = 10;
                 this.spawnDamage(this.playerX, this.playerY, "-" + p.damage, "red");
                 this.spawnExplosion(p.x, p.y, "red");
                 hit = true;
+                
+                // I-FRAMES setelah kena damage (kebal 0.5 detik)
+                this.invincible = true;
+                this.dashTimer = 30;  // 30 frame kebal
+                setTimeout(() => { if(!this.isDashing) this.invincible = false; }, 500);
                 
                 // ✅ CEK HP & FLAG DI SINI
                 if(this.playerHp <= 0 && !this.isGameOver) {
@@ -7268,6 +7651,10 @@ class ChapterBossBattle {
         window.removeEventListener('keydown', this.keyDownHandler);
         window.removeEventListener('keyup', this.keyUpHandler);
         document.getElementById('rpg-controls').style.display = 'none';
+        const joystick = document.getElementById('boss-joystick');
+        if(joystick) joystick.style.display = 'none';
+        if(this._joystickCleanup) this._joystickCleanup();
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
         this.active = false;
     }
 }
