@@ -3460,24 +3460,18 @@ class GameApp {
 		if(this.state === AppState.ENDING) return; // Sudah di ending screen
         this.active = false;
 		
-		// Bersihkan chapter dengan aman
+		// ✅ DETEKSI SURVIVAL DULU, sebelum state diubah ke ENDING
+        const isSurvival = (this.state === AppState.GAME_SURVIVAL || this.state === AppState.GAME_SURVIVAL_QUIZ);
+		
+		// Bersihkan chapter dengan aman (sekali saja)
 		if(this.currentChapter) {
-        if(this.currentChapter.cleanup) {
-            this.currentChapter.cleanup();
-        }
-        this.currentChapter.active = false; // Force stop
-        this.currentChapter.isGameOver = true; // Force flag
+            if(this.currentChapter.cleanup) this.currentChapter.cleanup();
+            this.currentChapter.active = false;
+            this.currentChapter.isGameOver = true;
 		}
     
 		this.state = AppState.ENDING;
 		this.switchScreen('screen-ending');
-		
-		
-        // Deteksi Survival (Cek AppState atau angka 7/7.5)
-        const isSurvival = (this.state === AppState.GAME_SURVIVAL || this.state === AppState.GAME_SURVIVAL_QUIZ || this.state === 7 || this.state === 7.5);
-        
-        // Bersihkan chapter jika ada fungsi cleanup
-        if(this.currentChapter && this.currentChapter.cleanup) this.currentChapter.cleanup();
         
         this.state = AppState.ENDING;
         this.switchScreen('screen-ending');
@@ -3495,7 +3489,7 @@ class GameApp {
         let rankChar = "D"; 
         let rankColor = "white";
 
-        if (score >= 9000) { rankChar = "S"; rankColor = "var(--accent-gold)"; }
+        if (score >= 90000) { rankChar = "S"; rankColor = "var(--accent-gold)"; }
         else if (score >= 70000) { rankChar = "A"; rankColor = "#00D9FF"; }
         else if (score >= 40000) { rankChar = "B"; rankColor = "#00FF88"; }
         else if (score >= 10000) { rankChar = "C"; rankColor = "white"; }
@@ -4002,7 +3996,7 @@ class GameApp {
         for(let i=0; i<5; i++) {
              const s = document.createElement('span');
              s.id = `lock-${i}`;
-             s.innerText = '🔓'; 
+             s.innerText = '🔒'; 
              s.style.margin = '0 10px';
              s.style.color = '#FF4444'; 
              s.style.fontSize = '2rem'; 
@@ -4591,7 +4585,8 @@ class ChapterSurvival {
             </div>`,
             () => { this.active = true; }
         );
-		this.isGameOver = false; // ✅ ADD THIS
+        this.isGameOver = false; // ✅ ADD THIS
+        this.game.player.lastWave = 1; // Inisialisasi lastWave dari wave 1
     }
 
 
@@ -6056,12 +6051,13 @@ class ChapterQuiz {
             btnHint.disabled = false; btnHint.innerText = "BANTUAN (REX)"; btnHint.style.filter = "none"; 
         }
         
-        // Buat Tombol Jawaban
+        // Buat Tombol Jawaban (Acak urutan opsi tiap soal)
         const container = document.getElementById('quiz-options-container');
         if(container) {
             container.innerHTML = '';
             
-            q.options.forEach((opt, index) => {
+            const shuffledOptions = shuffleArray([...q.options]);
+            shuffledOptions.forEach((opt, index) => {
                 const btn = document.createElement('button');
                 btn.className = 'btn-ml quiz-option-btn'; 
                 btn.innerText = String.fromCharCode(65 + index) + ". " + opt.text;
@@ -6072,9 +6068,9 @@ class ChapterQuiz {
                 btn.style.position = 'relative';
                 btn.style.zIndex = '100'; // Agar bisa diklik
                 
-                // PENTING: Kirim INDEX (Angka) dan elemen TOMBOL (btn)
+                // Kirim OPT langsung (bukan index) karena sudah diacak
                 btn.onclick = () => {
-                    this.checkAnswer(index, btn);
+                    this.checkAnswerByOpt(opt, btn, shuffledOptions);
                 };
                 
                 container.appendChild(btn);
@@ -6084,6 +6080,12 @@ class ChapterQuiz {
 	
 	// --- FUNGSI 2: CEK JAWABAN (LOGIKA) ---
     checkAnswer(optionIndex, btnElement) {
+        const q = this.activeQuestions[this.currentPhase];
+        const selectedOption = q.options[optionIndex];
+        this.checkAnswerByOpt(selectedOption, btnElement, q.options);
+    }
+
+    checkAnswerByOpt(selectedOption, btnElement, optionsList) {
         // Reset jika fase berubah
         if (this.lastPhaseSeen !== this.currentPhase) {
             this.lastPhaseSeen = this.currentPhase;
@@ -6093,9 +6095,6 @@ class ChapterQuiz {
 
         if(this.answered) return; 
 
-        const q = this.activeQuestions[this.currentPhase];
-        // Ambil data berdasarkan index
-        const selectedOption = q.options[optionIndex];
         const isCorrect = selectedOption.correct;
         
         const feedback = document.getElementById('quiz-feedback');
