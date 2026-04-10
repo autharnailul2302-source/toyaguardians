@@ -87,29 +87,51 @@
             justify-content: center; 
             align-items: center; 
             width: 100%; 
-            overflow: visible; 
+            overflow: visible;
+            position: relative;
+            z-index: 8;
+        }
+
+        #energy-ring-container {
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            width: 310px; height: 310px;
+            margin-bottom: -10px;
+        }
+        @media (max-height: 600px) {
+            #energy-ring-container { width: 300px; height: 300px; }
+            .energy-ring-1 { width: 290px !important; height: 290px !important; }
+            .energy-ring-2 { width: 265px !important; height: 265px !important; }
+            .energy-ring-3 { width: 235px !important; height: 235px !important; }
+            #logo-img { max-width: 240px !important; max-height: 240px !important; }
+            #subtitle-img { max-height: 90px !important; }
         }
         
         /* --- UPDATE: UKURAN PRESISI (Sedikit dikurangi dari 320 ke 290 agar muat nyaman dengan tombol) --- */
         #logo-img { 
             width: auto; 
             height: auto; 
-            max-width: 90%; 
-            max-height: 290px; /* Ukuran Goldilocks: Tidak terlalu besar, tidak terlalu kecil */
+            max-width: 500px; 
+            max-height: 500px; /* Hanya logo TOYA GUARDIANS yang diperbesar */
             display: block; 
-            filter: drop-shadow(0 0 35px rgba(0, 168, 255, 0.9)); 
             object-fit: contain; 
-            animation: floatLogo 3s ease-in-out infinite; 
+            animation: glitchLogo 3s ease-in-out infinite !important;
+        }
+
+        #logo-img-wrapper {
+            position: absolute;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9;
         }
         
-        /* --- UPDATE: POSISI SUBTITLE LEBIH RENGGANG (REQUEST USER) --- */
+        /* --- Subtitle tetap ukuran update4 --- */
         #subtitle-img { 
             width: auto; 
             height: auto; 
-            max-width: 75%; 
-            max-height: 80px; 
-            margin-top: -20px; /* Diturunkan dari -55px agar tidak nempel judul */
-            margin-bottom: 15px; /* Jarak ke tombol agar tidak nempel */
+            max-width: 90%; 
+            max-height: 120px;
+            margin-top: -15px;
+            margin-bottom: 15px;
             display: block; 
             filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)); 
             animation: floatLogo 3.5s ease-in-out infinite reverse; 
@@ -118,6 +140,125 @@
         @keyframes floatLogo { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-8px); } }
 
         #lightning-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
+
+        /* ===== TITLE SCREEN EPIC EFFECTS ===== */
+        /* Canvas kilat di belakang logo */
+        #title-lightning-canvas {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 4; opacity: 0.85;
+        }
+
+        /* Ring energi berputar di sekitar logo */
+        #energy-ring-container {
+            position: relative;
+            display: flex; justify-content: center; align-items: center;
+            width: 380px; height: 380px;
+            margin-bottom: -20px;
+        }
+        .energy-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            animation: spinRing linear infinite;
+        }
+        .energy-ring-1 {
+            width: 360px; height: 360px;
+            border-top-color: var(--tech-cyan);
+            border-right-color: var(--tech-cyan);
+            box-shadow: 0 0 18px var(--tech-cyan), inset 0 0 18px rgba(0,217,255,0.1);
+            animation-duration: 3s;
+        }
+        .energy-ring-2 {
+            width: 330px; height: 330px;
+            border-bottom-color: var(--accent-gold);
+            border-left-color: var(--accent-gold);
+            box-shadow: 0 0 14px var(--accent-gold), inset 0 0 14px rgba(255,215,0,0.08);
+            animation-duration: 2s; animation-direction: reverse;
+        }
+        .energy-ring-3 {
+            width: 300px; height: 300px;
+            border-top-color: rgba(0,168,255,0.5);
+            border-right-color: rgba(0,168,255,0.5);
+            animation-duration: 4.5s;
+        }
+        @keyframes spinRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Logo di dalam ring */
+        #logo-img-wrapper {
+            position: absolute;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+
+        /* Glitch effect pada logo */
+        @keyframes glitchLogo {
+            0%   { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)) drop-shadow(0 0 60px rgba(0,217,255,0.5)); transform: translateY(0px) translateX(0px); clip-path: none; }
+            2%   { filter: drop-shadow(-3px 0 35px rgba(255,0,100,0.8)) drop-shadow(3px 0 35px rgba(0,255,255,0.8)); transform: translateY(0px) translateX(-3px); }
+            4%   { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)); transform: translateY(0px) translateX(0px); }
+            50%  { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)) drop-shadow(0 0 60px rgba(0,217,255,0.5)); transform: translateY(-8px) translateX(0px); }
+            52%  { filter: drop-shadow(3px 0 35px rgba(0,255,100,0.8)) drop-shadow(-3px 0 35px rgba(255,0,255,0.8)); transform: translateY(-8px) translateX(3px); }
+            54%  { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)); transform: translateY(-8px) translateX(0px); }
+            100% { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)) drop-shadow(0 0 60px rgba(0,217,255,0.5)); transform: translateY(0px) translateX(0px); }
+        }
+        #logo-img {
+            animation: glitchLogo 3s ease-in-out infinite !important;
+        }
+
+        /* Subtitle glitch */
+        @keyframes glitchSubtitle {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(255,215,0,0.7)); transform: translateY(0px); }
+            48%       { filter: drop-shadow(0 0 20px rgba(255,215,0,0.7)); transform: translateY(4px); }
+            50%       { filter: drop-shadow(-2px 0 10px rgba(255,100,0,0.9)) drop-shadow(2px 0 10px rgba(255,255,0,0.9)); transform: translateY(4px) translateX(2px); }
+            52%       { filter: drop-shadow(0 0 20px rgba(255,215,0,0.7)); transform: translateY(4px); }
+        }
+        #subtitle-img {
+            animation: glitchSubtitle 3.5s ease-in-out infinite reverse !important;
+        }
+
+        /* Scan line efek di title screen */
+        #title-scanlines {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 6;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0,217,255,0.015) 2px,
+                rgba(0,217,255,0.015) 4px
+            );
+            animation: scanMove 8s linear infinite;
+        }
+        @keyframes scanMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 400px; }
+        }
+
+        /* Flash kilat sesekali */
+        @keyframes lightningFlash {
+            0%, 87%, 92%, 97%, 100% { opacity: 0; }
+            88%, 91%  { opacity: 0.55; background: rgba(180,240,255,0.55); }
+            93%, 96%  { opacity: 0.3; background: rgba(180,240,255,0.3); }
+        }
+        #title-flash-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 7;
+            animation: lightningFlash 4s ease-in-out infinite;
+            mix-blend-mode: screen;
+        }
+
+        /* Partikel bercahaya floating */
+        .title-particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            animation: particleFloat linear infinite;
+        }
+        @keyframes particleFloat {
+            0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+            10%  { opacity: 1; }
+            90%  { opacity: 0.8; }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.2); }
+        }
         
         /* REGISTER & CHAR SELECT */
         .panel { background: var(--glass-panel); padding: 30px; border: 1px solid var(--primary-blue); border-radius: 10px; box-shadow: 0 0 20px rgba(0, 168, 255, 0.2); max-width: 400px; width: 90%; backdrop-filter: blur(5px); position: relative; }
@@ -989,16 +1130,18 @@
 </head>
 <body>
 
-<!-- AUDIO TRACKS -->
-<audio id="bgm-player" loop><source src="audio/bgm.mp3" type="audio/mp3"></audio>
-<audio id="bgm-shooter" loop><source src="audio/bgm_shooter.mp3" type="audio/mp3"></audio> 
-<audio id="bgm-bomber" loop><source src="audio/bgm_bomber.mp3" type="audio/mp3"></audio> 
-<audio id="bgm-boss" loop><source src="audio/boss.mp3" type="audio/mp3"></audio> 
-<audio id="bgm-ending" loop><source src="audio/ending.mp3" type="audio/mp3"></audio> 
+<!-- AUDIO TRACKS: preload=none agar tidak didownload saat startup -->
+<audio id="bgm-player" loop preload="none"><source src="audio/ost.mp3" type="audio/mp3"></audio>
+<audio id="bgm-shooter" loop preload="none"><source src="audio/bgm_shooter.mp3" type="audio/mp3"></audio> 
+<audio id="bgm-bomber" loop preload="none"><source src="audio/bgm_bomber.mp3" type="audio/mp3"></audio> 
+<audio id="bgm-boss" loop preload="none"><source src="audio/boss.mp3" type="audio/mp3"></audio> 
+<audio id="bgm-ending" loop preload="none"><source src="audio/ending.mp3" type="audio/mp3"></audio> 
+<audio id="bgm-opening" loop preload="none"><source src="audio/opening.mp3" type="audio/mp3"></audio>
+<audio id="bgm-main" loop preload="none"><source src="audio/bgm.mp3" type="audio/mp3"></audio>
 
-<audio id="sfx-click"><source src="audio/click.mp3" type="audio/mp3"></audio>
-<audio id="sfx-correct"><source src="audio/correct.mp3" type="audio/mp3"></audio>
-<audio id="sfx-wrong"><source src="audio/wrong.mp3" type="audio/mp3"></audio>
+<audio id="sfx-click" preload="none"><source src="audio/click.mp3" type="audio/mp3"></audio>
+<audio id="sfx-correct" preload="none"><source src="audio/correct.mp3" type="audio/mp3"></audio>
+<audio id="sfx-wrong" preload="none"><source src="audio/wrong.mp3" type="audio/mp3"></audio>
 
 <div id="game-container">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
@@ -1140,11 +1283,23 @@
     </div>
 
     <div id="screen-title" class="ui-screen">
-        
-
+        <!-- Canvas kilat animasi di background title -->
+        <canvas id="title-lightning-canvas"></canvas>
+        <!-- Scanlines overlay -->
+        <div id="title-scanlines"></div>
+        <!-- Flash kilat sesekali -->
+        <div id="title-flash-overlay"></div>
 
         <div id="logo-container">
-            <img id="logo-img" src="images/logo_main.png" alt="TOYA GUARDIANS" onerror="this.style.display='none'">
+            <!-- Ring energi berputar di sekitar logo -->
+            <div id="energy-ring-container">
+                <div class="energy-ring energy-ring-1"></div>
+                <div class="energy-ring energy-ring-2"></div>
+                <div class="energy-ring energy-ring-3"></div>
+                <div id="logo-img-wrapper">
+                    <img id="logo-img" src="images/logo_main.png" alt="TOYA GUARDIANS" onerror="this.style.display='none'">
+                </div>
+            </div>
             <img id="subtitle-img" src="images/subtitle.png" alt="TIRTATELAGA DEFENSE" onerror="this.style.display='none'">
         </div>
         
@@ -1386,27 +1541,24 @@
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytjS3e35BG-XzTTbpbz685-OQjH2NOlTy2MC_krJzU9widFCpc4BIeK7iG0xuRJ7Nm/exec"; 
 
 const ASSETS = {
-    // FIX: Hero 1 (Laki-laki) menggunakan asset Laki-laki
-    //hero1_idle: 'images/hero_male.png', 
-    hero1_idle: 'images/hero1_walk1.png', // SEBELUMNYA TERTUKAR DENGAN hero2
+    // Hero 1 (Laki-laki)
+    hero1_idle: 'images/hero1_walk1.png', // sama dengan walk1, tidak perlu load 2x
     hero1_walk1: 'images/hero1_walk1.png', 
     hero1_walk2: 'images/hero1_walk2.png', 
     hero1_walk3: 'images/hero1_walk3.png', 
     hero1_walk4: 'images/hero1_walk4.png',
     hero1_tembak: 'images/hero1_tembak.png',
 
-    // FIX: Hero 2 (Hijab) menggunakan asset Hijab (sebelumnya file ini dipakai hero1)
-    //hero2_idle: 'images/hero_female_hijab.png', 
-    hero2_idle: 'images/hero2_walk1.png', 
+    // Hero 2 (Hijab)
+    hero2_idle: 'images/hero2_walk1.png',
     hero2_walk1: 'images/hero2_walk1.png', 
     hero2_walk2: 'images/hero2_walk2.png', 
     hero2_walk3: 'images/hero2_walk3.png', 
     hero2_walk4: 'images/hero2_walk4.png',
     hero2_tembak: 'images/hero2_tembak.png',
 
-    // Hero 3 (Perempuan Cyber) - Tetap
-    //hero3_idle: 'images/hero_female.png',
-    hero3_idle: 'images/hero3_walk1.png', 
+    // Hero 3 (Perempuan Cyber)
+    hero3_idle: 'images/hero3_walk1.png',
     hero3_walk1: 'images/hero3_walk1.png', 
     hero3_walk2: 'images/hero3_walk2.png', 
     hero3_walk3: 'images/hero3_walk3.png', 
@@ -1414,8 +1566,7 @@ const ASSETS = {
     hero3_tembak: 'images/hero3_tembak.png',
 	
 	rex: 'images/npc_rex.png', virus: 'images/enemy_virus.png', narrator: 'images/narrator.png', androidtoya: 'images/androidtoya.png',
-    //gambar
-	bg_title: 'images/bg_title.png', bg_server: 'images/bg_server.png', bg_firewall: 'images/bg_firewall.png', bg_noc: 'images/bg_noc.png',bg_open1: 'images/bg_open1.png',bg_open2: 'images/bg_open2.png',
+    bg_title: 'images/bg_title.png', bg_server: 'images/bg_server.png', bg_firewall: 'images/bg_firewall.png', bg_noc: 'images/bg_noc.png',bg_open1: 'images/bg_open1.png',bg_open2: 'images/bg_open2.png',
 	bg_masuklt1nyala: 'images/bg_masuklt1nyala.png', bg_menujulift: 'images/bg_menujulift.png', bg_firewall1: 'images/bg_firewall1.png',  bg_firewall2: 'images/bg_firewall2.png',
     bg_firewall3: 'images/bg_firewall3.png', 
 	bg_open3: 'images/bg_open3.png',bg_open4: 'images/bg_open4.png',bg_open5: 'images/bg_open5.png', bg_masuklt1 : 'images/bg_masuklt1.png',
@@ -1427,38 +1578,30 @@ const ASSETS = {
     item_door: 'images/item_door.png', tile_pinggir: 'images/tile_pinggir.png',
     icon_http: 'images/icon_http.png', icon_ssh: 'images/icon_ssh.png', icon_email: 'images/icon_email.png',
     icon_sql: 'images/icon_sql.png', icon_ping: 'images/icon_ping.png', icon_telnet: 'images/icon_telnet.png', icon_exe: 'images/icon_exe.png',
-    
-    // --- POWER UP ICONS & WAVE BGs (Mapped to existing) ---
-    icon_firewall: 'images/item_firewall.png', // Slow Enemies
-    bg_wave1: 'survival/bg_survival1.png',
-    bg_wave2: 'survival/bg_survival2.png',
-    bg_wave3: 'survival/bg_survival3.png',
-    bg_wave4: 'survival/bg_survival4.png',
-    bg_wave5: 'survival/bg_survival5.png',
-
+    icon_firewall: 'images/item_firewall.png',
     subtitle: 'images/subtitle.png',
     zone_allow: 'images/zone_allow.png',
     zone_block: 'images/zone_block.png',
     pintu_keluar: 'images/item_door.png',
     icon_headset: 'images/icon_headset.png',
-    
-    // --- NEW ASSETS FOR BOMBERMAN ---
     tile_tembok: 'images/tile_tembok.png',
     tile_meledak: 'images/tile_meledak.png',
     bomb_lt1: 'images/bomb_lt1.png',
     bomb_lt2: 'images/bomb_lt2.png',
     bomb_lt3: 'images/bomb_lt3.png',
 	icon_bomb: 'images/icon_bomb.png',
-	
-    // --- ADDED: MODE SELECT ASSETS (MAPPED TO EXISTING IMAGES) ---
     bg_story: 'images/bg_story.png', 
     bg_survival: 'images/bg_survival.png'
 };
 
-// --- TAMBAHAN ASSET ENDING ---
-for(let i=1; i<=14; i++) {
-    ASSETS[`ending${i}`] = `ending/${i}.png`;
-}
+// LAZY ASSETS: diload hanya saat dibutuhkan (tidak memperlambat startup)
+const ASSETS_LAZY = {};
+for(let i=1; i<=14; i++) { ASSETS_LAZY[`ending${i}`] = `ending/${i}.png`; }
+ASSETS_LAZY['bg_wave1'] = 'survival/bg_survival1.png';
+ASSETS_LAZY['bg_wave2'] = 'survival/bg_survival2.png';
+ASSETS_LAZY['bg_wave3'] = 'survival/bg_survival3.png';
+ASSETS_LAZY['bg_wave4'] = 'survival/bg_survival4.png';
+ASSETS_LAZY['bg_wave5'] = 'survival/bg_survival5.png';
 
 //DATA WILAYAH INDONESIA
 const DATA_INDONESIA = {
@@ -2674,7 +2817,7 @@ const AudioMgr = {
     initContext: function() {
         if(!this.contextInitialized) {
             this.contextInitialized = true;
-            ['bgm-player', 'bgm-shooter', 'bgm-bomber', 'bgm-boss', 'bgm-ending'].forEach(id => {
+            ['bgm-player', 'bgm-shooter', 'bgm-bomber', 'bgm-boss', 'bgm-ending', 'bgm-opening', 'bgm-main'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) { el.load(); }
             });
@@ -2696,7 +2839,7 @@ const AudioMgr = {
         }
     },
     stopAll: function() {
-        ['bgm-player', 'bgm-shooter', 'bgm-bomber', 'bgm-boss', 'bgm-ending'].forEach(id => {
+        ['bgm-player', 'bgm-shooter', 'bgm-bomber', 'bgm-boss', 'bgm-ending', 'bgm-opening', 'bgm-main'].forEach(id => {
             const el = document.getElementById(id);
             if(el) el.pause();
         });
@@ -2822,6 +2965,147 @@ function triggerLightning() {
     ctx.stroke();
     //AudioMgr.playSFX('sfx-click');
 }
+
+/* ===== TITLE SCREEN LIGHTNING CANVAS EFFECT ===== */
+(function initTitleLightning() {
+    let tlCanvas, tlCtx, tlAnim, tlParticles = [], tlBolts = [];
+    const COLORS = ['#00D9FF', '#00A8FF', '#FFD700', '#FFFFFF', '#7FE0FF'];
+
+    function makeBolt(w, h) {
+        const startX = Math.random() * w;
+        const startY = -10;
+        const segments = [];
+        let x = startX, y = startY;
+        const branches = [];
+        while (y < h + 20) {
+            const nx = x + (Math.random() - 0.5) * 80;
+            const ny = y + 30 + Math.random() * 40;
+            segments.push({ x1: x, y1: y, x2: nx, y2: ny });
+            // random branch
+            if (Math.random() < 0.3 && segments.length > 1) {
+                let bx = nx, by = ny;
+                for (let i = 0; i < 3; i++) {
+                    const bnx = bx + (Math.random() - 0.5) * 60;
+                    const bny = by + 20 + Math.random() * 30;
+                    branches.push({ x1: bx, y1: by, x2: bnx, y2: bny });
+                    bx = bnx; by = bny;
+                }
+            }
+            x = nx; y = ny;
+        }
+        return {
+            segments: [...segments, ...branches],
+            life: 1.0,
+            decay: 0.05 + Math.random() * 0.07,
+            color: COLORS[Math.floor(Math.random() * 3)],
+            width: 1 + Math.random() * 2
+        };
+    }
+
+    function makeParticle(w, h) {
+        const colors = ['#00D9FF', '#00A8FF', '#FFD700', '#FFFFFF'];
+        return {
+            x: 50 + Math.random() * (w - 100),
+            y: 50 + Math.random() * (h - 100),
+            r: 1 + Math.random() * 3,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            vy: -0.3 - Math.random() * 0.7,
+            vx: (Math.random() - 0.5) * 0.4,
+            life: 0,
+            maxLife: 60 + Math.random() * 80,
+            age: 0
+        };
+    }
+
+    function drawTitleLightning() {
+        if (!tlCanvas || !tlCtx) return;
+        const w = tlCanvas.width, h = tlCanvas.height;
+        tlCtx.clearRect(0, 0, w, h);
+
+        // Draw bolts
+        tlBolts.forEach(bolt => {
+            bolt.life -= bolt.decay;
+            bolt.segments.forEach(seg => {
+                tlCtx.save();
+                tlCtx.globalAlpha = Math.max(0, bolt.life);
+                // outer glow
+                tlCtx.shadowBlur = 18;
+                tlCtx.shadowColor = bolt.color;
+                tlCtx.strokeStyle = bolt.color;
+                tlCtx.lineWidth = bolt.width;
+                tlCtx.beginPath();
+                tlCtx.moveTo(seg.x1, seg.y1);
+                tlCtx.lineTo(seg.x2, seg.y2);
+                tlCtx.stroke();
+                // inner white core
+                tlCtx.shadowBlur = 4;
+                tlCtx.strokeStyle = 'rgba(255,255,255,0.7)';
+                tlCtx.lineWidth = bolt.width * 0.4;
+                tlCtx.stroke();
+                tlCtx.restore();
+            });
+        });
+        tlBolts = tlBolts.filter(b => b.life > 0);
+
+        // Draw particles
+        tlParticles.forEach(p => {
+            p.x += p.vx; p.y += p.vy; p.age++;
+            const lifePct = p.age / p.maxLife;
+            const alpha = lifePct < 0.15 ? lifePct / 0.15 : lifePct > 0.8 ? 1 - (lifePct - 0.8) / 0.2 : 1;
+            tlCtx.save();
+            tlCtx.globalAlpha = alpha * 0.8;
+            tlCtx.shadowBlur = 10;
+            tlCtx.shadowColor = p.color;
+            tlCtx.fillStyle = p.color;
+            tlCtx.beginPath();
+            tlCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            tlCtx.fill();
+            tlCtx.restore();
+        });
+        tlParticles = tlParticles.filter(p => p.age < p.maxLife);
+
+        tlAnim = requestAnimationFrame(drawTitleLightning);
+    }
+
+    function startTitleLightning() {
+        tlCanvas = document.getElementById('title-lightning-canvas');
+        if (!tlCanvas) return;
+        tlCtx = tlCanvas.getContext('2d');
+        const parent = tlCanvas.parentElement;
+        tlCanvas.width = parent.offsetWidth || window.innerWidth;
+        tlCanvas.height = parent.offsetHeight || window.innerHeight;
+
+        // Spawn bolts periodically
+        tlCanvas._boltInterval = setInterval(() => {
+            if (tlBolts.length < 5) {
+                tlBolts.push(makeBolt(tlCanvas.width, tlCanvas.height));
+            }
+        }, 600 + Math.random() * 800);
+
+        // Spawn particles periodically
+        tlCanvas._particleInterval = setInterval(() => {
+            if (tlParticles.length < 30) {
+                tlParticles.push(makeParticle(tlCanvas.width, tlCanvas.height));
+            }
+        }, 120);
+
+        cancelAnimationFrame(tlAnim);
+        drawTitleLightning();
+    }
+
+    function stopTitleLightning() {
+        cancelAnimationFrame(tlAnim);
+        if (tlCanvas) {
+            clearInterval(tlCanvas._boltInterval);
+            clearInterval(tlCanvas._particleInterval);
+        }
+        tlBolts = []; tlParticles = [];
+    }
+
+    // Expose globally
+    window.startTitleLightning = startTitleLightning;
+    window.stopTitleLightning = stopTitleLightning;
+})();
 
 class GameApp {
     constructor() {
@@ -3272,9 +3556,20 @@ class GameApp {
                 setTimeout(() => {
                     this.state = AppState.AUDIO_SETUP;
                     this.switchScreen('screen-audio');
+                    // LAZY LOAD: Aset ending & survival diload di background setelah game siap
+                    setTimeout(() => this.lazyLoadAssets(), 2000);
                 }, 300);
             }
         }, 200);
+    }
+
+    lazyLoadAssets() {
+        for (const [k, v] of Object.entries(ASSETS_LAZY)) {
+            if (!this.imgs[k]) {
+                this.imgs[k] = new Image();
+                this.imgs[k].src = v;
+            }
+        }
     }
 
     initUI() {
@@ -3370,12 +3665,16 @@ class GameApp {
             aboutBtn.style.display = 'flex';
             if(fsBtn) fsBtn.style.display = 'flex';
             AudioMgr.playMusic('bgm-player');
+            // Start epic title lightning effect
+            setTimeout(() => { if(window.startTitleLightning) window.startTitleLightning(); }, 100);
         } else if (id === 'dummy') { // Gameplay mode
             aboutBtn.style.display = 'none';
             if(fsBtn) fsBtn.style.display = 'flex';
+            if(window.stopTitleLightning) window.stopTitleLightning();
         } else {
             aboutBtn.style.display = 'none';
-            if(fsBtn) fsBtn.style.display = 'flex'; 
+            if(fsBtn) fsBtn.style.display = 'flex';
+            if(window.stopTitleLightning) window.stopTitleLightning();
         }
     }
     toggleMusic() { AudioMgr.toggle(); }
@@ -3528,6 +3827,7 @@ class GameApp {
 
     startStory() {
         AudioMgr.playSFX('sfx-click'); this.state = AppState.STORY; this.switchScreen('screen-story');
+        AudioMgr.playMusic('bgm-opening');
         story.start([
             // SCENE 1 — Pembuka sinematik
             { mode: 'caption', text: "Di suatu tempat di dunia digital...", bg: 'bg_open1', delay: 2400, sound: 'whoosh' },
@@ -3553,7 +3853,7 @@ class GameApp {
             { speaker: "MASTER REX", text: "Aku Rex, Network Administrator senior yang tersisa. Aku akan membimbingmu — dari memasang kabel jaringan, mengatur Firewall, hingga menghadapi Genderuwo langsung. Siapkah kamu?", char: 'rex', bg: 'bg_open5', sound: 'dramatic' },
             // SCENE 12 — Caption misi penutup
             { mode: 'caption', text: "MISI: Pelajari Jaringan — Konfigurasi Firewall — Selamatkan Tirtatelaga", bg: 'bg_open5', delay: 3500, sound: 'dramatic' },
-        ], () => { this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
+        ], () => { AudioMgr.playMusic('bgm-main'); this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
     }
 
     startTutorial() { this.switchScreen('dummy'); document.getElementById('hud').style.display = 'flex'; this.state = AppState.TUTORIAL; this.currentChapter = new ChapterTutorial(this); }
@@ -5556,8 +5856,31 @@ class ChapterTutorial {
         this.game = game; this.step = 0; 
         const frames = game.getHeroFrames(game.player.charId); const idle = game.getHeroIdle(game.player.charId);
         this.hero = new CharacterSprite(idle, frames, 400, 300, 96); 
-        this.handler = (e) => this.click(e); canvas.addEventListener('mousedown', this.handler);
         this.finished = false;
+
+        // Handler untuk mouse DAN touch
+        this.handler = (e) => this.click(e);
+        this.touchHandler = (e) => { e.preventDefault(); this.click(e.touches[0]); };
+        canvas.addEventListener('mousedown', this.handler);
+        canvas.addEventListener('touchstart', this.touchHandler, { passive: false });
+
+        // Virtual joystick untuk gerak di HP (step 1 dan 3)
+        if (game.VirtualJoy) {
+            game.VirtualJoy.show('omni', (dx, dy) => {
+                if (this.step === 1 || this.step === 3) {
+                    if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
+                        const nx = Math.max(30, Math.min(790, this.hero.x + dx * 8));
+                        const ny = Math.max(100, Math.min(560, this.hero.y + dy * 6));
+                        this.hero.moveTo(nx, ny);
+                        // Step 1: otomatis lanjut setelah bergerak
+                        if (this.step === 1 && !this._joyMoved) {
+                            this._joyMoved = true;
+                            setTimeout(() => { this.step = 2; }, 1500);
+                        }
+                    }
+                }
+            });
+        }
     }
     click(e) {
         const {x: mx, y: my} = getGamePos(e);
@@ -5578,15 +5901,14 @@ class ChapterTutorial {
             if(this.game.imgs.rex && this.game.imgs.rex.complete && this.game.imgs.rex.naturalWidth > 0) ctx.drawImage(this.game.imgs.rex, bx+20, by-40, 100, 100);
             ctx.fillStyle = "#FFD700"; ctx.font = "24px Orbitron"; ctx.textAlign="left"; ctx.fillText("MASTER REX", bx+140, by+40);
             ctx.fillStyle = "white"; ctx.font = "20px Rajdhani"; ctx.fillText(txt, bx+140, by+80);
-            if(next) { ctx.fillStyle = "#00D9FF"; ctx.font="16px sans-serif"; ctx.fillText("▼ Klik untuk lanjut", 650, by+130); }
+            if(next) { ctx.fillStyle = "#00D9FF"; ctx.font="16px sans-serif"; ctx.fillText("▼ Ketuk untuk lanjut", 640, by+130); }
         };
         if(this.step === 0) box("Selamat datang! Mari tes sistem gerakmu.", true);
-        else if(this.step === 1) box("[KLIK] di lantai untuk berjalan ke sana.", false);
+        else if(this.step === 1) box("Gunakan JOYSTICK atau ketuk lantai untuk berjalan.", false);
         else if(this.step === 2) {
             box("Bagus! Cek inventori: Tablet & Laptop.", true);
-            // ANIMATION 1: Floating Items in Tutorial
             const drawItem = (img, x, y) => { 
-                const floatY = Math.sin(Date.now() / 300) * 5; // Floating Effect
+                const floatY = Math.sin(Date.now() / 300) * 5;
                 if(img && img.complete) ctx.drawImage(img, x, y + floatY, 64, 64); 
             }
             drawItem(this.game.imgs.item_tablet, 350, 200);
@@ -5597,7 +5919,11 @@ class ChapterTutorial {
             ctx.fillStyle = "white"; ctx.font="20px Orbitron"; ctx.fillText("EXIT >>", 720, 300);
         }
     }
-    cleanup() { canvas.removeEventListener('mousedown', this.handler); }
+    cleanup() { 
+        canvas.removeEventListener('mousedown', this.handler);
+        canvas.removeEventListener('touchstart', this.touchHandler);
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
+    }
 }
 
 class ChapterWalkingScene {
@@ -5606,24 +5932,27 @@ class ChapterWalkingScene {
         const frames = game.getHeroFrames(game.player.charId); 
         const idle = game.getHeroIdle(game.player.charId);
         this.hero = new CharacterSprite(idle, frames, 50, 450, 96); 
-        this.handler = (e) => this.click(e); 
-        canvas.addEventListener('mousedown', this.handler);
         this.finished = false;
 
-        // Aktifkan universal joystick untuk mobile (gerak kiri-kanan-naik-turun)
+        // Mouse DAN touch handler
+        this.handler = (e) => this.click(e); 
+        this.touchHandler = (e) => { e.preventDefault(); this.click(e.touches[0]); };
+        canvas.addEventListener('mousedown', this.handler);
+        canvas.addEventListener('touchstart', this.touchHandler, { passive: false });
+
+        // Aktifkan universal joystick untuk mobile
         if (game.VirtualJoy) {
             game.VirtualJoy.show('omni', (dx, dy) => {
-                const speed = 3;
                 if (Math.abs(dx) > 0.15 || Math.abs(dy) > 0.15) {
                     this.hero.moveTo(
-                        Math.max(30, Math.min(790, this.hero.x + dx * speed * 3)),
-                        Math.max(350, Math.min(590, this.hero.y + dy * speed * 2))
+                        Math.max(30, Math.min(790, this.hero.x + dx * 9)),
+                        Math.max(350, Math.min(590, this.hero.y + dy * 6))
                     );
                 }
             });
         }
 
-        showMessage("AREA LORONG SERVER", "Gunakan joystick (HP) atau klik lantai (PC) untuk berjalan menuju LIFT di ujung kanan.");
+        showMessage("AREA LORONG SERVER", "Gunakan joystick (HP) atau ketuk lantai (PC) untuk berjalan menuju LIFT di ujung kanan.");
     }
     click(e) {
         const {x: mx, y: my} = getGamePos(e);
@@ -5641,7 +5970,8 @@ class ChapterWalkingScene {
         this.hero.draw(ctx);
     }
     cleanup() { 
-        canvas.removeEventListener('mousedown', this.handler); 
+        canvas.removeEventListener('mousedown', this.handler);
+        canvas.removeEventListener('touchstart', this.touchHandler);
         if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
     }
 }
