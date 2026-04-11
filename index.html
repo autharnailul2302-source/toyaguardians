@@ -1429,6 +1429,7 @@
                 </table>
             </div>
             <button class="btn-ml btn-anim" style="background:#002244; margin-top:10px;" onclick="app.switchScreen('screen-title')">KEMBALI</button>
+            <button class="btn-ml" style="background: linear-gradient(180deg,#005500,#003300); border-color:#00FF88; margin-top:6px; font-size:0.85rem;" onclick="app.exportLeaderboard()">📊 EXPORT LAPORAN (CSV)</button>
         </div>
     </div>
 
@@ -1454,6 +1455,19 @@
         <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">FORENSIK DIGITAL &amp; KONFRONTASI</h2>
         <p style="color:#aaa; max-width:360px; text-align:center; line-height:1.6;">Deteksi Keylogger tersembunyi, lakukan analisis forensik digital untuk melacak Boss, lalu hadapi Genderuwo dalam pertarungan terakhir!</p>
         <button class="btn-ml" style="width:200px" onclick="app.startChapter3Intro()">MULAI MISI</button>
+    </div>
+
+    <!-- Chapter Title Screen 4 -->
+    <div id="screen-title-ch4" class="ui-screen" style="background: linear-gradient(135deg, #050A14 0%, #0a1a0a 100%);">
+        <h1 style="color:var(--success-green); font-family:'Orbitron'; font-size:3rem; text-shadow:0 0 10px rgba(0, 255, 136, 0.6);">CHAPTER 4</h1>
+        <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">INCIDENT RESPONSE &amp; PEMULIHAN</h2>
+        <p style="color:#aaa; max-width:400px; text-align:center; line-height:1.6;">Sebelum konfrontasi akhir, Guardian harus membuktikan pemahaman tentang respons insiden, enkripsi, dan pemulihan sistem agar Tirtatelaga benar-benar aman!</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:5px;">
+            <div style="background:rgba(0,255,136,0.1); border:1px solid var(--success-green); padding:8px 15px; border-radius:6px; color:var(--success-green); font-family:'Orbitron'; font-size:0.75rem;">🛡️ INCIDENT RESPONSE</div>
+            <div style="background:rgba(0,168,255,0.1); border:1px solid var(--primary-blue); padding:8px 15px; border-radius:6px; color:var(--primary-blue); font-family:'Orbitron'; font-size:0.75rem;">🔐 ENKRIPSI & VPN</div>
+            <div style="background:rgba(255,215,0,0.1); border:1px solid var(--accent-gold); padding:8px 15px; border-radius:6px; color:var(--accent-gold); font-family:'Orbitron'; font-size:0.75rem;">⚡ SOC & SIEM</div>
+        </div>
+        <button class="btn-ml" style="width:220px; margin-top:20px; background:linear-gradient(180deg, #00aa55 0%, #006633 100%); border-color:var(--success-green);" onclick="app.startChapter4Intro()">MULAI MISI AKHIR</button>
     </div>
 
     <!-- Quiz Screen -->
@@ -1540,58 +1554,88 @@
 // --- GOOGLE SHEETS CONFIGURATION ---
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytjS3e35BG-XzTTbpbz685-OQjH2NOlTy2MC_krJzU9widFCpc4BIeK7iG0xuRJ7Nm/exec"; 
 
+// ASSETS KRITIS: Hanya yang dibutuhkan di title screen & char select
+// Diload pertama, lebih cepat karena jumlahnya sedikit
 const ASSETS = {
-    // Hero 1 (Laki-laki)
-    hero1_idle: 'images/hero1_walk1.png', // sama dengan walk1, tidak perlu load 2x
-    hero1_walk1: 'images/hero1_walk1.png', 
-    hero1_walk2: 'images/hero1_walk2.png', 
-    hero1_walk3: 'images/hero1_walk3.png', 
+    // === TITLE & MENU (dipakai langsung) ===
+    bg_title: 'images/bg_title.png',
+    subtitle: 'images/subtitle.png',
+    icon_headset: 'images/icon_headset.png',
+    bg_noc: 'images/bg_noc.png',
+
+    // === HERO (untuk char select) ===
+    // hero_idle = hero_walk1, pakai referensi yang sama agar tidak double request
+    hero1_walk1: 'images/hero1_walk1.png',
+    hero1_walk2: 'images/hero1_walk2.png',
+    hero1_walk3: 'images/hero1_walk3.png',
     hero1_walk4: 'images/hero1_walk4.png',
     hero1_tembak: 'images/hero1_tembak.png',
 
-    // Hero 2 (Hijab)
-    hero2_idle: 'images/hero2_walk1.png',
-    hero2_walk1: 'images/hero2_walk1.png', 
-    hero2_walk2: 'images/hero2_walk2.png', 
-    hero2_walk3: 'images/hero2_walk3.png', 
+    hero2_walk1: 'images/hero2_walk1.png',
+    hero2_walk2: 'images/hero2_walk2.png',
+    hero2_walk3: 'images/hero2_walk3.png',
     hero2_walk4: 'images/hero2_walk4.png',
     hero2_tembak: 'images/hero2_tembak.png',
 
-    // Hero 3 (Perempuan Cyber)
-    hero3_idle: 'images/hero3_walk1.png',
-    hero3_walk1: 'images/hero3_walk1.png', 
-    hero3_walk2: 'images/hero3_walk2.png', 
-    hero3_walk3: 'images/hero3_walk3.png', 
+    hero3_walk1: 'images/hero3_walk1.png',
+    hero3_walk2: 'images/hero3_walk2.png',
+    hero3_walk3: 'images/hero3_walk3.png',
     hero3_walk4: 'images/hero3_walk4.png',
     hero3_tembak: 'images/hero3_tembak.png',
-	
-	rex: 'images/npc_rex.png', virus: 'images/enemy_virus.png', narrator: 'images/narrator.png', androidtoya: 'images/androidtoya.png',
-    bg_title: 'images/bg_title.png', bg_server: 'images/bg_server.png', bg_firewall: 'images/bg_firewall.png', bg_noc: 'images/bg_noc.png',bg_open1: 'images/bg_open1.png',bg_open2: 'images/bg_open2.png',
-	bg_masuklt1nyala: 'images/bg_masuklt1nyala.png', bg_menujulift: 'images/bg_menujulift.png', bg_firewall1: 'images/bg_firewall1.png',  bg_firewall2: 'images/bg_firewall2.png',
-    bg_firewall3: 'images/bg_firewall3.png', 
-	bg_open3: 'images/bg_open3.png',bg_open4: 'images/bg_open4.png',bg_open5: 'images/bg_open5.png', bg_masuklt1 : 'images/bg_masuklt1.png',
-	bg_siap: 'images/bg_siap.png', bg_monitor: 'images/bg_monitor.png',
-	bg_tutorend: 'images/bg_tutorend.png',bg_victory: 'images/bg_victory.png',bg_rtraining: 'images/bg_rtraining.png',bg_rtraining1: 'images/bg_rtraining1.png',bg_jaringan: 'images/bg_jaringan.png',
-    bg_kabel: 'images/bg_kabel.png', bg_bomber: 'images/bg_server.png',
-	item_pc: 'images/item_pc.png', item_server: 'images/item_server.png', item_tablet: 'images/item_tablet.png', item_laptop: 'images/item_laptop.png',
-    item_switch: 'images/item_switch.png', item_firewall: 'images/item_firewall.png', item_keylogger: 'images/item_keylogger.png',
+
+    // === NPC & MUSUH (dipakai di banyak chapter) ===
+    rex: 'images/npc_rex.png',
+    virus: 'images/enemy_virus.png',
+    narrator: 'images/narrator.png',
+    androidtoya: 'images/androidtoya.png',
+};
+
+// Alias tanpa load ulang (reuse referensi setelah ASSETS diload)
+// hero_idle = walk1, diisi di lazyLoadAssets()
+
+// ASSETS DEFERRED: diload di background setelah title muncul
+// Tidak memblokir loading awal
+const ASSETS_DEFERRED = {
+    // BG Story & Tutorial
+    bg_open1: 'images/bg_open1.png', bg_open2: 'images/bg_open2.png',
+    bg_open3: 'images/bg_open3.png', bg_open4: 'images/bg_open4.png', bg_open5: 'images/bg_open5.png',
+    bg_story: 'images/bg_story.png',
+    bg_siap: 'images/bg_siap.png',
+    bg_tutorend: 'images/bg_tutorend.png',
+    bg_rtraining: 'images/bg_rtraining.png', bg_rtraining1: 'images/bg_rtraining1.png',
+    bg_jaringan: 'images/bg_jaringan.png',
+    bg_masuklt1: 'images/bg_masuklt1.png', bg_masuklt1nyala: 'images/bg_masuklt1nyala.png',
+    bg_menujulift: 'images/bg_menujulift.png',
+
+    // BG Chapter 1-3
+    bg_kabel: 'images/bg_kabel.png',
+    bg_firewall: 'images/bg_firewall.png',
+    bg_firewall1: 'images/bg_firewall1.png', bg_firewall2: 'images/bg_firewall2.png', bg_firewall3: 'images/bg_firewall3.png',
+    bg_server: 'images/bg_server.png',
+    bg_monitor: 'images/bg_monitor.png',
+    bg_victory: 'images/bg_victory.png',
+    bg_survival: 'images/bg_survival.png',
+
+    // Items & Icons Chapter 1
+    item_pc: 'images/item_pc.png', item_server: 'images/item_server.png',
+    item_tablet: 'images/item_tablet.png', item_laptop: 'images/item_laptop.png',
+    item_switch: 'images/item_switch.png', item_keylogger: 'images/item_keylogger.png',
     item_door: 'images/item_door.png', tile_pinggir: 'images/tile_pinggir.png',
-    icon_http: 'images/icon_http.png', icon_ssh: 'images/icon_ssh.png', icon_email: 'images/icon_email.png',
-    icon_sql: 'images/icon_sql.png', icon_ping: 'images/icon_ping.png', icon_telnet: 'images/icon_telnet.png', icon_exe: 'images/icon_exe.png',
-    icon_firewall: 'images/item_firewall.png',
-    subtitle: 'images/subtitle.png',
-    zone_allow: 'images/zone_allow.png',
-    zone_block: 'images/zone_block.png',
-    pintu_keluar: 'images/item_door.png',
-    icon_headset: 'images/icon_headset.png',
-    tile_tembok: 'images/tile_tembok.png',
-    tile_meledak: 'images/tile_meledak.png',
-    bomb_lt1: 'images/bomb_lt1.png',
-    bomb_lt2: 'images/bomb_lt2.png',
-    bomb_lt3: 'images/bomb_lt3.png',
-	icon_bomb: 'images/icon_bomb.png',
-    bg_story: 'images/bg_story.png', 
-    bg_survival: 'images/bg_survival.png'
+
+    // Icons firewall (satu file, pakai alias)
+    item_firewall: 'images/item_firewall.png',
+    icon_http: 'images/icon_http.png', icon_ssh: 'images/icon_ssh.png',
+    icon_email: 'images/icon_email.png', icon_sql: 'images/icon_sql.png',
+    icon_ping: 'images/icon_ping.png', icon_telnet: 'images/icon_telnet.png',
+    icon_exe: 'images/icon_exe.png',
+
+    // Bomberman assets
+    tile_tembok: 'images/tile_tembok.png', tile_meledak: 'images/tile_meledak.png',
+    bomb_lt1: 'images/bomb_lt1.png', bomb_lt2: 'images/bomb_lt2.png', bomb_lt3: 'images/bomb_lt3.png',
+    icon_bomb: 'images/icon_bomb.png',
+
+    // Zone
+    zone_allow: 'images/zone_allow.png', zone_block: 'images/zone_block.png',
 };
 
 // LAZY ASSETS: diload hanya saat dibutuhkan (tidak memperlambat startup)
@@ -2647,6 +2691,230 @@ const BANK_SOAL_CH3 = [
 
 
 
+// --- BANK SOAL CHAPTER 4 (INCIDENT RESPONSE & PEMULIHAN - 20 SOAL) ---
+const BANK_SOAL_CH4 = [
+    {
+        q: "Tahap pertama Incident Response adalah...",
+        options: [
+            {text:"Identifikasi (Identification)", correct:true},
+            {text:"Eliminasi (Eradication)", correct:false, explanation:"Eradikasi adalah tahap ke-4. Kamu harus tahu dulu insiden apa yang terjadi sebelum bertindak."},
+            {text:"Pemulihan (Recovery)", correct:false, explanation:"Recovery adalah tahap ke-5. Tanpa identifikasi, kamu tidak tahu apa yang perlu dipulihkan."},
+            {text:"Laporan Akhir (Lessons Learned)", correct:false, explanation:"Laporan akhir adalah tahap terakhir (ke-6), bukan pertama."}
+        ],
+        hint:"Kenali dulu musuhnya",
+        explanation:"Urutan PICERL: Preparation → Identification → Containment → Eradication → Recovery → Lessons Learned."
+    },
+    {
+        q: "Containment dalam Incident Response bertujuan untuk...",
+        options: [
+            {text:"Membatasi penyebaran insiden", correct:true},
+            {text:"Menghapus malware sepenuhnya", correct:false, explanation:"Menghapus malware adalah Eradication. Containment hanya membatasi agar tidak menyebar lebih jauh."},
+            {text:"Membuat laporan insiden", correct:false, explanation:"Laporan dibuat di tahap Lessons Learned. Containment adalah aksi cepat isolasi."},
+            {text:"Memulihkan sistem ke normal", correct:false, explanation:"Itu Recovery. Containment seperti karantina — hentikan penyebaran dulu."}
+        ],
+        hint:"Karantina insiden",
+        explanation:"Containment ibarat menutup keran air bocor — hentikan penyebaran dulu sebelum memperbaiki pipa."
+    },
+    {
+        q: "Apa yang dimaksud CSIRT?",
+        options: [
+            {text:"Tim Respons Insiden Keamanan Komputer", correct:true},
+            {text:"Sistem Antivirus Canggih", correct:false, explanation:"CSIRT adalah tim manusia, bukan software. Singkatannya: Computer Security Incident Response Team."},
+            {text:"Protokol Jaringan Baru", correct:false, explanation:"CSIRT bukan protokol teknis, melainkan organisasi/tim yang menangani insiden siber."},
+            {text:"Jenis Malware", correct:false, explanation:"CSIRT justru TIM yang melawan malware dan insiden siber."}
+        ],
+        hint:"Tim darurat siber",
+        explanation:"CSIRT adalah tim ahli yang siap 24/7 merespons, menganalisa, dan memulihkan insiden keamanan siber."
+    },
+    {
+        q: "VPN (Virtual Private Network) paling tepat digunakan untuk...",
+        options: [
+            {text:"Mengamankan komunikasi jarak jauh", correct:true},
+            {text:"Mempercepat koneksi internet", correct:false, explanation:"VPN justru sedikit memperlambat karena proses enkripsi. Tujuannya keamanan, bukan kecepatan."},
+            {text:"Menghapus virus", correct:false, explanation:"VPN tidak bisa mendeteksi atau menghapus virus. Itu tugas antivirus."},
+            {text:"Menyimpan file besar", correct:false, explanation:"VPN adalah jalur aman, bukan media penyimpanan."}
+        ],
+        hint:"Terowongan aman",
+        explanation:"VPN membuat 'terowongan terenkripsi' sehingga data yang dikirim dari Guardian ke markas tidak bisa disadap Genderuwo."
+    },
+    {
+        q: "Enkripsi End-to-End (E2E) berarti...",
+        options: [
+            {text:"Hanya pengirim & penerima yang bisa baca", correct:true},
+            {text:"Pesan dienkripsi hanya di server", correct:false, explanation:"Jika server bisa membaca, itu bukan E2E. E2E memastikan bahkan penyedia layanan pun tidak bisa baca."},
+            {text:"Pesan dikirim dua kali", correct:false, explanation:"E2E bukan tentang jumlah pengiriman, tapi tentang siapa yang bisa membaca isi pesan."},
+            {text:"Enkripsi berlapis dua", correct:false, explanation:"E2E merujuk pada ujung pengirim ke ujung penerima, bukan jumlah lapisan enkripsi."}
+        ],
+        hint:"Hanya dua orang yang tahu",
+        explanation:"Contoh: WhatsApp E2E — bahkan WhatsApp sendiri tidak bisa membaca isi percakapanmu."
+    },
+    {
+        q: "Apa itu Patch Management?",
+        options: [
+            {text:"Proses memperbarui software untuk menutup celah", correct:true},
+            {text:"Tambalan baju fisik", correct:false, explanation:"Patch di dunia IT artinya pembaruan kode software untuk menutup celah keamanan (bukan kain)."},
+            {text:"Menyimpan cadangan data", correct:false, explanation:"Itu Backup. Patch Management adalah tentang pembaruan software secara teratur."},
+            {text:"Mengganti kabel jaringan", correct:false, explanation:"Patch Management bersifat digital/software, bukan infrastruktur fisik."}
+        ],
+        hint:"Update rutin software",
+        explanation:"Banyak serangan berhasil karena korban tidak segera memasang Patch. WannaCry menyerang Windows yang belum di-update."
+    },
+    {
+        q: "Apa tujuan utama SOC (Security Operations Center)?",
+        options: [
+            {text:"Memantau dan merespons ancaman 24/7", correct:true},
+            {text:"Menjual produk keamanan", correct:false, explanation:"SOC bukan toko. Ini pusat komando keamanan siber yang beroperasi sepanjang waktu."},
+            {text:"Membuat aplikasi mobile", correct:false, explanation:"SOC adalah pusat pemantauan dan respons insiden, bukan studio pengembangan aplikasi."},
+            {text:"Merancang jaringan baru", correct:false, explanation:"Merancang jaringan adalah tugas Network Engineer. SOC memantau jaringan yang sudah ada."}
+        ],
+        hint:"Pusat komando keamanan",
+        explanation:"SOC adalah 'menara kontrol' keamanan siber — analis di sana memantau semua aktivitas jaringan dan segera bertindak jika ada ancaman."
+    },
+    {
+        q: "Apa itu Zero Trust Security?",
+        options: [
+            {text:"Jangan percaya siapapun, selalu verifikasi", correct:true},
+            {text:"Sistem keamanan gratis", correct:false, explanation:"Zero Trust bukan tentang harga. Ini filosofi keamanan: tidak ada entitas yang otomatis dipercaya."},
+            {text:"Firewall tanpa aturan", correct:false, explanation:"Justru sebaliknya. Zero Trust sangat ketat — semua akses harus diverifikasi."},
+            {text:"Jaringan tanpa password", correct:false, explanation:"Zero Trust justru memperketat autentikasi. Tidak ada akses tanpa verifikasi berlapis."}
+        ],
+        hint:"Tidak ada kepercayaan buta",
+        explanation:"Zero Trust: 'Never trust, always verify.' Bahkan karyawan internal pun harus diverifikasi setiap kali mengakses sistem."
+    },
+    {
+        q: "Apa itu Vulnerability Assessment?",
+        options: [
+            {text:"Mencari celah sebelum diserang", correct:true},
+            {text:"Menyerang sistem sendiri", correct:false, explanation:"Menyerang sistem sendiri secara aktif disebut Penetration Testing. VA hanya mencari dan melaporkan celah."},
+            {text:"Memulihkan data yang hilang", correct:false, explanation:"Itu Recovery. VA adalah proses proaktif mencari kelemahan sebelum ada serangan."},
+            {text:"Membuat password baru", correct:false, explanation:"VA adalah audit keamanan menyeluruh, bukan sekadar mengganti password."}
+        ],
+        hint:"Audit celah keamanan",
+        explanation:"VA ibarat dokter yang memeriksa kesehatan sistem secara rutin — lebih baik temukan penyakit sebelum parah."
+    },
+    {
+        q: "Apa itu Business Continuity Plan (BCP)?",
+        options: [
+            {text:"Rencana agar bisnis tetap jalan saat darurat", correct:true},
+            {text:"Rencana keuangan perusahaan", correct:false, explanation:"BCP bukan perencanaan keuangan (Finance). Ini tentang operasional saat terjadi bencana/serangan."},
+            {text:"Rencana pemasaran produk", correct:false, explanation:"Itu Marketing Plan. BCP adalah rencana keberlangsungan operasi saat sistem down."},
+            {text:"Rencana perekrutan karyawan", correct:false, explanation:"Itu HR Plan. BCP fokus pada bagaimana layanan tetap berjalan meski terjadi insiden siber."}
+        ],
+        hint:"Operasional tetap jalan",
+        explanation:"Misalnya: jika server utama diserang ransomware, BCP mengatur bagaimana layanan berpindah ke server cadangan otomatis."
+    },
+    {
+        q: "Apa itu SIEM (Security Information & Event Management)?",
+        options: [
+            {text:"Sistem pengumpul & analisa log terpusat", correct:true},
+            {text:"Jenis virus baru", correct:false, explanation:"SIEM adalah alat pertahanan, bukan ancaman. Ia mengumpulkan semua log dari berbagai sistem."},
+            {text:"Firewall generasi terbaru", correct:false, explanation:"SIEM dan Firewall berbeda fungsi. SIEM menganalisa data; Firewall memfilter trafik."},
+            {text:"Protokol enkripsi data", correct:false, explanation:"SIEM bukan protokol enkripsi. Ia adalah platform analisis keamanan terpusat."}
+        ],
+        hint:"Pusat analisis log",
+        explanation:"SIEM mengumpulkan log dari firewall, server, dan endpoint lalu menganalisa pola untuk mendeteksi ancaman secara otomatis."
+    },
+    {
+        q: "Apa yang harus dilakukan PERTAMA saat menemukan malware aktif di jaringan?",
+        options: [
+            {text:"Isolasi perangkat yang terinfeksi", correct:true},
+            {text:"Langsung format semua harddisk", correct:false, explanation:"Format dulu justru menghancurkan bukti forensik yang dibutuhkan untuk investigasi."},
+            {text:"Restart komputer", correct:false, explanation:"Restart bisa menghapus data di RAM yang krusial untuk analisis Live Response."},
+            {text:"Posting di media sosial", correct:false, explanation:"Ini bisa merusak reputasi dan memberi informasi kepada penyerang. Laporkan ke CSIRT terlebih dahulu."}
+        ],
+        hint:"Karantina dulu",
+        explanation:"Isolasi mencegah malware menyebar ke perangkat lain. Cabut dari jaringan, jangan matikan — data RAM masih dibutuhkan."
+    },
+    {
+        q: "Apa itu Threat Intelligence?",
+        options: [
+            {text:"Informasi ancaman untuk mencegah serangan", correct:true},
+            {text:"AI yang menyerang otomatis", correct:false, explanation:"Threat Intelligence adalah pengetahuan tentang ancaman, bukan sistem serangan."},
+            {text:"Database password", correct:false, explanation:"Threat Intelligence berisi data tentang taktik, teknik, dan prosedur penyerang (TTPs), bukan password."},
+            {text:"Antivirus generasi baru", correct:false, explanation:"Threat Intelligence adalah informasi/pengetahuan, bukan software antivirus."}
+        ],
+        hint:"Intel tentang musuh",
+        explanation:"Seperti intelijen militer, Threat Intelligence memberi tahu siapa penyerang, apa yang mereka incar, dan bagaimana mereka beroperasi."
+    },
+    {
+        q: "Apa itu RTO (Recovery Time Objective)?",
+        options: [
+            {text:"Waktu maksimal sistem boleh down", correct:true},
+            {text:"Waktu backup data dilakukan", correct:false, explanation:"Jadwal backup itu RPO (Recovery Point Objective). RTO adalah toleransi waktu downtime."},
+            {text:"Waktu login ke sistem", correct:false, explanation:"Waktu login tidak ada hubungannya dengan RTO. Ini tentang batas waktu pemulihan sistem."},
+            {text:"Durasi serangan siber", correct:false, explanation:"Durasi serangan tidak bisa dikontrol. RTO adalah target waktu pemulihan yang kita tentukan sendiri."}
+        ],
+        hint:"Batas waktu downtime",
+        explanation:"Contoh: RTO Bank = 2 jam. Artinya sistem perbankan harus pulih maksimal 2 jam setelah insiden, atau bisnis mengalami kerugian besar."
+    },
+    {
+        q: "Apa fungsi Digital Forensics dalam Incident Response?",
+        options: [
+            {text:"Mengumpulkan bukti dan rekonstruksi kejadian", correct:true},
+            {text:"Mempercepat jaringan", correct:false, explanation:"Forensik bukan tentang performa jaringan. Ini tentang investigasi kejahatan digital."},
+            {text:"Membuat backup data", correct:false, explanation:"Forensik menganalisa kejadian yang sudah terjadi, berbeda dengan backup yang bersifat preventif."},
+            {text:"Memperbarui antivirus", correct:false, explanation:"Update antivirus adalah pencegahan. Forensik adalah investigasi pasca-insiden."}
+        ],
+        hint:"Detektif digital",
+        explanation:"Forensik menjawab: 'Apa yang terjadi, kapan, bagaimana, dan siapa pelakunya?' — penting untuk hukum dan pembelajaran."
+    },
+    {
+        q: "Apa yang dimaksud 'Lessons Learned' dalam Incident Response?",
+        options: [
+            {text:"Evaluasi untuk mencegah insiden serupa", correct:true},
+            {text:"Pelajaran sekolah tentang komputer", correct:false, explanation:"Ini istilah CSIRT, bukan kurikulum sekolah. Lessons Learned adalah refleksi pasca-insiden."},
+            {text:"Pelatihan karyawan baru", correct:false, explanation:"Pelatihan karyawan itu onboarding. Lessons Learned adalah review proses penanganan insiden yang baru terjadi."},
+            {text:"Laporan keuangan insiden", correct:false, explanation:"Biaya insiden memang dicatat, tapi Lessons Learned fokus pada perbaikan prosedur dan teknis."}
+        ],
+        hint:"Belajar dari kejadian",
+        explanation:"Setelah insiden ditangani, tim berkumpul dan bertanya: 'Apa yang salah? Apa yang berhasil? Bagaimana mencegahnya lagi?'"
+    },
+    {
+        q: "Apa itu Multi-Factor Authentication (MFA)?",
+        options: [
+            {text:"Login butuh lebih dari satu bukti identitas", correct:true},
+            {text:"Login dengan banyak akun sekaligus", correct:false, explanation:"MFA bukan tentang banyak akun, tapi banyak FAKTOR verifikasi untuk satu akun."},
+            {text:"Password yang sangat panjang", correct:false, explanation:"Password panjang hanya satu faktor. MFA menggabungkan: tahu (password) + punya (HP) + biometrik."},
+            {text:"Antivirus berlapis", correct:false, explanation:"MFA adalah tentang autentikasi login, bukan tentang software keamanan berlapis."}
+        ],
+        hint:"Verifikasi berlapis",
+        explanation:"MFA = Password + OTP HP + Sidik Jari. Bahkan jika password dicuri, penyerang tetap tidak bisa masuk tanpa HP-mu."
+    },
+    {
+        q: "Honey Pot dalam keamanan jaringan berfungsi sebagai...",
+        options: [
+            {text:"Perangkap untuk mempelajari teknik penyerang", correct:true},
+            {text:"Tempat menyimpan data penting", correct:false, explanation:"Honeypot justru berisi data palsu. Tujuannya menarik penyerang agar tekniknya bisa dipelajari."},
+            {text:"Jenis firewall", correct:false, explanation:"Honeypot adalah server umpan, bukan firewall. Keduanya adalah alat keamanan yang berbeda."},
+            {text:"Backup server utama", correct:false, explanation:"Honeypot sengaja dibuat lemah agar penyerang masuk ke sana, bukan sebagai cadangan sistem nyata."}
+        ],
+        hint:"Perangkap madu",
+        explanation:"Honeypot = 'jebakan madu'. Penyerang tergiur masuk, lalu aktivitasnya direkam untuk dipelajari tanpa merusak sistem asli."
+    },
+    {
+        q: "Apa itu Network Segmentation?",
+        options: [
+            {text:"Membagi jaringan jadi zona-zona terpisah", correct:true},
+            {text:"Memotong kabel jaringan", correct:false, explanation:"Segmentasi adalah konsep logis/virtual, bukan tindakan fisik memotong kabel."},
+            {text:"Mematikan sebagian jaringan", correct:false, explanation:"Segmentasi tidak mematikan jaringan, justru mengorganisirnya agar lebih aman dan efisien."},
+            {text:"Memperlambat koneksi internet", correct:false, explanation:"Segmentasi yang benar tidak memperlambat, malah meningkatkan performa dan keamanan."}
+        ],
+        hint:"Bagi-bagi zona",
+        explanation:"Contoh: Zona Keuangan, Zona R&D, Zona Tamu dipisahkan. Jika satu zona disusupi, malware tidak bisa bebas menjangkau zona lain."
+    },
+    {
+        q: "Setelah Genderuwo berhasil diusir, langkah TERAKHIR yang benar adalah...",
+        options: [
+            {text:"Dokumentasi dan laporan insiden lengkap", correct:true},
+            {text:"Langsung matikan semua server", correct:false, explanation:"Mematikan server setelah ancaman hilang justru menghentikan layanan. Sistem harus kembali normal."},
+            {text:"Ganti semua komputer baru", correct:false, explanation:"Mengganti hardware tidak selalu perlu. Yang penting adalah perbaiki sistem, tutup celah, dan dokumentasikan."},
+            {text:"Hapus semua log sistem", correct:false, explanation:"Log adalah bukti berharga! Justru log harus DISIMPAN untuk keperluan investigasi dan pembelajaran."}
+        ],
+        hint:"Catat semua untuk masa depan",
+        explanation:"Dokumentasi insiden adalah aset berharga: siapa penyerang, bagaimana masuk, apa yang diambil, dan apa yang berhasil menutupnya."
+    }
+];
+
 const BANK_SOAL_KABEL = [
     { q: "Hubungkan PC ke Switch (Straight)", srcType: 'item_pc', targetType: 'item_switch', cableType: 'straight' },
     { q: "Hubungkan Laptop ke Switch (Straight)", srcType: 'item_laptop', targetType: 'item_switch', cableType: 'straight' },
@@ -2867,7 +3135,7 @@ function getGamePos(e) {
         y: (clientY - r.top)  * (600 / r.height)
     };
 }
-const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_FORENSIC: 4.6, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5, MODE_SELECT: 0.5, GAME_SURVIVAL: 7, GAME_SURVIVAL_QUIZ: 7.5 };
+const AppState = { SPLASH: -1, AUDIO_SETUP: -0.5, TITLE: 0, STORY: 1, TUTORIAL: 1.5, GAME_CH1: 2, BRIDGE_CH1: 2.5, GAME_CH2: 3, GAME_CH2_CONFIG: 3.2, GAME_CH2_QUIZ: 3.5, BRIDGE_CH2: 3.8, GAME_CH3: 4, GAME_CH3_BOMBER: 4.2, GAME_FORENSIC: 4.6, GAME_CH3_QUIZ: 4.5, GAME_CH3_IR: 4.8, GAME_CH4: 4.85, GAME_CH4_QUIZ: 4.87, BOSS_BATTLE: 4.9, ENDING_CINEMATIC: 5, VICTORY_SCORE: 5.5, CREDITS: 6, ENDING: 5.5, MODE_SELECT: 0.5, GAME_SURVIVAL: 7, GAME_SURVIVAL_QUIZ: 7.5 };
 
 // --- FIX 1: SIMPLIFIED & FORCED SHOW MESSAGE ---
 function showMessage(title, body, onCloseCallback) {
@@ -3122,6 +3390,14 @@ class GameApp {
         this.player.toyaPurity = 10; // Kembali ke 10% (Merah)
         this.player.score = 0;       // Kembali ke 0
         this.player.lastWave = 0;
+        // Reset tracking quiz per chapter
+        this.player.quizStats = { 
+            ch1: {benar:0, total:0}, 
+            ch2: {benar:0, total:0}, 
+            ch3: {benar:0, total:0},
+            ch4: {benar:0, total:0},
+            survival: {benar:0, total:0}
+        };
         // ----------------------------------
 		
         // NEW STATS TRACKING
@@ -3152,7 +3428,16 @@ class GameApp {
                 const fill = document.getElementById('loading-fill');
                 if(pct) pct.innerText = progress + "%";
                 if(fill) fill.style.width = progress + "%";
-                if (loadedCount === totalAssets) this.runSplashTextAnimation();
+                if (loadedCount === totalAssets) {
+                    // Set alias tanpa request ulang
+                    this.imgs.hero1_idle = this.imgs.hero1_walk1;
+                    this.imgs.hero2_idle = this.imgs.hero2_walk1;
+                    this.imgs.hero3_idle = this.imgs.hero3_walk1;
+                    this.imgs.icon_firewall = this.imgs.item_firewall;
+                    this.imgs.pintu_keluar = this.imgs.item_door;
+                    this.imgs.bg_bomber = this.imgs.bg_server;
+                    this.runSplashTextAnimation();
+                }
             };
             this.imgs[k].onerror = () => { 
                 if(k.includes('_w')) { let id = k.split('_')[0]+'_idle'; if(this.imgs[id]) this.imgs[k].src = this.imgs[id].src; } else if(k==='narrator') this.imgs[k].src = this.imgs['rex']?this.imgs['rex'].src:''; 
@@ -3550,14 +3835,22 @@ class GameApp {
                 setTimeout(() => {
                     this.state = AppState.AUDIO_SETUP;
                     this.switchScreen('screen-audio');
-                    // LAZY LOAD: Aset ending & survival diload di background setelah game siap
-                    setTimeout(() => this.lazyLoadAssets(), 2000);
+                    // Langsung load deferred & lazy assets di background tanpa tunggu
+                    this.lazyLoadAssets();
                 }, 300);
             }
         }, 200);
     }
 
     lazyLoadAssets() {
+        // Load DEFERRED assets (BG chapter, items, icons) di background setelah title muncul
+        for (const [k, v] of Object.entries(ASSETS_DEFERRED)) {
+            if (!this.imgs[k]) {
+                this.imgs[k] = new Image();
+                this.imgs[k].src = v;
+            }
+        }
+        // Load LAZY assets (ending slides, survival BG)
         for (const [k, v] of Object.entries(ASSETS_LAZY)) {
             if (!this.imgs[k]) {
                 this.imgs[k] = new Image();
@@ -3856,7 +4149,7 @@ class GameApp {
         story.start([ { speaker: "MASTER REX", text: "Bagus! Kamu sudah paham cara bergerak. Sekarang saatnya masuk ke Gedung Server. Lantai pertama adalah pusat jaringan fisik — kita mulai dari sana.", char: 'rex', bg: 'bg_siap' } ], () => { this.startChapter1(); });
     }
     
-    startChapter1() { AudioMgr.playSFX('sfx-click'); this.switchScreen('screen-title-ch1'); }
+    startChapter1() { AudioMgr.playSFX('sfx-click'); this.player.chapter = Math.max(this.player.chapter||0, 1); this.switchScreen('screen-title-ch1'); }
     startChapter1Story() {
         AudioMgr.playSFX('sfx-click'); this.state = AppState.STORY; this.switchScreen('screen-story');
         story.start([
@@ -3930,6 +4223,7 @@ class GameApp {
 
     startChapter2Intro() {
         AudioMgr.playSFX('sfx-click');
+        this.player.chapter = Math.max(this.player.chapter||0, 2);
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
@@ -4040,6 +4334,7 @@ class GameApp {
 
     startChapter3Bomber() {
         AudioMgr.playSFX('sfx-click');
+        this.player.chapter = Math.max(this.player.chapter||0, 3);
         this.switchScreen('dummy');
         document.getElementById('hud').style.display = 'flex';
         document.getElementById('current-mission-text').innerText = "TEMUKAN KEYLOGGER";
@@ -4091,8 +4386,8 @@ class GameApp {
         
         this.state = AppState.GAME_CH3_QUIZ;
         this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH3, () => {
-            showMessage("ENKRIPSI BERHASIL DIDEKRIPSI", "Kode kunci forensik: 19019. Lokasi Genderuwo terkonfirmasi — ia berada di Core Server! Bersiaplah untuk konfrontasi terakhir!");
-            setTimeout(() => this.triggerBossNarrative(), 2000);
+            showMessage("ENKRIPSI BERHASIL DIDEKRIPSI", "Kode kunci forensik: 19019. Lokasi Genderuwo terkonfirmasi — ia berada di Core Server! Tapi sebelum konfrontasi, Guardian harus mempersiapkan protokol pemulihan sistem.");
+            setTimeout(() => this.triggerChapter4Narrative(), 2000);
         }, fixedCode);
     }
 
@@ -4100,6 +4395,87 @@ class GameApp {
         this.triggerBossNarrative();
     }
     
+    // =====================================================
+    // CHAPTER 4 — INCIDENT RESPONSE & PEMULIHAN SISTEM
+    // =====================================================
+    triggerChapter4Narrative() {
+        AudioMgr.playSFX('sfx-click');
+        this.state = AppState.STORY;
+        this.switchScreen('screen-story');
+        story.start([
+            { speaker: "MASTER REX", text: "Luar biasa Guardian! Forensik selesai — kita tahu di mana Genderuwo bersembunyi. Tapi sebelum kita menyerangnya, ada satu tahap kritis yang tidak boleh dilewati.", char: 'rex', bg: 'bg_monitor' },
+            { speaker: "MASTER REX", text: "Incident Response Protocol! Kita harus memastikan semua sistem yang terinfeksi terisolasi, jalur komunikasi aman lewat VPN, dan ada rencana pemulihan jika serangan terakhir ini menghancurkan server.", char: 'rex', bg: 'bg_monitor' },
+            { speaker: "System AI Gedung Server", text: "Peringatan: Sistem pemulihan darurat membutuhkan protokol autentikasi berlapis. Guardian harus membuktikan penguasaan materi Incident Response untuk mengaktifkan backup server.", char: 'androidtoya', bg: 'bg_firewall2' },
+            { speaker: "MASTER REX", text: "Ini bukan hanya pertempuran fisik — ini pertempuran pengetahuan. Seorang Guardian sejati tahu tidak hanya cara menyerang, tapi juga cara memulihkan dan melindungi sistem setelah badai berlalu.", char: 'rex', bg: 'bg_firewall2', sound: 'dramatic' },
+            { mode: 'caption', text: "AKTIVASI PROTOKOL: INCIDENT RESPONSE & SYSTEM RECOVERY", bg: 'bg_firewall3', delay: 3000, sound: 'dramatic' }
+        ], () => {
+            this.switchScreen('screen-title-ch4');
+        });
+    }
+
+    startChapter4Intro() {
+        AudioMgr.playSFX('sfx-click');
+        this.player.chapter = Math.max(this.player.chapter || 0, 4);
+        this.state = AppState.STORY;
+        this.switchScreen('screen-story');
+        story.start([
+            { speaker: "System AI Gedung Server", text: "Memulai protokol Incident Response. Tahap 1: Isolasi zona yang terinfeksi. Tahap 2: Amankan jalur komunikasi. Tahap 3: Aktifkan rencana pemulihan.", char: 'androidtoya', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Guardian! Ada ancaman aktif di tiga titik server. Kamu harus bergerak cepat — tekan semua node yang terinfeksi sebelum malware menyebar ke backup server kita!", char: 'rex', bg: 'bg_server' }
+        ], () => {
+            this.startChapter4IR();
+        });
+    }
+
+    startChapter4IR() {
+        this.switchScreen('dummy');
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('mission-overlay').style.display = 'block';
+        document.getElementById('current-mission-text').innerText = "ISOLASI ANCAMAN: TEKAN NODE TERINFEKSI";
+        this.state = AppState.GAME_CH4;
+        AudioMgr.playMusic('bgm-bomber');
+        this.currentChapter = new ChapterIRDefense(this);
+    }
+
+    startChapter4Quiz() {
+        AudioMgr.playSFX('sfx-click');
+        this.state = AppState.STORY;
+        this.switchScreen('screen-story');
+        story.start([
+            { speaker: "System AI Gedung Server", text: "Ancaman berhasil diisolasi! Kini aktifkan jalur VPN terenkripsi dan protokol pemulihan darurat. Sistem memerlukan verifikasi pengetahuan Guardian.", char: 'androidtoya', bg: 'bg_firewall3' },
+            { speaker: "MASTER REX", text: "Ini momen terakhir sebelum konfrontasi akhir. Tunjukkan bahwa kamu siap — tidak hanya sebagai pejuang, tapi sebagai Guardian yang paham cara menjaga dan memulihkan sistem!", char: 'rex', bg: 'bg_monitor', sound: 'dramatic' }
+        ], () => {
+            this.switchScreen('screen-quiz');
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('quiz-title-text').innerText = "PROTOKOL PEMULIHAN SISTEM";
+
+            const display = document.getElementById('quiz-code-display');
+            display.style.display = 'block';
+            display.innerHTML = '';
+            const icons = ['🛡️','🔐','⚡','🔄','✅'];
+            for (let i = 0; i < 5; i++) {
+                const s = document.createElement('span');
+                s.id = `ir-${i}`;
+                s.innerText = '⬛';
+                s.style.margin = '0 8px';
+                s.style.fontSize = '1.8rem';
+                display.appendChild(s);
+            }
+
+            this.state = AppState.GAME_CH4_QUIZ;
+            this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH4, () => {
+                // Update display icons on complete
+                for (let i = 0; i < 5; i++) {
+                    const el = document.getElementById(`ir-${i}`);
+                    if (el) el.innerText = icons[i];
+                }
+                showMessage("PROTOKOL PEMULIHAN AKTIF! 🛡️", "Semua sistem darurat berhasil diaktifkan. Jalur VPN aman, backup server siap, dan rencana pemulihan terkunci. Saatnya menghadapi Genderuwo!");
+                setTimeout(() => this.triggerBossNarrative(), 2500);
+            }, null);
+        });
+    }
+
+    // =====================================================
+
     triggerBossNarrative() {
         AudioMgr.playSFX('sfx-click');
         this.state = AppState.STORY;
@@ -4418,6 +4794,252 @@ class GameApp {
         }
     }
 
+
+    // ===== EXPORT LAPORAN CSV =====
+    exportLeaderboard() {
+        AudioMgr.playSFX('sfx-click');
+        const cached = JSON.parse(localStorage.getItem('toya_lb_cache') || '[]');
+        const local  = JSON.parse(localStorage.getItem('toya_lb') || '[]');
+        const mock   = SaveSystem.getMockData();
+        const map = new Map();
+        [...mock, ...cached, ...local].forEach(item => {
+            const key = item.name + '_' + (item.school||'');
+            if(!map.has(key) || item.score > map.get(key).score) map.set(key, item);
+        });
+        let allData = Array.from(map.values());
+
+        if(this.leaderboardMode === 'survival') {
+            allData = allData.filter(d => d.mode === 'survival');
+        } else {
+            allData = allData.filter(d => !d.mode || d.mode === 'story');
+        }
+
+        const filterType = document.getElementById('lb-filter').value;
+        const subVal = document.getElementById('lb-sub-filter').value;
+        if(filterType !== 'all' && subVal) {
+            if(filterType === 'prov')          allData = allData.filter(d => (d.prov||'').toUpperCase()     === subVal);
+            else if(filterType === 'city')     allData = allData.filter(d => (d.city||'').toUpperCase()     === subVal);
+            else if(filterType === 'district') allData = allData.filter(d => (d.district||'').toUpperCase() === subVal);
+            else if(filterType === 'school')   allData = allData.filter(d => (d.school||'').toUpperCase()   === subVal);
+        }
+        allData.sort((a, b) => b.score - a.score);
+
+        // === HELPER FUNCTIONS ===
+        const chapterLabel = (d) => {
+            if(d.mode === 'survival') return 'SURVIVAL';
+            const ch = d.chapter || 0;
+            if(ch >= 4) return 'Chapter 4 (Selesai)';
+            if(ch >= 3) return 'Chapter 3';
+            if(ch === 2) return 'Chapter 2';
+            if(ch === 1) return 'Chapter 1';
+            return 'Belum Mulai';
+        };
+
+        const pemahamanLabel = (d) => {
+            const score = d.score || 0;
+            const ch = d.chapter || 0;
+            if(d.mode === 'survival') {
+                const wave = d.wave || 0;
+                if(wave >= 20 && score >= 50000) return 'Sangat Baik';
+                if(wave >= 10 && score >= 20000) return 'Baik';
+                if(wave >= 5  && score >= 5000)  return 'Cukup';
+                return 'Perlu Bimbingan';
+            }
+            if(ch >= 3 && score >= 70000) return 'Sangat Baik';
+            if(ch >= 3 && score >= 40000) return 'Baik';
+            if(ch >= 2 && score >= 10000) return 'Cukup';
+            if(ch >= 1)                   return 'Perlu Bimbingan';
+            return 'Belum Dinilai';
+        };
+
+        const purityLabel = (purity) => {
+            const p = purity || 0;
+            if(p >= 80) return 'Sangat Murni';
+            if(p >= 50) return 'Murni';
+            if(p >= 20) return 'Tercemar';
+            return 'Kritis';
+        };
+
+        // Analisis materi per chapter dari quizStats
+        // Materi per chapter:
+        // Ch1 = Dasar Keamanan Jaringan (DDoS, Phishing, Malware, Firewall, dll)
+        // Ch2 = Pertahanan Firewall (Firewall Config, IDS, DMZ, dll)
+        // Ch3 = Forensik Digital (Keylogger, Write Blocker, Hash, dll)
+        // Ch4 = Incident Response & Pemulihan (CSIRT, VPN, SOC, SIEM, dll)
+        const materiPaham = (d) => {
+            const qs = d.quizStats;
+            if(!qs) return 'Data tidak tersedia (main lebih dulu)';
+            const hasil = [];
+            const cek = (key, nama) => {
+                const s = qs[key];
+                if(!s || s.total === 0) return;
+                const pct = Math.round(s.benar / s.total * 100);
+                if(pct >= 70) hasil.push(nama + ' (' + pct + '% benar)');
+            };
+            cek('ch1', 'Dasar Keamanan Jaringan');
+            cek('ch2', 'Pertahanan Firewall');
+            cek('ch3', 'Forensik Digital');
+            cek('ch4', 'Incident Response & Pemulihan');
+            if(d.mode === 'survival') cek('survival', 'Survival Quiz');
+            return hasil.length > 0 ? hasil.join(' | ') : 'Belum ada data';
+        };
+
+        const materiTidakPaham = (d) => {
+            const qs = d.quizStats;
+            if(!qs) return 'Data tidak tersedia (main lebih dulu)';
+            const hasil = [];
+            const cek = (key, nama) => {
+                const s = qs[key];
+                if(!s || s.total === 0) return;
+                const pct = Math.round(s.benar / s.total * 100);
+                if(pct < 70) hasil.push(nama + ' (' + pct + '% benar)');
+            };
+            cek('ch1', 'Dasar Keamanan Jaringan');
+            cek('ch2', 'Pertahanan Firewall');
+            cek('ch3', 'Forensik Digital');
+            cek('ch4', 'Incident Response & Pemulihan');
+            if(d.mode === 'survival') cek('survival', 'Survival Quiz');
+            return hasil.length > 0 ? hasil.join(' | ') : 'Semua materi dipahami';
+        };
+
+        const skorPerMateri = (d) => {
+            const qs = d.quizStats;
+            if(!qs) return '-';
+            const parts = [];
+            const fmt = (key, singkat) => {
+                const s = qs[key];
+                if(!s || s.total === 0) return;
+                parts.push(singkat+': '+s.benar+'/'+s.total);
+            };
+            fmt('ch1','Ch1'); fmt('ch2','Ch2'); fmt('ch3','Ch3'); fmt('ch4','Ch4');
+            if(d.mode === 'survival') fmt('survival','Surv');
+            return parts.length > 0 ? parts.join(' | ') : '-';
+        };
+
+        // === BUILD CSV ===
+        let scopeLabel = 'Nasional';
+        if(filterType !== 'all' && subVal) scopeLabel = subVal;
+        const mode = this.leaderboardMode === 'survival' ? 'SURVIVAL' : 'STORY';
+        const now = new Date();
+        const dateStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+        const sep = ',';
+        let csv = '\uFEFF';
+        csv += 'LAPORAN HASIL TOYA GUARDIANS - '+mode+' MODE\n';
+        csv += 'Lingkup: '+scopeLabel+' | Tanggal Export: '+dateStr+'\n';
+        csv += 'Total Peserta: '+allData.length+'\n\n';
+
+        if(this.leaderboardMode === 'survival') {
+            csv += ['No','Nama','Sekolah','Provinsi','Kota/Kab','Kecamatan','Skor','Wave Tertinggi',
+                    'Soal Benar/Total','Indikator Pemahaman','Materi Dipahami','Materi Perlu Diulang'].join(sep)+'\n';
+            allData.forEach((d,i) => {
+                csv += [
+                    i+1,
+                    '"'+(d.name||'')+'"',
+                    '"'+(d.school||'-')+'"',
+                    '"'+(d.prov||'-')+'"',
+                    '"'+(d.city||'-')+'"',
+                    '"'+(d.district||'-')+'"',
+                    d.score||0,
+                    d.wave||0,
+                    '"'+skorPerMateri(d)+'"',
+                    '"'+pemahamanLabel(d)+'"',
+                    '"'+materiPaham(d)+'"',
+                    '"'+materiTidakPaham(d)+'"'
+                ].join(sep)+'\n';
+            });
+        } else {
+            csv += ['No','Nama','Sekolah','Provinsi','Kota/Kab','Kecamatan','Skor',
+                    'Chapter Dicapai','Toya Purity (%)','Soal Benar per Materi',
+                    'Indikator Pemahaman','Ket. Purity',
+                    'Materi Dipahami (>=70%)','Materi Perlu Diulang (<70%)'].join(sep)+'\n';
+            allData.forEach((d,i) => {
+                csv += [
+                    i+1,
+                    '"'+(d.name||'')+'"',
+                    '"'+(d.school||'-')+'"',
+                    '"'+(d.prov||'-')+'"',
+                    '"'+(d.city||'-')+'"',
+                    '"'+(d.district||'-')+'"',
+                    d.score||0,
+                    '"'+chapterLabel(d)+'"',
+                    d.toyaPurity||0,
+                    '"'+skorPerMateri(d)+'"',
+                    '"'+pemahamanLabel(d)+'"',
+                    '"'+purityLabel(d.toyaPurity)+'"',
+                    '"'+materiPaham(d)+'"',
+                    '"'+materiTidakPaham(d)+'"'
+                ].join(sep)+'\n';
+            });
+        }
+
+        // === RINGKASAN STATISTIK ===
+        const total = allData.length;
+        const pct = (n) => total ? Math.round(n/total*100)+'%' : '0%';
+        csv += '\nRINGKASAN STATISTIK\n';
+
+        if(this.leaderboardMode === 'story') {
+            const selesai    = allData.filter(d => (d.chapter||0) >= 3).length;
+            const ch2        = allData.filter(d => (d.chapter||0) === 2).length;
+            const ch1        = allData.filter(d => (d.chapter||0) === 1).length;
+            const belum      = allData.filter(d => !d.chapter || d.chapter === 0).length;
+            const avgScore   = total ? Math.round(allData.reduce((a,b)=>a+(b.score||0),0)/total) : 0;
+            const sangatBaik = allData.filter(d => pemahamanLabel(d) === 'Sangat Baik').length;
+            const baik       = allData.filter(d => pemahamanLabel(d) === 'Baik').length;
+            const cukup      = allData.filter(d => pemahamanLabel(d) === 'Cukup').length;
+            const perlu      = allData.filter(d => pemahamanLabel(d) === 'Perlu Bimbingan').length;
+
+            csv += 'Total Peserta,'+total+'\n';
+            csv += 'Rata-rata Skor,'+avgScore+'\n\n';
+
+            csv += 'PROGRES CHAPTER\n';
+            csv += 'Selesai (Chapter 3),'+selesai+','+pct(selesai)+'\n';
+            csv += 'Sampai Chapter 2,'+ch2+','+pct(ch2)+'\n';
+            csv += 'Sampai Chapter 1,'+ch1+','+pct(ch1)+'\n';
+            csv += 'Belum Mulai,'+belum+','+pct(belum)+'\n\n';
+
+            csv += 'INDIKATOR PEMAHAMAN MATERI\n';
+            csv += 'Sangat Baik,'+sangatBaik+','+pct(sangatBaik)+'\n';
+            csv += 'Baik,'+baik+','+pct(baik)+'\n';
+            csv += 'Cukup,'+cukup+','+pct(cukup)+'\n';
+            csv += 'Perlu Bimbingan,'+perlu+','+pct(perlu)+'\n\n';
+
+            // Rata-rata nilai per materi (dari semua player yang punya data)
+            const calcAvgMateri = (key) => {
+                const withData = allData.filter(d => d.quizStats && d.quizStats[key] && d.quizStats[key].total > 0);
+                if(withData.length === 0) return '-';
+                const avg = withData.reduce((a,d) => a + Math.round(d.quizStats[key].benar/d.quizStats[key].total*100), 0) / withData.length;
+                return Math.round(avg)+'% ('+withData.length+' siswa)';
+            };
+            csv += 'RATA-RATA NILAI PER MATERI\n';
+            csv += 'Dasar Keamanan Jaringan (Ch1),'+calcAvgMateri('ch1')+'\n';
+            csv += 'Pertahanan Firewall (Ch2),'+calcAvgMateri('ch2')+'\n';
+            csv += 'Forensik Digital (Ch3),'+calcAvgMateri('ch3')+'\n';
+
+        } else {
+            const avgWave  = total ? Math.round(allData.reduce((a,b)=>a+(b.wave||0),0)/total) : 0;
+            const avgScore = total ? Math.round(allData.reduce((a,b)=>a+(b.score||0),0)/total) : 0;
+            csv += 'Total Peserta,'+total+'\nRata-rata Skor,'+avgScore+'\nRata-rata Wave,'+avgWave+'\n';
+            const calcAvgSurv = () => {
+                const withData = allData.filter(d => d.quizStats && d.quizStats.survival && d.quizStats.survival.total > 0);
+                if(withData.length === 0) return '-';
+                const avg = withData.reduce((a,d) => a + Math.round(d.quizStats.survival.benar/d.quizStats.survival.total*100), 0) / withData.length;
+                return Math.round(avg)+'% ('+withData.length+' siswa)';
+            };
+            csv += 'Rata-rata Quiz Survival,'+calcAvgSurv()+'\n';
+        }
+
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ToyaGuardians_'+mode+'_'+scopeLabel+'_'+dateStr+'.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    // ===== END EXPORT =====
+
     loop(timestamp) {
         const dt = timestamp - (this.lastTime || timestamp); this.lastTime = timestamp;
 
@@ -4460,6 +5082,10 @@ class GameApp {
             else if(this.state === AppState.GAME_CH3_QUIZ || this.state === AppState.GAME_CH3_IR || this.state === AppState.GAME_FORENSIC) bgKey = 'bg_rtraining';
             // -----------------------------------------------
 
+            // --- CHAPTER 4 BACKGROUNDS ---
+            else if(this.state === AppState.GAME_CH4) bgKey = 'bg_server';
+            else if(this.state === AppState.GAME_CH4_QUIZ) bgKey = 'bg_monitor';
+
             else if(this.state === AppState.ENDING_CINEMATIC || this.state === AppState.CREDITS) bgKey = 'bg_title'; // BG untuk ending/credits
             
             // --- SURVIVAL BACKGROUND LOGIC ---
@@ -4473,11 +5099,13 @@ class GameApp {
             let bg = this.imgs[bgKey];
             // Khusus Bomberman, BG digambar sendiri oleh method draw-nya (untuk lantai spesifik)
             // Tapi untuk amannya kita tidak gambar BG global di sini jika bomberman aktif
-            if(this.state !== AppState.GAME_CH3_BOMBER && bg && bg.complete && bg.naturalWidth > 0 && this.state !== AppState.ENDING_CINEMATIC) {
+            // Sama untuk Chapter 4 IR Defense yang menggambar BG-nya sendiri
+            const skipGlobalBG = this.state === AppState.GAME_CH3_BOMBER || this.state === AppState.GAME_CH4;
+            if(!skipGlobalBG && bg && bg.complete && bg.naturalWidth > 0 && this.state !== AppState.ENDING_CINEMATIC) {
                 // Jangan gambar BG default di Cinematic karena dia gambar sendiri
                 ctx.drawImage(bg, 0, 0, 800, 600); 
             } 
-            else if (this.state !== AppState.ENDING_CINEMATIC && this.state !== AppState.GAME_CH3_BOMBER) { 
+            else if (this.state !== AppState.ENDING_CINEMATIC && !skipGlobalBG) { 
                 ctx.fillStyle='#050A14'; ctx.fillRect(0,0,800,600); 
             }
 
@@ -4529,6 +5157,9 @@ class ChapterSurvival {
         };
 
         this.quizTriggerWave = 3; 
+        
+        // Anti-repeat soal: track indeks soal yang sudah pernah keluar
+        this.usedQuestionIndices = [];
         
         // --- UI ADJUSTMENTS: HIDE UNUSED HUD ELEMENTS ---
         // Sembunyikan Timer & Purity bawaan HTML karena tidak dipakai di survival
@@ -4582,6 +5213,10 @@ class ChapterSurvival {
             🧱 <strong>Firewall</strong>: Memperlambat semua musuh<br>
             🛡️ <strong>Enkripsi</strong>: Kebal sementara dari serangan<br>
             ☢️ <strong>Antivirus</strong>: Hancurkan seluruh layar!<br>
+            ❤️ <strong>+15 HP</strong>: Pulihkan nyawa (drop jarang)<br><br>
+            <strong>📋 QUIZ BONUS (tiap wave baru):</strong><br>
+            ✅ Benar = Power-Up + 200 Skor<br>
+            ❌ Salah = -15 HP — jadi belajar dulu!
             </div>`,
             () => { this.active = true; }
         );
@@ -4599,11 +5234,13 @@ class ChapterSurvival {
     }
 
     getWaveConfig() {
-        if(this.wave <= 5) return { spd: 0.8, hp: 2, spawn: 2000, ai: 'straight' }; 
-        if(this.wave <= 10) return { spd: 1.0, hp: 3, spawn: 1500, ai: 'zigzag_light' }; 
-        if(this.wave <= 15) return { spd: 1.3, hp: 4, spawn: 1200, ai: 'zigzag_hard' }; 
-        if(this.wave <= 20) return { spd: 1.6, hp: 5, spawn: 1000, ai: 'track' }; 
-        return { spd: 1.8 + ((this.wave-20)*0.1), hp: 6 + Math.floor((this.wave-20)/5), spawn: 800, ai: 'mixed' }; 
+        // Spawn rate makin cepat seiring wave naik, tapi dibatasi minimal 500ms
+        const baseSpawn = Math.max(500, 2000 - (this.wave * 60));
+        if(this.wave <= 5)  return { spd: 0.8, hp: 2, spawn: baseSpawn, ai: 'straight' }; 
+        if(this.wave <= 10) return { spd: 1.0, hp: 3, spawn: baseSpawn, ai: 'zigzag_light' }; 
+        if(this.wave <= 15) return { spd: 1.3, hp: 4, spawn: baseSpawn, ai: 'zigzag_hard' }; 
+        if(this.wave <= 20) return { spd: 1.6, hp: 5, spawn: baseSpawn, ai: 'track' }; 
+        return { spd: 1.8 + ((this.wave-20)*0.1), hp: 6 + Math.floor((this.wave-20)/5), spawn: baseSpawn, ai: 'mixed' }; 
     }
 
     spawnEnemy() {
@@ -4627,6 +5264,11 @@ class ChapterSurvival {
     }
 
     dropPowerUp(x, y) {
+        // HP Recovery: 5% chance terpisah
+        if(Math.random() < 0.05 && this.hp < this.maxHp) {
+            this.powerups.push({ x, y, vy: 2, type: 'hp_recovery', icon: 'icon_ssh', name: "+15 HP" });
+            return;
+        }
         if(Math.random() < 0.10) {
             const types = [
                 { type: 'firewall_boost', icon: 'icon_firewall', name: "FIREWALL" },
@@ -4640,7 +5282,7 @@ class ChapterSurvival {
 
     activatePowerUp(type) {
         AudioMgr.playSFX('sfx-correct');
-        spawnFloatingScore(type.replace('_', ' ').toUpperCase() + "!");
+        spawnFloatingScore(type === 'hp_recovery' ? '+15 HP!' : type.replace('_', ' ').toUpperCase() + "!");
         
         if(type === 'firewall_boost') {
             this.effects.slow = 300; 
@@ -4654,6 +5296,9 @@ class ChapterSurvival {
             });
             this.enemies = [];
             this.game.screenShake = 20;
+        } else if (type === 'hp_recovery') {
+            this.hp = Math.min(this.maxHp, this.hp + 15);
+            this.game.screenShake = 5;
         }
     }
 
@@ -4662,8 +5307,16 @@ class ChapterSurvival {
         this.isShooting = false;
         this.game.state = AppState.GAME_SURVIVAL_QUIZ;
         
+        // Anti-repeat: ambil soal yang belum pernah keluar
         const questionBank = [...BANK_SOAL_CH1, ...BANK_SOAL_CH2, ...BANK_SOAL_CH3];
-        const q = questionBank[Math.floor(Math.random() * questionBank.length)];
+        if(this.usedQuestionIndices.length >= questionBank.length) {
+            this.usedQuestionIndices = []; // Reset jika semua soal sudah keluar
+        }
+        let idx;
+        do { idx = Math.floor(Math.random() * questionBank.length); }
+        while(this.usedQuestionIndices.includes(idx));
+        this.usedQuestionIndices.push(idx);
+        const q = questionBank[idx];
         
         this.game.switchScreen('screen-quiz');
         document.getElementById('quiz-title-text').innerText = "BONUS WAVE QUIZ";
@@ -4671,6 +5324,12 @@ class ChapterSurvival {
         document.getElementById('quiz-question-text').innerText = q.q;
         document.getElementById('quiz-code-display').style.display = 'none'; 
         document.getElementById('quiz-feedback').innerText = "";
+        
+        // Tampilkan info taruhan
+        const feedbackEl = document.getElementById('quiz-feedback');
+        feedbackEl.innerText = "✅ Benar = Power-Up + 200 Skor  |  ❌ Salah = -15 HP";
+        feedbackEl.style.color = "#FFD700";
+        feedbackEl.style.fontSize = "0.75rem";
         
         const optionsContainer = document.getElementById('quiz-options-container'); 
         optionsContainer.innerHTML = '';
@@ -4684,18 +5343,34 @@ class ChapterSurvival {
             btn.onclick = () => {
                 document.querySelectorAll('.quiz-option-btn').forEach(b => b.disabled = true);
                 
+                // Tracking stats survival
+                const qs = this.game.player.quizStats;
+                if(!qs.survival) qs.survival = {benar:0, total:0};
+                qs.survival.total++;
+                if(opt.correct) qs.survival.benar++;
+
                 if(opt.correct) {
                     AudioMgr.playSFX('sfx-correct');
                     btn.style.background = 'var(--success-green)';
-                    showMessage("JAWABAN BENAR!", "Pengetahuanmu tentang keamanan jaringan mengaktifkan Power-Up! Pengetahuan adalah senjata terkuat seorang Guardian.", () => {
-                        this.activatePowerUp(['firewall_boost', 'encryption_shield', 'antivirus_nuke'][Math.floor(Math.random()*3)]);
+                    this.game.addScore(200);
+                    const powerType = ['firewall_boost', 'encryption_shield', 'antivirus_nuke'][Math.floor(Math.random()*3)];
+                    showMessage("🎉 JAWABAN BENAR! +200 Skor", `Pengetahuanmu mengaktifkan <strong>${powerType.replace('_',' ').toUpperCase()}</strong>! Pertahanan makin kuat!`, () => {
+                        this.activatePowerUp(powerType);
                         this.resumeGame();
                     });
                 } else {
                     AudioMgr.playSFX('sfx-wrong');
                     btn.style.background = 'var(--danger-red)';
-                    showMessage("BELUM TEPAT", "Tidak ada penalti — tapi pelajari jawaban yang benar agar kamu semakin kuat! Lanjutkan pertahanan!", () => {
-                        this.resumeGame();
+                    // Penalti: -15 HP
+                    this.hp = Math.max(0, this.hp - 15);
+                    const explanation = opt.explanation || `Jawaban yang benar bukan ini. Pelajari lagi!`;
+                    showMessage("❌ KURANG TEPAT! -15 HP", explanation, () => {
+                        if(this.hp <= 0) {
+                            this.isGameOver = true;
+                            this.game.triggerGameOver();
+                        } else {
+                            this.resumeGame();
+                        }
                     });
                 }
             };
@@ -4977,15 +5652,23 @@ class ChapterSurvival {
             const icon = this.game.imgs[p.icon];
             const yOffset = Math.sin(Date.now() / 200) * 5;
             
-            // Gambar Icon
-            if(icon && icon.complete) {
+            // HP Recovery: gambar lingkaran hijau berkilau
+            if(p.type === 'hp_recovery') {
+                ctx.save();
+                ctx.shadowColor = "#00FF88"; ctx.shadowBlur = 20;
+                ctx.fillStyle = "#00FF88";
+                ctx.beginPath(); ctx.arc(p.x, p.y + yOffset, 18, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = "white"; ctx.font = "bold 16px Orbitron"; ctx.textAlign = "center";
+                ctx.fillText("♥", p.x, p.y + 6 + yOffset);
+                ctx.shadowBlur = 0; ctx.restore();
+            } else if(icon && icon.complete) {
                 ctx.drawImage(icon, p.x - 20, p.y - 20 + yOffset, 40, 40);
             } else {
                 ctx.fillStyle = "gold"; ctx.beginPath(); ctx.arc(p.x, p.y, 15, 0, Math.PI*2); ctx.fill();
             }
             
             // Gambar Nama Item
-            ctx.fillStyle = "#FFFFFF"; 
+            ctx.fillStyle = p.type === 'hp_recovery' ? "#00FF88" : "#FFFFFF"; 
             ctx.font = "bold 12px Orbitron"; 
             ctx.textAlign = "center";
             ctx.shadowColor = "black"; ctx.shadowBlur = 4;
@@ -5978,6 +6661,15 @@ class ChapterQuiz {
         this.onComplete = onComplete; 
         this.currentPhase = 0; 
         
+        // Tentukan chapter key untuk tracking stats
+        const state = game.state;
+        const AppS = AppState;
+        if(state === AppS.GAME_CH1 || state === AppS.BRIDGE_CH1) this.chapterKey = 'ch1';
+        else if(state === AppS.GAME_CH2 || state === AppS.GAME_CH2_QUIZ || state === AppS.GAME_CH2_CONFIG) this.chapterKey = 'ch2';
+        else if(state === AppS.GAME_CH3 || state === AppS.GAME_CH3_QUIZ || state === AppS.GAME_FORENSIC) this.chapterKey = 'ch3';
+        else if(state === AppS.GAME_CH4 || state === AppS.GAME_CH4_QUIZ) this.chapterKey = 'ch4';
+        else this.chapterKey = 'ch1'; // default
+        
         // Acak 5 soal
         this.activeQuestions = shuffleArray([...questionBank]).slice(0, 5);
         this.generatedCode = fixedCode || Array(5).fill(0).map(() => Math.floor(Math.random() * 10)); 
@@ -6097,6 +6789,15 @@ class ChapterQuiz {
 
         const isCorrect = selectedOption.correct;
         
+        // === TRACKING STATS PER CHAPTER ===
+        // Hanya catat attempt pertama (bukan retry)
+        if(this.attemptCount === 0) {
+            const qs = this.game.player.quizStats;
+            if(!qs[this.chapterKey]) qs[this.chapterKey] = {benar:0, total:0};
+            qs[this.chapterKey].total++;
+            if(isCorrect) qs[this.chapterKey].benar++;
+        }
+        
         const feedback = document.getElementById('quiz-feedback');
 
         if(isCorrect) {
@@ -6177,6 +6878,16 @@ class ChapterQuiz {
                 lockEl.innerText = '🔓';
                 lockEl.style.color = "#00FF88";
                 lockEl.classList.add('unlocked');
+            }
+            // Update IR Protocol icons (CH4)
+            const irEl = document.getElementById(`ir-${idx}`);
+            if (irEl) {
+                const icons = ['🛡️','🔐','⚡','🔄','✅'];
+                irEl.innerText = icons[idx] || '✅';
+                irEl.style.filter = "drop-shadow(0 0 8px #00FF88)";
+                irEl.style.transform = "scale(1.2)";
+                irEl.style.transition = "transform 0.3s";
+                setTimeout(() => { if(irEl) irEl.style.transform = "scale(1)"; }, 300);
             }
         }
     }
@@ -7314,6 +8025,367 @@ class Chapter3Bomber {
     }
 }
 
+
+// =====================================================================
+// CHAPTER 4 — INCIDENT RESPONSE DEFENSE MINI-GAME
+// Gameplay: Node-tapping — tekan node merah terinfeksi sebelum timer habis
+// Menggunakan aset yang sudah ada: bg_server, bg_monitor, virus, rex
+// =====================================================================
+class ChapterIRDefense {
+    constructor(game) {
+        this.game = game;
+        this.active = false;
+        this.isGameOver = false;
+
+        // Canvas & scaling
+        this.nodes = [];
+        this.particles = [];
+        this.timer = 0;
+        this.gameTime = 45; // 45 detik
+        this.score = 0;
+        this.targetScore = 12; // 12 node berhasil ditekan
+        this.neutralized = 0;
+        this.missed = 0;
+        this.missedLimit = 5;
+        this.spawnTimer = 0;
+        this.spawnInterval = 2200;
+        this.phase = 1; // fase kesulitan
+        this.won = false;
+        this.flashTimer = 0;
+        this.warningShown = false;
+
+        // Tutorial popup dulu
+        setTimeout(() => {
+            showMessage(
+                "🚨 ISOLASI ANCAMAN — INCIDENT RESPONSE",
+                `<div style='text-align:left; font-size:1rem; line-height:1.7;'>
+                Malware aktif menyebar ke node-node server!<br><br>
+                <strong>🎮 CARA BERMAIN:</strong><br>
+                🖱️ <strong>KLIK / TAP</strong> node merah berkedip untuk menetralisirnya<br>
+                ⏰ Node yang tidak ditekan akan menyebar — jangan biarkan lebih dari <strong>${this.missedLimit} node lolos!</strong><br><br>
+                <strong>💡 TIPS:</strong> Node berdenyut makin cepat = makin mendesak!<br>
+                <strong>🎯 Netralkan ${this.targetScore} node untuk mengamankan sistem!</strong>
+                </div>`,
+                () => { this.active = true; }
+            );
+        }, 400);
+
+        // Input handler
+        this.handleClick = (e) => {
+            if (!this.active || this.isGameOver) return;
+            const pos = getGamePos(e);
+            for (let i = this.nodes.length - 1; i >= 0; i--) {
+                const n = this.nodes[i];
+                if (Math.hypot(pos.x - n.x, pos.y - n.y) < n.radius + 10) {
+                    // Hit!
+                    this.neutralized++;
+                    this.game.addScore(80 + Math.floor((1 - n.life / n.maxLife) * 40));
+                    this.game.gameStats.totalKills++;
+                    AudioMgr.playSFX('sfx-correct');
+                    this.spawnBurst(n.x, n.y, '#00FF88');
+                    this.nodes.splice(i, 1);
+                    this.flashTimer = 8;
+                    this.game.updatePurityDisplay(this.game.player.toyaPurity + 2);
+                    if (this.neutralized >= this.targetScore && !this.won) {
+                        this.won = true;
+                        this.active = false;
+                        this.cleanup();
+                        showMessage(
+                            "✅ SEMUA ANCAMAN TERISOLASI!",
+                            "Sistem jaringan berhasil diamankan. Malware tidak dapat lagi menyebar. Aktifkan protokol pemulihan lanjutan!",
+                            () => { this.game.startChapter4Quiz(); }
+                        );
+                    }
+                    return;
+                }
+            }
+        };
+
+        canvas.addEventListener('mousedown', this.handleClick);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (e.touches[0]) this.handleClick(e.touches[0]);
+        }, { passive: false });
+
+        // Show virtual joystick hint area (no joystick needed for tap game)
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
+    }
+
+    spawnNode() {
+        const W = canvas.width, H = canvas.height;
+        const margin = 80;
+        const x = margin + Math.random() * (W - margin * 2);
+        const y = 80 + Math.random() * (H - 180);
+        const lifeTime = Math.max(2500, 5000 - this.phase * 400);
+        this.nodes.push({
+            x, y,
+            radius: 28 + Math.random() * 14,
+            life: lifeTime,
+            maxLife: lifeTime,
+            pulse: Math.random() * Math.PI * 2
+        });
+    }
+
+    spawnBurst(x, y, color) {
+        for (let i = 0; i < 10; i++) {
+            const angle = (i / 10) * Math.PI * 2;
+            const spd = 2 + Math.random() * 4;
+            this.particles.push({
+                x, y,
+                vx: Math.cos(angle) * spd,
+                vy: Math.sin(angle) * spd,
+                life: 1.0,
+                color,
+                size: 4 + Math.random() * 4
+            });
+        }
+    }
+
+    update(dt) {
+        if (!this.active || this.isGameOver) return;
+
+        // Timer
+        this.timer += dt;
+        this.flashTimer = Math.max(0, this.flashTimer - 1);
+
+        // Spawn
+        this.spawnTimer += dt;
+        const curInterval = Math.max(1000, this.spawnInterval - this.phase * 200);
+        if (this.spawnTimer > curInterval && this.nodes.length < 6) {
+            this.spawnNode();
+            this.spawnTimer = 0;
+        }
+
+        // Phase escalation every 12 seconds
+        this.phase = 1 + Math.floor(this.timer / 12000);
+
+        // Update node lifetimes
+        for (let i = this.nodes.length - 1; i >= 0; i--) {
+            const n = this.nodes[i];
+            n.life -= dt;
+            n.pulse += 0.08 + (1 - n.life / n.maxLife) * 0.12;
+
+            if (n.life <= 0) {
+                // Node lolos — spread effect
+                this.missed++;
+                AudioMgr.playSFX('sfx-wrong');
+                this.spawnBurst(n.x, n.y, '#FF4444');
+                this.nodes.splice(i, 1);
+                this.game.addScore(-30);
+                this.game.updatePurityDisplay(this.game.player.toyaPurity - 5);
+                this.game.screenShake = 10;
+
+                if (this.missed >= this.missedLimit && !this.isGameOver) {
+                    this.isGameOver = true;
+                    this.active = false;
+                    this.cleanup();
+                    this.game.triggerGameOver();
+                }
+            }
+        }
+
+        // Particles
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+            const p = this.particles[i];
+            p.x += p.vx; p.y += p.vy;
+            p.life -= 0.04;
+            if (p.life <= 0) this.particles.splice(i, 1);
+        }
+
+        // Time limit check
+        if (this.timer >= this.gameTime * 1000 && !this.won && !this.isGameOver) {
+            this.isGameOver = true;
+            this.active = false;
+            this.cleanup();
+            this.game.triggerGameOver();
+        }
+    }
+
+    draw(ctx) {
+        const W = canvas.width, H = canvas.height;
+        const scaleX = W / 800, scaleY = H / 600;
+
+        // Background hint (reuse bg_server)
+        const bg = this.game.imgs.bg_server;
+        if (bg && bg.complete) {
+            ctx.globalAlpha = 0.35;
+            ctx.drawImage(bg, 0, 0, W, H);
+            ctx.globalAlpha = 1;
+        }
+
+        // Dark overlay
+        ctx.fillStyle = 'rgba(0, 5, 20, 0.7)';
+        ctx.fillRect(0, 0, W, H);
+
+        // Grid lines (network feel)
+        ctx.strokeStyle = 'rgba(0, 168, 255, 0.07)';
+        ctx.lineWidth = 1;
+        for (let gx = 0; gx < W; gx += 60) {
+            ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+        }
+        for (let gy = 0; gy < H; gy += 60) {
+            ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
+        }
+
+        // Draw connections between nodes (network topology feel)
+        ctx.strokeStyle = 'rgba(0, 217, 255, 0.12)';
+        ctx.lineWidth = 1;
+        for (let i = 0; i < this.nodes.length; i++) {
+            for (let j = i + 1; j < this.nodes.length; j++) {
+                const dist = Math.hypot(this.nodes[i].x - this.nodes[j].x, this.nodes[i].y - this.nodes[j].y);
+                if (dist < 200) {
+                    ctx.globalAlpha = (1 - dist / 200) * 0.4;
+                    ctx.beginPath();
+                    ctx.moveTo(this.nodes[i].x, this.nodes[i].y);
+                    ctx.lineTo(this.nodes[j].x, this.nodes[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        ctx.globalAlpha = 1;
+
+        // Draw nodes
+        this.nodes.forEach(n => {
+            const lifePct = n.life / n.maxLife;
+            const urgency = 1 - lifePct;
+            const pulseMag = 1 + Math.sin(n.pulse) * (0.08 + urgency * 0.15);
+
+            // Outer ring (danger aura)
+            ctx.save();
+            ctx.globalAlpha = 0.25 + urgency * 0.4;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, (n.radius + 18) * pulseMag, 0, Math.PI * 2);
+            const dangerGrad = ctx.createRadialGradient(n.x, n.y, n.radius, n.x, n.y, n.radius + 20);
+            dangerGrad.addColorStop(0, `rgba(255, ${Math.floor(100 * lifePct)}, 0, 0.8)`);
+            dangerGrad.addColorStop(1, 'rgba(255,0,0,0)');
+            ctx.fillStyle = dangerGrad;
+            ctx.fill();
+            ctx.restore();
+
+            // Node body
+            ctx.save();
+            ctx.shadowBlur = 20 + urgency * 20;
+            ctx.shadowColor = `rgb(255, ${Math.floor(180 * lifePct)}, 0)`;
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.radius * pulseMag, 0, Math.PI * 2);
+            const grad = ctx.createRadialGradient(n.x - n.radius * 0.3, n.y - n.radius * 0.3, 2, n.x, n.y, n.radius);
+            grad.addColorStop(0, `rgba(255, ${Math.floor(200 * lifePct)}, 50, 1)`);
+            grad.addColorStop(1, `rgba(180, 0, 0, 0.9)`);
+            ctx.fillStyle = grad;
+            ctx.fill();
+            ctx.strokeStyle = `rgba(255, ${Math.floor(150 * lifePct)}, 0, 0.9)`;
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.restore();
+
+            // Virus icon (reuse virus image, scaled down)
+            const virusImg = this.game.imgs.virus;
+            if (virusImg && virusImg.complete) {
+                ctx.save();
+                ctx.globalAlpha = 0.9;
+                const vsz = n.radius * 1.1;
+                ctx.drawImage(virusImg, n.x - vsz / 2, n.y - vsz / 2, vsz, vsz);
+                ctx.restore();
+            } else {
+                ctx.fillStyle = '#fff';
+                ctx.font = `bold ${Math.floor(n.radius * 0.8)}px Orbitron`;
+                ctx.textAlign = 'center';
+                ctx.fillText('⚠', n.x, n.y + n.radius * 0.3);
+            }
+
+            // Life bar ring (arc)
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, n.radius + 6, -Math.PI / 2, -Math.PI / 2 + lifePct * Math.PI * 2);
+            ctx.strokeStyle = lifePct > 0.5 ? '#00FF88' : lifePct > 0.25 ? '#FFD700' : '#FF4444';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.restore();
+
+            // Label
+            ctx.fillStyle = '#fff';
+            ctx.font = `bold ${Math.floor(10 * scaleX + 8)}px Orbitron`;
+            ctx.textAlign = 'center';
+            ctx.shadowBlur = 4;
+            ctx.shadowColor = '#000';
+            ctx.fillText('TAP!', n.x, n.y + n.radius + 18);
+            ctx.shadowBlur = 0;
+        });
+
+        // Particles
+        this.particles.forEach(p => {
+            ctx.globalAlpha = p.life;
+            ctx.fillStyle = p.color;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+
+        // HUD — top status bar
+        const timeLeft = Math.max(0, this.gameTime - this.timer / 1000);
+        const timeColor = timeLeft > 15 ? '#00FF88' : timeLeft > 8 ? '#FFD700' : '#FF4444';
+
+        // Header bar BG
+        ctx.fillStyle = 'rgba(0,0,0,0.75)';
+        ctx.fillRect(0, 0, W, 50 * scaleY);
+
+        // Neutralized count
+        ctx.fillStyle = '#00FF88';
+        ctx.font = `bold ${Math.floor(13 * scaleX + 5)}px Orbitron`;
+        ctx.textAlign = 'left';
+        ctx.fillText(`✅ TERALIHKAN: ${this.neutralized}/${this.targetScore}`, 20, 32 * scaleY);
+
+        // Timer
+        ctx.fillStyle = timeColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(`⏱ ${timeLeft.toFixed(1)}s`, W / 2, 32 * scaleY);
+
+        // Missed
+        const missedColor = this.missed >= this.missedLimit - 1 ? '#FF4444' : '#FF8888';
+        ctx.fillStyle = missedColor;
+        ctx.textAlign = 'right';
+        ctx.fillText(`❌ LOLOS: ${this.missed}/${this.missedLimit}`, W - 20, 32 * scaleY);
+
+        // Phase badge
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(W / 2 - 60, 52 * scaleY, 120, 20 * scaleY);
+        ctx.fillStyle = '#00D9FF';
+        ctx.font = `${Math.floor(9 * scaleX + 7)}px Rajdhani`;
+        ctx.textAlign = 'center';
+        ctx.fillText(`PHASE ${Math.min(this.phase, 4)} — ISOLASI AKTIF`, W / 2, 66 * scaleY);
+
+        // Progress bar
+        const progPct = this.neutralized / this.targetScore;
+        ctx.fillStyle = 'rgba(0,0,0,0.5)';
+        ctx.fillRect(20, H - 28 * scaleY, W - 40, 12 * scaleY);
+        const progGrad = ctx.createLinearGradient(20, 0, W - 40, 0);
+        progGrad.addColorStop(0, '#00FF88');
+        progGrad.addColorStop(1, '#00D9FF');
+        ctx.fillStyle = progGrad;
+        ctx.fillRect(20, H - 28 * scaleY, (W - 40) * progPct, 12 * scaleY);
+        ctx.strokeStyle = 'rgba(0,217,255,0.4)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(20, H - 28 * scaleY, W - 40, 12 * scaleY);
+
+        // Flash hit feedback
+        if (this.flashTimer > 0) {
+            ctx.fillStyle = `rgba(0, 255, 136, ${this.flashTimer / 8 * 0.15})`;
+            ctx.fillRect(0, 0, W, H);
+        }
+
+        ctx.textAlign = 'left';
+    }
+
+    cleanup() {
+        canvas.removeEventListener('mousedown', this.handleClick);
+        canvas.removeEventListener('touchstart', this.handleClick);
+        if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
+    }
+}
 
 // ... [CLASS BOSS BATTLE TETAP SAMA] ...
 // --- NEW CLASS: CHAPTER BOSS BATTLE (REAL-TIME ARPG STYLE) ---
