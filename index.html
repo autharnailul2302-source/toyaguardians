@@ -95,24 +95,24 @@
         #energy-ring-container {
             position: relative;
             display: flex; justify-content: center; align-items: center;
-            width: 310px; height: 310px;
+            width: min(310px, 82vw); height: min(310px, 82vw);
             margin-bottom: -10px;
         }
         @media (max-height: 600px) {
-            #energy-ring-container { width: 300px; height: 300px; }
-            .energy-ring-1 { width: 290px !important; height: 290px !important; }
-            .energy-ring-2 { width: 265px !important; height: 265px !important; }
-            .energy-ring-3 { width: 235px !important; height: 235px !important; }
-            #logo-img { max-width: 240px !important; max-height: 240px !important; }
+            #energy-ring-container { width: min(280px, 78vw) !important; height: min(280px, 78vw) !important; }
+            .energy-ring-1 { width: min(268px, 74vw) !important; height: min(268px, 74vw) !important; }
+            .energy-ring-2 { width: min(244px, 67vw) !important; height: min(244px, 67vw) !important; }
+            .energy-ring-3 { width: min(218px, 60vw) !important; height: min(218px, 60vw) !important; }
+            #logo-img { max-width: min(230px, 70vw) !important; max-height: min(230px, 70vw) !important; }
             #subtitle-img { max-height: 90px !important; }
         }
         
-        /* --- UPDATE: UKURAN PRESISI (Sedikit dikurangi dari 320 ke 290 agar muat nyaman dengan tombol) --- */
+        /* --- RESPONSIVE LOGO: tidak pernah terpotong di layar sempit --- */
         #logo-img { 
             width: auto; 
             height: auto; 
-            max-width: 500px; 
-            max-height: 500px; /* Hanya logo TOYA GUARDIANS yang diperbesar */
+            max-width: min(300px, 78vw);
+            max-height: min(300px, 78vw);
             display: block; 
             object-fit: contain; 
             animation: glitchLogo 3s ease-in-out infinite !important;
@@ -149,12 +149,7 @@
         }
 
         /* Ring energi berputar di sekitar logo */
-        #energy-ring-container {
-            position: relative;
-            display: flex; justify-content: center; align-items: center;
-            width: 380px; height: 380px;
-            margin-bottom: -20px;
-        }
+        /* (sizing ditangani oleh definisi di atas dengan min() responsive) */
         .energy-ring {
             position: absolute;
             border-radius: 50%;
@@ -162,21 +157,21 @@
             animation: spinRing linear infinite;
         }
         .energy-ring-1 {
-            width: 360px; height: 360px;
+            width: min(310px, 82vw); height: min(310px, 82vw);
             border-top-color: var(--tech-cyan);
             border-right-color: var(--tech-cyan);
             box-shadow: 0 0 18px var(--tech-cyan), inset 0 0 18px rgba(0,217,255,0.1);
             animation-duration: 3s;
         }
         .energy-ring-2 {
-            width: 330px; height: 330px;
+            width: min(284px, 75vw); height: min(284px, 75vw);
             border-bottom-color: var(--accent-gold);
             border-left-color: var(--accent-gold);
             box-shadow: 0 0 14px var(--accent-gold), inset 0 0 14px rgba(255,215,0,0.08);
             animation-duration: 2s; animation-direction: reverse;
         }
         .energy-ring-3 {
-            width: 300px; height: 300px;
+            width: min(258px, 68vw); height: min(258px, 68vw);
             border-top-color: rgba(0,168,255,0.5);
             border-right-color: rgba(0,168,255,0.5);
             animation-duration: 4.5s;
