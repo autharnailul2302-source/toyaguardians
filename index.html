@@ -95,24 +95,25 @@
         #energy-ring-container {
             position: relative;
             display: flex; justify-content: center; align-items: center;
-            width: min(310px, 82vw); height: min(310px, 82vw);
+            width: min(260px, 65vw); height: min(260px, 65vw);
             margin-bottom: -10px;
+            overflow: visible;
         }
         @media (max-height: 600px) {
-            #energy-ring-container { width: min(280px, 78vw) !important; height: min(280px, 78vw) !important; }
-            .energy-ring-1 { width: min(268px, 74vw) !important; height: min(268px, 74vw) !important; }
-            .energy-ring-2 { width: min(244px, 67vw) !important; height: min(244px, 67vw) !important; }
-            .energy-ring-3 { width: min(218px, 60vw) !important; height: min(218px, 60vw) !important; }
-            #logo-img { max-width: min(230px, 70vw) !important; max-height: min(230px, 70vw) !important; }
+            #energy-ring-container { width: min(200px, 55vw) !important; height: min(200px, 55vw) !important; }
+            .energy-ring-1 { width: min(200px, 55vw) !important; height: min(200px, 55vw) !important; }
+            .energy-ring-2 { width: min(178px, 50vw) !important; height: min(178px, 50vw) !important; }
+            .energy-ring-3 { width: min(156px, 44vw) !important; height: min(156px, 44vw) !important; }
+            #logo-img { width: min(360px, 88vw) !important; height: min(360px, 88vw) !important; max-width: min(360px, 88vw) !important; max-height: min(360px, 88vw) !important; }
             #subtitle-img { max-height: 90px !important; }
         }
         
         /* --- RESPONSIVE LOGO: tidak pernah terpotong di layar sempit --- */
         #logo-img { 
-            width: auto; 
-            height: auto; 
-            max-width: min(300px, 78vw);
-            max-height: min(300px, 78vw);
+            width: min(450px, 90vw);
+            height: min(450px, 90vw);
+            max-width: min(450px, 90vw);
+            max-height: min(450px, 90vw);
             display: block; 
             object-fit: contain; 
             animation: glitchLogo 3s ease-in-out infinite !important;
@@ -157,21 +158,21 @@
             animation: spinRing linear infinite;
         }
         .energy-ring-1 {
-            width: min(310px, 82vw); height: min(310px, 82vw);
+            width: min(260px, 65vw); height: min(260px, 65vw);
             border-top-color: var(--tech-cyan);
             border-right-color: var(--tech-cyan);
             box-shadow: 0 0 18px var(--tech-cyan), inset 0 0 18px rgba(0,217,255,0.1);
             animation-duration: 3s;
         }
         .energy-ring-2 {
-            width: min(284px, 75vw); height: min(284px, 75vw);
+            width: min(235px, 59vw); height: min(235px, 59vw);
             border-bottom-color: var(--accent-gold);
             border-left-color: var(--accent-gold);
             box-shadow: 0 0 14px var(--accent-gold), inset 0 0 14px rgba(255,215,0,0.08);
             animation-duration: 2s; animation-direction: reverse;
         }
         .energy-ring-3 {
-            width: min(258px, 68vw); height: min(258px, 68vw);
+            width: min(210px, 53vw); height: min(210px, 53vw);
             border-top-color: rgba(0,168,255,0.5);
             border-right-color: rgba(0,168,255,0.5);
             animation-duration: 4.5s;
@@ -195,6 +196,10 @@
             100% { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)) drop-shadow(0 0 60px rgba(0,217,255,0.5)); transform: translateY(0px) translateX(0px); }
         }
         #logo-img {
+            width: min(450px, 90vw);
+            height: min(450px, 90vw);
+            max-width: min(450px, 90vw);
+            max-height: min(450px, 90vw);
             animation: glitchLogo 3s ease-in-out infinite !important;
         }
 
@@ -1710,8 +1715,8 @@
     </div>
 
     <div id="screen-char" class="ui-screen">
-        <div class="panel" style="max-width: 600px;">
-            <h2 style="text-align:center; color:var(--tech-cyan);">PILIH AVATAR</h2>
+        <div class="panel" style="max-width: 600px; position: relative;">
+            <h2 style="text-align:center; color:var(--tech-cyan); margin-top: 0;">PILIH AVATAR</h2>
             <div class="char-grid">
                 <div class="char-card selected" id="char-1" onclick="app.selectChar(1)">
                     <img src="images/hero_male.png"><div style="font-size:0.8rem; margin-top:8px; font-weight:bold;">TECH BOY</div>
@@ -1725,6 +1730,10 @@
             </div>
             <!-- FIXED: Button now goes to Mode Select instead of directly to Story -->
             <button class="btn-ml" onclick="app.goToModeSelect()">LANJUT KE MISI</button>
+            <!-- BACK BUTTON -->
+            <button class="btn-ml" onclick="app.switchScreen('screen-title')" style="background: transparent; border-color: #445; color: #aaa; box-shadow: none; margin-top: 8px; font-size: 0.85rem; padding: 9px;">
+                ◀ KEMBALI KE MENU UTAMA
+            </button>
         </div>
     </div>
 
@@ -1808,7 +1817,7 @@
                 </table>
             </div>
             <button class="btn-ml btn-anim" style="background:#002244; margin-top:10px;" onclick="app.switchScreen('screen-title')">KEMBALI</button>
-            <button class="btn-ml" style="background: linear-gradient(180deg,#005500,#003300); border-color:#00FF88; margin-top:6px; font-size:0.85rem;" onclick="app.exportLeaderboard()">📊 EXPORT LAPORAN (CSV)</button>
+            <button class="btn-ml" style="background: linear-gradient(180deg,#005500,#003300); border-color:#00FF88; margin-top:6px; font-size:0.85rem;" onclick="app.exportLeaderboard()">📊 EXPORT LAPORAN (HTML)</button>
         </div>
     </div>
 
@@ -3295,16 +3304,30 @@ const BANK_SOAL_CH4 = [
 ];
 
 const BANK_SOAL_KABEL = [
-    { q: "Hubungkan PC ke Switch (Straight)", srcType: 'item_pc', targetType: 'item_switch', cableType: 'straight' },
-    { q: "Hubungkan Laptop ke Switch (Straight)", srcType: 'item_laptop', targetType: 'item_switch', cableType: 'straight' },
-    { q: "Hubungkan Server ke Switch (Straight)", srcType: 'item_server', targetType: 'item_switch', cableType: 'straight' },
-    { q: "Hubungkan Switch ke Firewall (Straight)", srcType: 'item_switch', targetType: 'item_firewall', cableType: 'straight' },
-    { q: "Hubungkan PC ke Laptop (Crossover)", srcType: 'item_pc', targetType: 'item_laptop', cableType: 'crossover' },
-    { q: "Hubungkan Switch ke Switch (Crossover)", srcType: 'item_switch', targetType: 'item_switch', cableType: 'crossover' },
-    { q: "Hubungkan PC ke Server (Crossover)", srcType: 'item_pc', targetType: 'item_server', cableType: 'crossover' },
-    { q: "Hubungkan Laptop ke Server (Crossover)", srcType: 'item_laptop', targetType: 'item_server', cableType: 'crossover' },
-    { q: "Hubungkan Firewall ke PC (Crossover)", srcType: 'item_firewall', targetType: 'item_pc', cableType: 'crossover' },
-    { q: "Hubungkan Switch ke Server (Straight)", srcType: 'item_switch', targetType: 'item_server', cableType: 'straight' }
+    // === STRAIGHT (perangkat berbeda jenis) ===
+    { q: "PC → Switch: Pakai kabel Straight!", srcType: 'item_pc',       targetType: 'item_switch',   cableType: 'straight' },
+    { q: "Laptop → Switch: Sambungkan!", srcType: 'item_laptop',          targetType: 'item_switch',   cableType: 'straight' },
+    { q: "Server → Switch: Kabel Straight!", srcType: 'item_server',      targetType: 'item_switch',   cableType: 'straight' },
+    { q: "Switch → Firewall: Straight!", srcType: 'item_switch',          targetType: 'item_firewall', cableType: 'straight' },
+    { q: "Switch → Server: Sambungkan!", srcType: 'item_switch',          targetType: 'item_server',   cableType: 'straight' },
+    { q: "Firewall → Switch: Straight!", srcType: 'item_firewall',        targetType: 'item_switch',   cableType: 'straight' },
+    { q: "PC → Firewall: Kabel Straight!", srcType: 'item_pc',            targetType: 'item_firewall', cableType: 'straight' },
+    { q: "Laptop → Server: Kabel Straight!", srcType: 'item_laptop',      targetType: 'item_server',   cableType: 'straight' },
+    { q: "Server → Firewall: Straight!", srcType: 'item_server',          targetType: 'item_firewall', cableType: 'straight' },
+    { q: "Firewall → Server: Sambungkan!", srcType: 'item_firewall',      targetType: 'item_server',   cableType: 'straight' },
+    // === CROSSOVER (peer-to-peer / sejenis) ===
+    { q: "PC → PC langsung: Crossover!", srcType: 'item_pc',              targetType: 'item_pc',       cableType: 'crossover' },
+    { q: "PC → Laptop (peer-to-peer): Crossover!", srcType: 'item_pc',   targetType: 'item_laptop',   cableType: 'crossover' },
+    { q: "Laptop → PC: Crossover!", srcType: 'item_laptop',               targetType: 'item_pc',       cableType: 'crossover' },
+    { q: "Switch → Switch: Crossover!", srcType: 'item_switch',           targetType: 'item_switch',   cableType: 'crossover' },
+    { q: "PC → Server langsung: Crossover!", srcType: 'item_pc',          targetType: 'item_server',   cableType: 'crossover' },
+    { q: "Laptop → Server: Crossover!", srcType: 'item_laptop',           targetType: 'item_server',   cableType: 'crossover' },
+    { q: "Firewall → PC: Crossover!", srcType: 'item_firewall',           targetType: 'item_pc',       cableType: 'crossover' },
+    { q: "Server → PC: Crossover!", srcType: 'item_server',               targetType: 'item_pc',       cableType: 'crossover' },
+    { q: "Server → Laptop: Crossover!", srcType: 'item_server',           targetType: 'item_laptop',   cableType: 'crossover' },
+    { q: "Laptop → Laptop: Crossover!", srcType: 'item_laptop',           targetType: 'item_laptop',   cableType: 'crossover' },
+    { q: "Firewall → Firewall: Crossover!", srcType: 'item_firewall',     targetType: 'item_firewall', cableType: 'crossover' },
+    { q: "Firewall → Laptop: Crossover!", srcType: 'item_firewall',       targetType: 'item_laptop',   cableType: 'crossover' },
 ];
 
 // --- SAVE SYSTEM MODIFIED: PERSISTENT PROFILE & LEADERBOARD ---
@@ -5295,123 +5318,362 @@ class GameApp {
             return parts.length > 0 ? parts.join(' | ') : '-';
         };
 
-        // === BUILD CSV ===
+        // === BUILD BEAUTIFUL HTML REPORT ===
         let scopeLabel = 'Nasional';
         if(filterType !== 'all' && subVal) scopeLabel = subVal;
         const mode = this.leaderboardMode === 'survival' ? 'SURVIVAL' : 'STORY';
         const now = new Date();
         const dateStr = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
-        const sep = ',';
-        let csv = '\uFEFF';
-        csv += 'LAPORAN HASIL TOYA GUARDIANS - '+mode+' MODE\n';
-        csv += 'Lingkup: '+scopeLabel+' | Tanggal Export: '+dateStr+'\n';
-        csv += 'Total Peserta: '+allData.length+'\n\n';
-
-        if(this.leaderboardMode === 'survival') {
-            csv += ['No','Nama','Sekolah','Provinsi','Kota/Kab','Kecamatan','Skor','Wave Tertinggi',
-                    'Soal Benar/Total','Indikator Pemahaman','Materi Dipahami','Materi Perlu Diulang'].join(sep)+'\n';
-            allData.forEach((d,i) => {
-                csv += [
-                    i+1,
-                    '"'+(d.name||'')+'"',
-                    '"'+(d.school||'-')+'"',
-                    '"'+(d.prov||'-')+'"',
-                    '"'+(d.city||'-')+'"',
-                    '"'+(d.district||'-')+'"',
-                    d.score||0,
-                    d.wave||0,
-                    '"'+skorPerMateri(d)+'"',
-                    '"'+pemahamanLabel(d)+'"',
-                    '"'+materiPaham(d)+'"',
-                    '"'+materiTidakPaham(d)+'"'
-                ].join(sep)+'\n';
-            });
-        } else {
-            csv += ['No','Nama','Sekolah','Provinsi','Kota/Kab','Kecamatan','Skor',
-                    'Chapter Dicapai','Toya Purity (%)','Soal Benar per Materi',
-                    'Indikator Pemahaman','Ket. Purity',
-                    'Materi Dipahami (>=70%)','Materi Perlu Diulang (<70%)'].join(sep)+'\n';
-            allData.forEach((d,i) => {
-                csv += [
-                    i+1,
-                    '"'+(d.name||'')+'"',
-                    '"'+(d.school||'-')+'"',
-                    '"'+(d.prov||'-')+'"',
-                    '"'+(d.city||'-')+'"',
-                    '"'+(d.district||'-')+'"',
-                    d.score||0,
-                    '"'+chapterLabel(d)+'"',
-                    d.toyaPurity||0,
-                    '"'+skorPerMateri(d)+'"',
-                    '"'+pemahamanLabel(d)+'"',
-                    '"'+purityLabel(d.toyaPurity)+'"',
-                    '"'+materiPaham(d)+'"',
-                    '"'+materiTidakPaham(d)+'"'
-                ].join(sep)+'\n';
-            });
-        }
-
-        // === RINGKASAN STATISTIK ===
         const total = allData.length;
-        const pct = (n) => total ? Math.round(n/total*100)+'%' : '0%';
-        csv += '\nRINGKASAN STATISTIK\n';
+        const pct = (n) => total ? Math.round(n/total*100) : 0;
+        const avgScore = total ? Math.round(allData.reduce((a,b)=>a+(b.score||0),0)/total) : 0;
+
+        // Stats
+        let statsHTML = '';
+        let tableHeader = '';
+        let tableRows = '';
+        let progresHTML = '';
 
         if(this.leaderboardMode === 'story') {
             const selesai    = allData.filter(d => (d.chapter||0) >= 3).length;
             const ch2        = allData.filter(d => (d.chapter||0) === 2).length;
             const ch1        = allData.filter(d => (d.chapter||0) === 1).length;
             const belum      = allData.filter(d => !d.chapter || d.chapter === 0).length;
-            const avgScore   = total ? Math.round(allData.reduce((a,b)=>a+(b.score||0),0)/total) : 0;
             const sangatBaik = allData.filter(d => pemahamanLabel(d) === 'Sangat Baik').length;
             const baik       = allData.filter(d => pemahamanLabel(d) === 'Baik').length;
             const cukup      = allData.filter(d => pemahamanLabel(d) === 'Cukup').length;
             const perlu      = allData.filter(d => pemahamanLabel(d) === 'Perlu Bimbingan').length;
 
-            csv += 'Total Peserta,'+total+'\n';
-            csv += 'Rata-rata Skor,'+avgScore+'\n\n';
-
-            csv += 'PROGRES CHAPTER\n';
-            csv += 'Selesai (Chapter 3),'+selesai+','+pct(selesai)+'\n';
-            csv += 'Sampai Chapter 2,'+ch2+','+pct(ch2)+'\n';
-            csv += 'Sampai Chapter 1,'+ch1+','+pct(ch1)+'\n';
-            csv += 'Belum Mulai,'+belum+','+pct(belum)+'\n\n';
-
-            csv += 'INDIKATOR PEMAHAMAN MATERI\n';
-            csv += 'Sangat Baik,'+sangatBaik+','+pct(sangatBaik)+'\n';
-            csv += 'Baik,'+baik+','+pct(baik)+'\n';
-            csv += 'Cukup,'+cukup+','+pct(cukup)+'\n';
-            csv += 'Perlu Bimbingan,'+perlu+','+pct(perlu)+'\n\n';
-
-            // Rata-rata nilai per materi (dari semua player yang punya data)
             const calcAvgMateri = (key) => {
                 const withData = allData.filter(d => d.quizStats && d.quizStats[key] && d.quizStats[key].total > 0);
-                if(withData.length === 0) return '-';
-                const avg = withData.reduce((a,d) => a + Math.round(d.quizStats[key].benar/d.quizStats[key].total*100), 0) / withData.length;
-                return Math.round(avg)+'% ('+withData.length+' siswa)';
+                if(withData.length === 0) return 0;
+                return Math.round(withData.reduce((a,d) => a + Math.round(d.quizStats[key].benar/d.quizStats[key].total*100), 0) / withData.length);
             };
-            csv += 'RATA-RATA NILAI PER MATERI\n';
-            csv += 'Dasar Keamanan Jaringan (Ch1),'+calcAvgMateri('ch1')+'\n';
-            csv += 'Pertahanan Firewall (Ch2),'+calcAvgMateri('ch2')+'\n';
-            csv += 'Forensik Digital (Ch3),'+calcAvgMateri('ch3')+'\n';
+            const avgCh1 = calcAvgMateri('ch1');
+            const avgCh2 = calcAvgMateri('ch2');
+            const avgCh3 = calcAvgMateri('ch3');
+
+            statsHTML = `
+            <div class="stat-cards">
+                <div class="stat-card blue"><div class="sc-val">${total}</div><div class="sc-label">Total Peserta</div></div>
+                <div class="stat-card gold"><div class="sc-val">${avgScore.toLocaleString()}</div><div class="sc-label">Rata-rata Skor</div></div>
+                <div class="stat-card green"><div class="sc-val">${selesai}</div><div class="sc-label">Selesai Game</div></div>
+                <div class="stat-card purple"><div class="sc-val">${sangatBaik}</div><div class="sc-label">Sangat Baik</div></div>
+            </div>
+            <div class="chart-section">
+                <div class="chart-box">
+                    <div class="chart-title">📈 Progres Chapter</div>
+                    <div class="bar-row"><div class="bar-label">✅ Selesai</div><div class="bar-wrap"><div class="bar-fill green-bar" style="width:${pct(selesai)}%"></div></div><div class="bar-num">${selesai} (${pct(selesai)}%)</div></div>
+                    <div class="bar-row"><div class="bar-label">📘 Chapter 2</div><div class="bar-wrap"><div class="bar-fill blue-bar" style="width:${pct(ch2)}%"></div></div><div class="bar-num">${ch2} (${pct(ch2)}%)</div></div>
+                    <div class="bar-row"><div class="bar-label">📗 Chapter 1</div><div class="bar-wrap"><div class="bar-fill cyan-bar" style="width:${pct(ch1)}%"></div></div><div class="bar-num">${ch1} (${pct(ch1)}%)</div></div>
+                    <div class="bar-row"><div class="bar-label">⬜ Belum Mulai</div><div class="bar-wrap"><div class="bar-fill grey-bar" style="width:${pct(belum)}%"></div></div><div class="bar-num">${belum} (${pct(belum)}%)</div></div>
+                </div>
+                <div class="chart-box">
+                    <div class="chart-title">🧠 Pemahaman Materi</div>
+                    <div class="bar-row"><div class="bar-label">⭐ Sangat Baik</div><div class="bar-wrap"><div class="bar-fill gold-bar" style="width:${pct(sangatBaik)}%"></div></div><div class="bar-num">${sangatBaik} (${pct(sangatBaik)}%)</div></div>
+                    <div class="bar-row"><div class="bar-label">👍 Baik</div><div class="bar-wrap"><div class="bar-fill green-bar" style="width:${pct(baik)}%"></div></div><div class="bar-num">${baik} (${pct(baik)}%)</div></div>
+                    <div class="bar-row"><div class="bar-label">📊 Cukup</div><div class="bar-wrap"><div class="bar-fill blue-bar" style="width:${pct(cukup)}%"></div></div><div class="bar-num">${cukup} (${pct(cukup)}%)</div></div>
+                    <div class="bar-row"><div class="bar-label">⚠️ Perlu Bimbingan</div><div class="bar-wrap"><div class="bar-fill red-bar" style="width:${pct(perlu)}%"></div></div><div class="bar-num">${perlu} (${pct(perlu)}%)</div></div>
+                </div>
+            </div>
+            <div class="chart-box" style="margin-top:16px;">
+                <div class="chart-title">📚 Rata-rata Nilai Per Materi</div>
+                <div class="bar-row"><div class="bar-label">Ch1: Dasar Keamanan Jaringan</div><div class="bar-wrap"><div class="bar-fill cyan-bar" style="width:${avgCh1}%"></div></div><div class="bar-num">${avgCh1}%</div></div>
+                <div class="bar-row"><div class="bar-label">Ch2: Pertahanan Firewall</div><div class="bar-wrap"><div class="bar-fill blue-bar" style="width:${avgCh2}%"></div></div><div class="bar-num">${avgCh2}%</div></div>
+                <div class="bar-row"><div class="bar-label">Ch3: Forensik Digital</div><div class="bar-wrap"><div class="bar-fill purple-bar" style="width:${avgCh3}%"></div></div><div class="bar-num">${avgCh3}%</div></div>
+            </div>`;
+
+            tableHeader = `<tr><th>#</th><th>Nama</th><th>Sekolah</th><th>Provinsi</th><th>Kota/Kab</th><th>Kecamatan</th><th>Skor</th><th>Chapter</th><th>Toya Purity</th><th>Soal per Materi</th><th>Pemahaman</th><th>Ket. Purity</th><th>Materi Paham</th><th>Perlu Diulang</th></tr>`;
+            tableRows = allData.map((d,i) => {
+                const pem = pemahamanLabel(d);
+                const pemColor = pem==='Sangat Baik'?'#FFD700':pem==='Baik'?'#00FF88':pem==='Cukup'?'#00A8FF':'#FF4444';
+                const rankBadge = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="color:#888">${i+1}</span>`;
+                return `<tr class="${i%2===0?'row-even':'row-odd'}">
+                    <td style="text-align:center;font-weight:bold;">${rankBadge}</td>
+                    <td style="font-weight:bold;color:#fff;">${d.name||''}</td>
+                    <td>${d.school||'-'}</td>
+                    <td>${d.prov||'-'}</td>
+                    <td>${d.city||'-'}</td>
+                    <td>${d.district||'-'}</td>
+                    <td style="font-weight:bold;color:#FFD700;text-align:right;">${(d.score||0).toLocaleString()}</td>
+                    <td style="text-align:center;">${chapterLabel(d)}</td>
+                    <td style="text-align:center;">${d.toyaPurity||0}%</td>
+                    <td style="font-size:0.75rem;">${skorPerMateri(d)}</td>
+                    <td style="text-align:center;"><span style="background:${pemColor}22;color:${pemColor};border:1px solid ${pemColor};border-radius:4px;padding:2px 6px;font-size:0.75rem;white-space:nowrap;">${pem}</span></td>
+                    <td style="text-align:center;">${purityLabel(d.toyaPurity)}</td>
+                    <td style="font-size:0.75rem;color:#00FF88;">${materiPaham(d)}</td>
+                    <td style="font-size:0.75rem;color:#FF7777;">${materiTidakPaham(d)}</td>
+                </tr>`;
+            }).join('');
 
         } else {
-            const avgWave  = total ? Math.round(allData.reduce((a,b)=>a+(b.wave||0),0)/total) : 0;
-            const avgScore = total ? Math.round(allData.reduce((a,b)=>a+(b.score||0),0)/total) : 0;
-            csv += 'Total Peserta,'+total+'\nRata-rata Skor,'+avgScore+'\nRata-rata Wave,'+avgWave+'\n';
-            const calcAvgSurv = () => {
-                const withData = allData.filter(d => d.quizStats && d.quizStats.survival && d.quizStats.survival.total > 0);
-                if(withData.length === 0) return '-';
-                const avg = withData.reduce((a,d) => a + Math.round(d.quizStats.survival.benar/d.quizStats.survival.total*100), 0) / withData.length;
-                return Math.round(avg)+'% ('+withData.length+' siswa)';
-            };
-            csv += 'Rata-rata Quiz Survival,'+calcAvgSurv()+'\n';
+            const avgWave = total ? Math.round(allData.reduce((a,b)=>a+(b.wave||0),0)/total) : 0;
+            const sangatBaik = allData.filter(d => pemahamanLabel(d) === 'Sangat Baik').length;
+            const baik       = allData.filter(d => pemahamanLabel(d) === 'Baik').length;
+            const cukup      = allData.filter(d => pemahamanLabel(d) === 'Cukup').length;
+            const perlu      = allData.filter(d => pemahamanLabel(d) === 'Perlu Bimbingan').length;
+
+            statsHTML = `
+            <div class="stat-cards">
+                <div class="stat-card blue"><div class="sc-val">${total}</div><div class="sc-label">Total Peserta</div></div>
+                <div class="stat-card gold"><div class="sc-val">${avgScore.toLocaleString()}</div><div class="sc-label">Rata-rata Skor</div></div>
+                <div class="stat-card cyan"><div class="sc-val">${avgWave}</div><div class="sc-label">Rata-rata Wave</div></div>
+                <div class="stat-card green"><div class="sc-val">${sangatBaik}</div><div class="sc-label">Sangat Baik</div></div>
+            </div>
+            <div class="chart-box" style="margin-top:16px;">
+                <div class="chart-title">🧠 Indikator Pemahaman Materi - Survival</div>
+                <div class="bar-row"><div class="bar-label">⭐ Sangat Baik</div><div class="bar-wrap"><div class="bar-fill gold-bar" style="width:${pct(sangatBaik)}%"></div></div><div class="bar-num">${sangatBaik} (${pct(sangatBaik)}%)</div></div>
+                <div class="bar-row"><div class="bar-label">👍 Baik</div><div class="bar-wrap"><div class="bar-fill green-bar" style="width:${pct(baik)}%"></div></div><div class="bar-num">${baik} (${pct(baik)}%)</div></div>
+                <div class="bar-row"><div class="bar-label">📊 Cukup</div><div class="bar-wrap"><div class="bar-fill blue-bar" style="width:${pct(cukup)}%"></div></div><div class="bar-num">${cukup} (${pct(cukup)}%)</div></div>
+                <div class="bar-row"><div class="bar-label">⚠️ Perlu Bimbingan</div><div class="bar-wrap"><div class="bar-fill red-bar" style="width:${pct(perlu)}%"></div></div><div class="bar-num">${perlu} (${pct(perlu)}%)</div></div>
+            </div>`;
+
+            tableHeader = `<tr><th>#</th><th>Nama</th><th>Sekolah</th><th>Provinsi</th><th>Kota/Kab</th><th>Kecamatan</th><th>Skor</th><th>Wave Tertinggi</th><th>Soal Benar/Total</th><th>Pemahaman</th><th>Materi Paham</th><th>Perlu Diulang</th></tr>`;
+            tableRows = allData.map((d,i) => {
+                const pem = pemahamanLabel(d);
+                const pemColor = pem==='Sangat Baik'?'#FFD700':pem==='Baik'?'#00FF88':pem==='Cukup'?'#00A8FF':'#FF4444';
+                const rankBadge = i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="color:#888">${i+1}</span>`;
+                return `<tr class="${i%2===0?'row-even':'row-odd'}">
+                    <td style="text-align:center;font-weight:bold;">${rankBadge}</td>
+                    <td style="font-weight:bold;color:#fff;">${d.name||''}</td>
+                    <td>${d.school||'-'}</td>
+                    <td>${d.prov||'-'}</td>
+                    <td>${d.city||'-'}</td>
+                    <td>${d.district||'-'}</td>
+                    <td style="font-weight:bold;color:#FFD700;text-align:right;">${(d.score||0).toLocaleString()}</td>
+                    <td style="text-align:center;color:#00D9FF;">${d.wave||0}</td>
+                    <td style="font-size:0.75rem;">${skorPerMateri(d)}</td>
+                    <td style="text-align:center;"><span style="background:${pemColor}22;color:${pemColor};border:1px solid ${pemColor};border-radius:4px;padding:2px 6px;font-size:0.75rem;white-space:nowrap;">${pem}</span></td>
+                    <td style="font-size:0.75rem;color:#00FF88;">${materiPaham(d)}</td>
+                    <td style="font-size:0.75rem;color:#FF7777;">${materiTidakPaham(d)}</td>
+                </tr>`;
+            }).join('');
         }
 
-        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const html = `<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laporan Toya Guardians - ${mode} - ${scopeLabel}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap');
+  :root {
+    --bg: #050A14; --panel: #0a1628; --border: rgba(0,217,255,0.2);
+    --cyan: #00D9FF; --gold: #FFD700; --green: #00FF88; --red: #FF4444; --purple: #BB88FF; --blue: #00A8FF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: #ccc; font-family: 'Rajdhani', sans-serif; font-size: 14px; padding: 24px; }
+  
+  /* HEADER */
+  .report-header {
+    background: linear-gradient(135deg, #0a1e3d, #050a14);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--cyan);
+    border-radius: 12px;
+    padding: 24px 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: 0 0 40px rgba(0,217,255,0.06);
+  }
+  .report-title-wrap {}
+  .report-game-tag {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 4px;
+    color: var(--cyan);
+    opacity: 0.7;
+    margin-bottom: 4px;
+  }
+  .report-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 20px rgba(0,217,255,0.4);
+    margin-bottom: 4px;
+  }
+  .report-meta { font-size: 0.85rem; color: #888; }
+  .report-meta span { color: var(--cyan); font-weight: bold; }
+  .mode-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 2px solid;
+    white-space: nowrap;
+  }
+  .mode-story  { background: rgba(0,168,255,0.1); color: var(--blue);   border-color: var(--blue); }
+  .mode-survival { background: rgba(255,68,68,0.1); color: var(--red); border-color: var(--red); }
+
+  /* STAT CARDS */
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .stat-card.blue  { background: rgba(0,168,255,0.08);  border-color: rgba(0,168,255,0.25);  color: var(--blue);  }
+  .stat-card.blue::before  { background: var(--blue); }
+  .stat-card.gold  { background: rgba(255,215,0,0.08);  border-color: rgba(255,215,0,0.25);  color: var(--gold);  }
+  .stat-card.gold::before  { background: var(--gold); }
+  .stat-card.green { background: rgba(0,255,136,0.08);  border-color: rgba(0,255,136,0.25);  color: var(--green); }
+  .stat-card.green::before { background: var(--green); }
+  .stat-card.purple{ background: rgba(187,136,255,0.08);border-color: rgba(187,136,255,0.25);color: var(--purple);}
+  .stat-card.purple::before{ background: var(--purple);}
+  .stat-card.cyan  { background: rgba(0,217,255,0.08);  border-color: rgba(0,217,255,0.25);  color: var(--cyan);  }
+  .stat-card.cyan::before  { background: var(--cyan); }
+  .stat-card.red   { background: rgba(255,68,68,0.08);  border-color: rgba(255,68,68,0.25);  color: var(--red);   }
+  .stat-card.red::before   { background: var(--red); }
+  .sc-val   { font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; margin-bottom: 4px; }
+  .sc-label { font-size: 0.75rem; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* CHARTS */
+  .chart-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+  .chart-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .chart-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--cyan);
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+  }
+  .bar-label { width: 160px; flex-shrink: 0; color: #aaa; }
+  .bar-wrap   { flex: 1; background: rgba(255,255,255,0.05); border-radius: 4px; height: 12px; overflow: hidden; }
+  .bar-fill   { height: 100%; border-radius: 4px; transition: width 0.6s ease; min-width: 2px; }
+  .bar-num    { width: 70px; text-align: right; color: #888; font-size: 0.75rem; }
+  .green-bar  { background: linear-gradient(90deg, #00FF88, #00cc66); box-shadow: 0 0 6px #00FF88; }
+  .blue-bar   { background: linear-gradient(90deg, #00A8FF, #0066cc); box-shadow: 0 0 6px #00A8FF; }
+  .cyan-bar   { background: linear-gradient(90deg, #00D9FF, #0099cc); box-shadow: 0 0 6px #00D9FF; }
+  .gold-bar   { background: linear-gradient(90deg, #FFD700, #cc9900); box-shadow: 0 0 6px #FFD700; }
+  .purple-bar { background: linear-gradient(90deg, #BB88FF, #7744cc); box-shadow: 0 0 6px #BB88FF; }
+  .red-bar    { background: linear-gradient(90deg, #FF4444, #cc1111); box-shadow: 0 0 6px #FF4444; }
+  .grey-bar   { background: rgba(255,255,255,0.15); }
+
+  /* TABLE */
+  .table-section { margin-top: 20px; }
+  .table-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; min-width: 700px; }
+  thead tr { background: linear-gradient(90deg, rgba(0,168,255,0.15), rgba(0,217,255,0.05)); }
+  th {
+    padding: 10px 12px;
+    text-align: left;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 1px;
+    color: var(--cyan);
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  td { padding: 9px 12px; color: #ccc; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 0.82rem; }
+  .row-even { background: rgba(255,255,255,0.015); }
+  .row-odd  { background: transparent; }
+  tr:hover td { background: rgba(0,217,255,0.04); }
+  tr:first-child td { color: #FFD700; }
+
+  /* FOOTER */
+  .report-footer {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 1px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* PRINT */
+  @media print {
+    body { background: #fff; color: #000; }
+    .report-header { border-top-color: #0066cc; background: #f0f8ff; }
+    .report-title { color: #003366; text-shadow: none; }
+    .chart-box, .table-wrap { border: 1px solid #ccc; }
+    th { color: #003366; }
+    td { color: #333; }
+    .bar-fill { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="report-header">
+  <div class="report-title-wrap">
+    <div class="report-game-tag">LAPORAN HASIL PERMAINAN</div>
+    <div class="report-title">⚡ TOYA GUARDIANS</div>
+    <div class="report-meta">
+      Lingkup: <span>${scopeLabel}</span> &nbsp;|&nbsp;
+      Tanggal Export: <span>${dateStr}</span> &nbsp;|&nbsp;
+      Total Data: <span>${total} peserta</span>
+    </div>
+  </div>
+  <div class="mode-badge ${mode==='STORY'?'mode-story':'mode-survival'}">${mode==='STORY'?'📖 STORY MODE':'⚔️ SURVIVAL MODE'}</div>
+</div>
+
+${statsHTML}
+
+<div class="table-section">
+  <div class="table-title">🏆 Data Lengkap Peserta</div>
+  <div class="table-wrap">
+    <table>
+      <thead>${tableHeader}</thead>
+      <tbody>${tableRows}</tbody>
+    </table>
+  </div>
+</div>
+
+<div class="report-footer">
+  © 2025 Toya Guardians — Tim Gelombang Utara · SMK Negeri 1 Brondong, Lamongan, Jawa Timur<br>
+  Finalis Hackathon Rumah Pendidikan 2025 · Pusdatin Kemendikdasmen
+</div>
+
+</body></html>`;
+
+        const blob = new Blob([html], {type:'text/html;charset=utf-8;'});
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'ToyaGuardians_'+mode+'_'+scopeLabel+'_'+dateStr+'.csv';
+        a.download = 'Laporan_ToyaGuardians_'+mode+'_'+scopeLabel+'_'+dateStr+'.html';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -7320,37 +7582,31 @@ class ChapterQuiz {
 class ChapterCabling {
     constructor(game) {
         this.game = game; this.timeLeft = 60; 
-        this.active = false; // Start paused
-        
-        const selectedTasks = shuffleArray([...BANK_SOAL_KABEL]).slice(0, 3);
-        // ... existing task setup ...
-        const positions = [
-            { sX: 100, sY: 150, tX: 600, tY: 150 }, 
-            { sX: 100, sY: 300, tX: 500, tY: 300 }, 
-            { sX: 100, sY: 450, tX: 600, tY: 450 } 
-        ];
+        this.active = false;
 
-        this.tasks = selectedTasks.map((task, index) => {
-            return {
-                q: task.q,
-                sX: positions[index].sX,
-                sY: positions[index].sY,
-                tX: positions[index].tX,
-                tY: positions[index].tY,
-                srcType: task.srcType,
-                targetType: task.targetType,
-                cableType: task.cableType,
-                completed: false,
-                connected: false
-            };
-        });
-        
+        // Pilih 3 soal acak dari bank
+        const selectedTasks = shuffleArray([...BANK_SOAL_KABEL]).slice(0, 3);
+
+        // Posisi Y kiri ACAK → bisa silang dengan kanan
+        const leftYOptions  = shuffleArray([130, 280, 430]);
+        const rightYOptions = shuffleArray([130, 280, 430]); // acak independen → silang!
+
+        this.tasks = selectedTasks.map((task, i) => ({
+            q:          task.q,
+            sX: 60,  sY: leftYOptions[i],
+            tX: 560, tY: rightYOptions[i],
+            srcType:    task.srcType,
+            targetType: task.targetType,
+            cableType:  task.cableType,
+            completed:  false,
+            connected:  false
+        }));
+
         this.dragged = null; this.mx = 0; this.my = 0;
         this.evDown = (e) => this.input(e, 'down');
         this.evMove = (e) => this.input(e, 'move');
         this.evUp   = (e) => this.input(e, 'up');
 
-        // Touch wrappers untuk HP/tablet
         this.evTouchStart = (e) => { e.preventDefault(); this.input(e.touches[0], 'down'); };
         this.evTouchMove  = (e) => { e.preventDefault(); this.input(e.touches[0], 'move'); };
         this.evTouchEnd   = (e) => { e.preventDefault(); this.input(e.changedTouches[0], 'up'); };
@@ -7361,34 +7617,34 @@ class ChapterCabling {
         canvas.addEventListener('touchstart', this.evTouchStart, {passive: false});
         canvas.addEventListener('touchmove',  this.evTouchMove,  {passive: false});
         canvas.addEventListener('touchend',   this.evTouchEnd,   {passive: false});
-        
+
         document.getElementById('hud-timer').innerText = this.timeLeft;
 
-        // TUTORIAL OVERLAY CABLING (UPDATED TEXT) - ADDED TIMEOUT
         setTimeout(() => {
             showMessage(
                 "TUTORIAL: PENGKABELAN",
-                `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
+                `<div style='text-align:left; font-size:1rem; line-height:1.6;'>
                 <strong>🎮 CARA BERMAIN:</strong><br>
-                Hubungkan port perangkat kiri ke kanan dengan kabel yang sesuai.<br>
-                🖱️ <strong>KLIK / SENTUH & TAHAN</strong> pada Port Awal (Kiri).<br>
-                👉 <strong>GESER</strong> kabel ke Port Tujuan (Kanan).<br>
-                ✅ Lepas untuk menghubungkan.
+                Sambungkan perangkat kiri ke perangkat kanan yang tepat!<br><br>
+                🖱️ <strong>KLIK / SENTUH & TAHAN</strong> pada perangkat kiri.<br>
+                👉 <strong>GESER</strong> ke perangkat kanan yang sesuai.<br>
+                ⚠️ Kabel bisa <strong>menyilang</strong> — perhatikan soal masing-masing!<br><br>
+                🔵 Kabel <span style="color:#00D9FF;font-weight:bold">Biru = Straight</span> &nbsp;|&nbsp;
+                🟡 Kabel <span style="color:#FFD700;font-weight:bold">Kuning = Crossover</span>
                 </div>`,
                 () => {
                     this.active = true;
                     this.timerInterval = setInterval(() => {
                         if(!this.active) return;
-                        this.timeLeft--; document.getElementById('hud-timer').innerText = this.timeLeft;
-                        if(this.timeLeft <= 0) { 
-                            this.cleanup(); 
-                            this.game.triggerGameOver();
-                        }
+                        this.timeLeft--;
+                        document.getElementById('hud-timer').innerText = this.timeLeft;
+                        if(this.timeLeft <= 0) { this.cleanup(); this.game.triggerGameOver(); }
                     }, 1000);
                 }
             );
         }, 500);
     }
+
     cleanup() {
         clearInterval(this.timerInterval);
         canvas.removeEventListener('mousedown',  this.evDown);
@@ -7398,62 +7654,154 @@ class ChapterCabling {
         canvas.removeEventListener('touchmove',  this.evTouchMove);
         canvas.removeEventListener('touchend',   this.evTouchEnd);
     }
-    getCanvasCoords(e) {
-        const p = getGamePos(e);
-        return { mx: p.x, my: p.y };
-    }
+
+    getCanvasCoords(e) { const p = getGamePos(e); return { mx: p.x, my: p.y }; }
+
     input(e, type) {
         if(!this.active) return;
         const {mx, my} = this.getCanvasCoords(e); this.mx = mx; this.my = my;
-        if (type === 'down') { for (let i = 0; i < this.tasks.length; i++) { if (!this.tasks[i].completed && Math.hypot(mx - (this.tasks[i].sX + 40), my - (this.tasks[i].sY + 40)) < 55) { this.dragged = i; AudioMgr.playSFX('sfx-click'); return; } } }
-        else if (type === 'up' && this.dragged !== null) {
+        if(type === 'down') {
+            for(let i = 0; i < this.tasks.length; i++) {
+                if(!this.tasks[i].completed && Math.hypot(mx - (this.tasks[i].sX + 40), my - (this.tasks[i].sY + 40)) < 55) {
+                    this.dragged = i; AudioMgr.playSFX('sfx-click'); return;
+                }
+            }
+        } else if(type === 'up' && this.dragged !== null) {
             const t = this.tasks[this.dragged];
+            // Cari target yang posisinya cocok (tX,tY) dan belum connected
+            let connected = false;
             if(Math.hypot(mx - (t.tX + 40), my - (t.tY + 40)) < 70) {
-                t.completed = true; t.connected = true; this.game.addScore(100); AudioMgr.playSFX('sfx-correct'); 
-                if(this.tasks.every(task => task.completed)) { this.cleanup(); showMessage("JARINGAN AKTIF", `Koneksi Stabil! Bonus Waktu: ${this.timeLeft * 2}`); setTimeout(() => this.game.triggerPostCablingNarrative(), 3000); }
-            } else { AudioMgr.playSFX('sfx-wrong'); }
+                t.completed = true; t.connected = true;
+                this.game.addScore(150);
+                AudioMgr.playSFX('sfx-correct');
+                connected = true;
+                if(this.tasks.every(task => task.completed)) {
+                    this.cleanup();
+                    showMessage("⚡ JARINGAN AKTIF!", `Semua kabel terhubung! Bonus Waktu: +${this.timeLeft * 2}`);
+                    setTimeout(() => this.game.triggerPostCablingNarrative(), 3000);
+                }
+            }
+            if(!connected) AudioMgr.playSFX('sfx-wrong');
             this.dragged = null;
         }
     }
-    update(dt) { }
+
+    update(dt) {}
+
+    // Gambar kabel melengkung (bezier curve) agar terlihat kabel yang menyilang
+    _drawCable(ctx, x1, y1, x2, y2, color, width, dashed) {
+        ctx.save();
+        ctx.beginPath();
+        if(dashed) ctx.setLineDash([10, 6]);
+        else ctx.setLineDash([]);
+        // Bezier curve: titik kontrol di tengah tapi digeser vertikal
+        const mx = (x1 + x2) / 2;
+        ctx.moveTo(x1, y1);
+        ctx.bezierCurveTo(mx, y1, mx, y2, x2, y2);
+        ctx.strokeStyle = color;
+        ctx.lineWidth = width;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        // Glow pass
+        ctx.globalAlpha = 0.3;
+        ctx.lineWidth = width + 6;
+        ctx.stroke();
+        ctx.restore();
+    }
+
     draw(ctx) {
-        // ... existing drawing code ...
         const pulse = 1 + Math.sin(Date.now() / 200) * 0.05;
+        const ICON = 80;
 
+        // --- Label kolom ---
+        ctx.fillStyle = "rgba(0,0,0,0.55)";
+        ctx.fillRect(30, 55, 155, 32);
+        ctx.fillRect(530, 55, 175, 32);
+        ctx.fillStyle = "#00D9FF"; ctx.font = "bold 13px Orbitron"; ctx.textAlign = "center";
+        ctx.fillText("PERANGKAT ASAL", 110, 76);
+        ctx.fillText("PERANGKAT TUJUAN", 618, 76);
+        ctx.textAlign = "left";
+
+        // --- Gambar kabel yang sudah terhubung (bezier) ---
         this.tasks.forEach(t => {
-            const imgS = this.game.imgs[t.srcType]; const imgT = this.game.imgs[t.targetType];
-            const safeDraw = (img, x, y, label) => {
-                let size = 80;
-                let offset = 0;
-                if(!t.completed) { size = 80 * pulse; offset = (80 - size)/2; }
-                
-                if(img && img.complete) ctx.drawImage(img, x + offset, y + offset, size, size);
-                else { ctx.fillStyle = "#334"; ctx.fillRect(x, y, 80, 80); ctx.strokeRect(x, y, 80, 80); }
-                ctx.fillStyle = "white"; ctx.font = "12px sans-serif"; ctx.textAlign = "center";
-                const text = label.replace('item_', '').toUpperCase(); ctx.fillText(text, x + 40, y + 95); ctx.textAlign = "left"; 
-            };
-            safeDraw(imgS, t.sX, t.sY, t.srcType);
-            if(t.srcType !== t.targetType || !t.completed) safeDraw(imgT, t.tX, t.tY, t.targetType);
-            if(t.connected) { ctx.beginPath(); ctx.moveTo(t.sX + 40, t.sY + 40); ctx.lineTo(t.tX + 40, t.tY + 40); ctx.strokeStyle = t.cableType === 'straight' ? "#00A8FF" : "#FFD700"; ctx.lineWidth = 4; ctx.stroke(); }
+            if(t.connected) {
+                const color = t.cableType === 'straight' ? "#00A8FF" : "#FFD700";
+                this._drawCable(ctx, t.sX + 40, t.sY + 40, t.tX + 40, t.tY + 40, color, 4, false);
+                // Label di tengah kabel
+                const lx = (t.sX + 40 + t.tX + 40) / 2;
+                const ly = (t.sY + 40 + t.tY + 40) / 2 - 10;
+                ctx.save();
+                ctx.fillStyle = t.cableType === 'straight' ? "rgba(0,80,180,0.85)" : "rgba(120,80,0,0.85)";
+                ctx.beginPath(); ctx.roundRect(lx - 42, ly - 14, 84, 22, 5); ctx.fill();
+                ctx.fillStyle = color; ctx.font = "bold 11px Orbitron"; ctx.textAlign = "center";
+                ctx.fillText(t.cableType.toUpperCase(), lx, ly + 3);
+                ctx.restore();
+            }
         });
-        if(this.dragged !== null) { const t = this.tasks[this.dragged]; ctx.beginPath(); ctx.moveTo(t.sX + 40, t.sY + 40); ctx.lineTo(this.mx, this.my); ctx.strokeStyle = t.cableType === 'straight' ? "#00D9FF" : "#FFD700"; ctx.lineWidth = 5; ctx.stroke(); }
-        
-        const currentTask = this.tasks.find(t => !t.completed);
-        if (currentTask) { 
-            // FIX (Poin 5): Background Gelap agar tulisan terbaca jelas
-            ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-            ctx.fillRect(100, 520, 600, 50);
-            ctx.strokeStyle = "#00D9FF";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(100, 520, 600, 50);
 
-            // Ganti warna teks jadi Gold/Kuning agar kontras dengan biru/hijau elemen lain
-            ctx.fillStyle = "#FFD700"; 
-            ctx.font = "bold 24px Orbitron"; 
-            ctx.textAlign = "center"; 
-            ctx.fillText("MISI: " + currentTask.q, 400, 553); 
-            ctx.textAlign = "left"; 
+        // --- Kabel yang sedang ditarik (dashed + bezier) ---
+        if(this.dragged !== null) {
+            const t = this.tasks[this.dragged];
+            const color = t.cableType === 'straight' ? "#00D9FF" : "#FFD700";
+            this._drawCable(ctx, t.sX + 40, t.sY + 40, this.mx, this.my, color, 5, true);
         }
+
+        // --- Gambar ikon perangkat ---
+        this.tasks.forEach(t => {
+            const imgS = this.game.imgs[t.srcType];
+            const imgT = this.game.imgs[t.targetType];
+
+            const safeDraw = (img, x, y, label, isCompleted) => {
+                let sz = isCompleted ? ICON : ICON * pulse;
+                let off = (ICON - sz) / 2;
+                ctx.save();
+                if(isCompleted) { ctx.shadowColor = "#00FF88"; ctx.shadowBlur = 18; }
+                if(img && img.complete) ctx.drawImage(img, x + off, y + off, sz, sz);
+                else { ctx.fillStyle = "#334"; ctx.fillRect(x, y, ICON, ICON); }
+                ctx.restore();
+                // Label nama perangkat
+                ctx.fillStyle = "rgba(0,0,0,0.7)";
+                ctx.fillRect(x - 5, y + ICON + 2, ICON + 10, 20);
+                ctx.fillStyle = isCompleted ? "#00FF88" : "white";
+                ctx.font = "bold 11px Orbitron"; ctx.textAlign = "center";
+                ctx.fillText(label.replace('item_','').toUpperCase(), x + 40, y + ICON + 16);
+                ctx.textAlign = "left";
+            };
+
+            safeDraw(imgS, t.sX, t.sY, t.srcType, t.completed);
+            safeDraw(imgT, t.tX, t.tY, t.targetType, t.completed);
+
+            // Port indicator (lingkaran kecil di titik sambung)
+            const portColor = t.completed ? "#00FF88" : (this.dragged !== null ? "#FFD700" : "#00D9FF");
+            ctx.save();
+            ctx.shadowColor = portColor; ctx.shadowBlur = 10;
+            ctx.fillStyle = portColor;
+            ctx.beginPath(); ctx.arc(t.sX + 40, t.sY + 40, 7, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.arc(t.tX + 40, t.tY + 40, 7, 0, Math.PI*2); ctx.fill();
+            ctx.restore();
+        });
+
+        // --- Soal aktif di bawah ---
+        const currentTask = this.tasks.find(t => !t.completed);
+        if(currentTask) {
+            ctx.fillStyle = "rgba(0,0,0,0.88)";
+            ctx.fillRect(60, 530, 680, 52);
+            ctx.strokeStyle = "#FFD700"; ctx.lineWidth = 2;
+            ctx.strokeRect(60, 530, 680, 52);
+            ctx.fillStyle = "#FFD700";
+            ctx.font = "bold 20px Orbitron"; ctx.textAlign = "center";
+            ctx.fillText("🔌 " + currentTask.q, 400, 562);
+            ctx.textAlign = "left";
+        }
+
+        // --- Legenda kabel ---
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(270, 8, 260, 28);
+        ctx.fillStyle = "#00A8FF"; ctx.font = "bold 11px Rajdhani"; ctx.textAlign = "center";
+        ctx.fillText("■ STRAIGHT", 320, 26);
+        ctx.fillStyle = "#FFD700";
+        ctx.fillText("■ CROSSOVER", 440, 26);
+        ctx.textAlign = "left";
     }
 }
 
