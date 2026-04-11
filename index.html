@@ -47,6 +47,7 @@
             width: 100%; 
             height: 100%; 
             image-rendering: auto;
+            pointer-events: none;
         }
         
         /* UI SCREENS */
@@ -1053,9 +1054,10 @@
             max-width: 500px;
             width: 90%;
             
-            /* Agar tidak scroll */
-            max-height: 80vh; 
-            overflow: hidden; 
+            /* Fix: overflow-y auto agar tombol jawaban tidak terpotong */
+            max-height: 85vh; 
+            overflow: hidden;
+            overflow-y: auto; 
             display: flex;
             flex-direction: column;
         }
@@ -1080,6 +1082,8 @@
         /* Container Jawaban Rapat */
         #quiz-options-container {
             display: flex; flex-direction: column; gap: 5px; /* Jarak rapat */
+            overflow: visible;
+            flex-shrink: 0;
         }
 
         /* Tombol Jawaban Compact */
