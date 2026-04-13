@@ -475,7 +475,7 @@
         .story-dot.active { background: var(--accent-gold); transform: scale(1.4); }
         .story-dot.done   { background: rgba(255,215,0,0.4); }
 
-        #hud { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; display: none; justify-content: space-between; pointer-events: none; z-index: 20; }
+        #hud { position: absolute; top: 0; left: 0; width: 100%; padding: 15px; box-sizing: border-box; display: none; justify-content: space-between; pointer-events: none; z-index: 600; }
         .hud-top-left { display:flex; gap:10px; flex-direction: column; align-items: flex-start; }
         
         .hud-panel { 
@@ -1002,12 +1002,12 @@
     position: absolute; top: 0; left: 0; width: 100%;
     padding: 20px; box-sizing: border-box;
     display: flex; justify-content: space-between; align-items: flex-start;
-    pointer-events: none; z-index: 60;
+    pointer-events: none; z-index: 600;
 }
 
 /* KIRI: SKOR & WAKTU (Frame Neon) */
 .hud-top-left {
-    display: flex; flex-direction: column; gap: 10px; z-index: 65;
+    display: flex; flex-direction: column; gap: 10px; z-index: 605;
 }
 .hud-top-left > div:first-child {
     display: flex !important; flex-direction: row !important; gap: 15px;
@@ -1034,10 +1034,10 @@
 /* Pastikan elemen judul di HTML punya ID="hud-center" */
 #hud-center {
     position: absolute;
-    left: 50%; transform: translateX(-50%); /* Trik Dead Center */
+    left: 50%; transform: translateX(-50%);
     top: 20px;
     text-align: center;
-    z-index: 65;
+    z-index: 605;
     font-family: 'Orbitron'; color: var(--accent-gold);
     text-shadow: 0 0 10px black;
     background: rgba(0,0,0,0.5); padding: 5px 15px; border-radius: 10px; border: 1px solid var(--accent-gold);
@@ -4374,25 +4374,29 @@ class GameApp {
 
         const aboutBtn = document.getElementById('btn-about');
         const fsBtn = document.getElementById('btn-fullscreen');
+        const hud = document.getElementById('hud');
         
         // Atur visibilitas tombol menu
         if (id === 'screen-quiz') {
-            // QUIZ: HUD disembunyikan agar tidak menghalangi tombol jawaban
-            document.getElementById('hud').style.display = 'none';
+            // QUIZ: HUD tetap tampil tapi tidak bisa menghalangi klik
+            hud.style.display = 'flex';
+            hud.style.pointerEvents = 'none'; // Seluruh HUD tidak blokir klik
             aboutBtn.style.display = 'none';
             if(fsBtn) fsBtn.style.display = 'none';
             if(window.stopTitleLightning) window.stopTitleLightning();
         } else if (id === 'screen-title') {
+            hud.style.pointerEvents = '';
             aboutBtn.style.display = 'flex';
             if(fsBtn) fsBtn.style.display = 'flex';
             AudioMgr.playMusic('bgm-player');
-            // Start epic title lightning effect
             setTimeout(() => { if(window.startTitleLightning) window.startTitleLightning(); }, 100);
         } else if (id === 'dummy') { // Gameplay mode
+            hud.style.pointerEvents = '';
             aboutBtn.style.display = 'none';
             if(fsBtn) fsBtn.style.display = 'flex';
             if(window.stopTitleLightning) window.stopTitleLightning();
         } else {
+            hud.style.pointerEvents = '';
             aboutBtn.style.display = 'none';
             if(fsBtn) fsBtn.style.display = 'flex';
             if(window.stopTitleLightning) window.stopTitleLightning();
@@ -4591,8 +4595,9 @@ class GameApp {
             { speaker: "MASTER REX", text: "Untuk membukanya, kamu harus membuktikan bahwa kamu paham dasar-dasar jaringan komputer. Jawab pertanyaannya dengan benar!", char: 'rex', bg: 'bg_server' }
         ], () => { 
             this.switchScreen('screen-quiz');
-            // HUD disembunyikan saat quiz agar tidak menghalangi tombol jawaban
-            document.getElementById('mission-overlay').style.display = 'none';
+            // HUD tetap tampil tapi pointer-events:none (diatur di switchScreen)
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('mission-overlay').style.display = 'block';
             document.getElementById('current-mission-text').innerText = "PECAHKAN KODE AKSES";
             this.state = AppState.GAME_CH1; 
             
@@ -4713,7 +4718,7 @@ class GameApp {
         AudioMgr.playSFX('sfx-click');
         showMessage("VALIDASI FIREWALL", "Konfigurasi fisik selesai. Sekarang validasi pengetahuanmu tentang Firewall untuk mengunci sistem pertahanan secara permanen!");
         this.switchScreen('screen-quiz');
-        // HUD disembunyikan saat quiz agar tidak menghalangi tombol jawaban
+        document.getElementById('hud').style.display = 'flex';
         document.getElementById('hud-purity').style.width = this.player.toyaPurity + "%";
         document.getElementById('quiz-title-text').innerText = "VALIDASI FIREWALL";
         
@@ -4802,7 +4807,7 @@ class GameApp {
         // showMessage("INVESTIGASI LANJUTAN", "IP Penyerang Ditemukan! Analisis paket data untuk mendapatkan kode dekripsi.");
         
         this.switchScreen('screen-quiz');
-        // HUD disembunyikan saat quiz agar tidak menghalangi tombol jawaban
+        document.getElementById('hud').style.display = 'flex';
         document.getElementById('quiz-title-text').innerText = "FORENSIK DIGITAL";
         
         const display = document.getElementById('quiz-code-display');
@@ -4879,7 +4884,7 @@ class GameApp {
             { speaker: "MASTER REX", text: "Ini momen terakhir sebelum konfrontasi akhir. Tunjukkan bahwa kamu siap — tidak hanya sebagai pejuang, tapi sebagai Guardian yang paham cara menjaga dan memulihkan sistem!", char: 'rex', bg: 'bg_monitor', sound: 'dramatic' }
         ], () => {
             this.switchScreen('screen-quiz');
-            // HUD disembunyikan saat quiz agar tidak menghalangi tombol jawaban
+            document.getElementById('hud').style.display = 'flex';
             document.getElementById('quiz-title-text').innerText = "PROTOKOL PEMULIHAN SISTEM";
 
             const display = document.getElementById('quiz-code-display');
@@ -9813,19 +9818,22 @@ const app = new GameApp();
 
 <!-- FIX: Pastikan quiz screen dan tombolnya selalu bisa diklik -->
 <script>
-// Setiap kali quiz screen aktif, pastikan semua elemen di atasnya tidak menghalangi
 function enforceQuizClickable() {
     const quizScreen = document.getElementById('screen-quiz');
     if (!quizScreen || !quizScreen.classList.contains('active')) return;
     
-    // Force style langsung pada elemen-elemen yang mungkin menghalangi
-    const blockers = ['gameCanvas', 'hud', 'mission-overlay', 'rpg-controls', 
+    // Elemen yang harus diblokir pointer-events-nya (tapi tetap visible)
+    const blockers = ['gameCanvas', 'mission-overlay', 'rpg-controls', 
                       'dpad-controls', 'virtual-joystick', 'boss-joystick',
                       'title-lightning-canvas', 'lightning-overlay'];
     blockers.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.style.pointerEvents = 'none';
     });
+    
+    // HUD tetap tampil tapi tidak blokir klik
+    const hud = document.getElementById('hud');
+    if (hud) hud.style.pointerEvents = 'none';
     
     // Pastikan quiz screen dan tombolnya bisa diklik
     quizScreen.style.pointerEvents = 'auto';
@@ -9839,7 +9847,6 @@ function enforceQuizClickable() {
     });
 }
 
-// Pantau perubahan class active pada screen-quiz
 const quizObserver = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         if (mutation.target.id === 'screen-quiz') {
