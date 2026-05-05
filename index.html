@@ -3,7 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Toya Guardians: Tirtatelaga Defense</title>
+    <title>Keamanan Siber: Pertahanan Jaringan Digital</title>
+    <meta name="description" content="Siap jadi Guardian dunia digital? Di sini kamu akan belajar konsep keamanan siber seperti phishing, malware, firewall, dan enkripsi — semua dikemas dalam petualangan seru bertema sci-fi! Sambil bermain, kamu bakal makin paham cara menjaga keamanan jaringan di dunia nyata. Yuk, buktikan kamu bisa jadi pelindung jaringan sejati!">
+    <meta name="keywords" content="game edukasi, keamanan siber, cybersecurity, phishing, malware, firewall, enkripsi, Guardian, Toya Guardians">
+    <meta property="og:title" content="Toya Guardians: Pertahanan Jaringan Digital">
+    <meta property="og:description" content="Siap jadi Guardian dunia digital? Pelajari keamanan siber lewat petualangan seru bertema sci-fi. Buktikan kamu bisa jadi pelindung jaringan sejati!">
+    <meta property="og:type" content="website">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;700&family=VT323&display=swap" rel="stylesheet">
     
     <style>
@@ -179,12 +184,6 @@
         }
         @keyframes spinRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Logo di dalam ring */
-        #logo-img-wrapper {
-            position: absolute;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-        }
-
         /* Glitch effect pada logo */
         @keyframes glitchLogo {
             0%   { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)) drop-shadow(0 0 60px rgba(0,217,255,0.5)); transform: translateY(0px) translateX(0px); clip-path: none; }
@@ -195,14 +194,6 @@
             54%  { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)); transform: translateY(-8px) translateX(0px); }
             100% { filter: drop-shadow(0 0 35px rgba(0,168,255,0.9)) drop-shadow(0 0 60px rgba(0,217,255,0.5)); transform: translateY(0px) translateX(0px); }
         }
-        #logo-img {
-            width: min(450px, 90vw);
-            height: min(450px, 90vw);
-            max-width: min(450px, 90vw);
-            max-height: min(450px, 90vw);
-            animation: glitchLogo 3s ease-in-out infinite !important;
-        }
-
         /* Subtitle glitch */
         @keyframes glitchSubtitle {
             0%, 100% { filter: drop-shadow(0 0 20px rgba(255,215,0,0.7)); transform: translateY(0px); }
@@ -280,9 +271,9 @@
         .btn-ml:disabled { background: #333; color: #777; border-color: #555; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(100%); }
         
         /* --- MENU BUTTONS FIXED POSITIONING --- */
-        .btn-music-toggle { position: absolute; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; }
+        .btn-music-toggle { position: absolute; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; }
         
-        .btn-fullscreen-toggle { position: absolute; top: 20px; right: 70px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; z-index: 100; transition: 0.3s; }
+        .btn-fullscreen-toggle { position: absolute; top: 20px; right: 70px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; z-index: 100; transition: 0.3s; }
         
         .btn-about-toggle { position: absolute; top: 20px; right: 120px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; font-family: 'Orbitron'; font-weight: bold; }
         
@@ -708,6 +699,46 @@
         .sync-error { color: var(--danger-red); }
         
         #screen-title-ch1, #screen-title-ch2, #screen-title-ch3 { background-color: #111; }
+
+        /* === MINI GAME: MENJODOHKAN === */
+        .match-card {
+            background: rgba(0,30,60,0.9); border: 2px solid var(--primary-blue);
+            border-radius: 8px; padding: 8px 12px; cursor: grab; user-select: none;
+            font-family: 'Rajdhani'; font-size: 0.85rem; color: white;
+            display: flex; align-items: center; gap: 6px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            touch-action: none;
+        }
+        .match-card:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 0 15px var(--primary-blue); }
+        .match-card.placed { opacity: 0.5; pointer-events: none; border-color: #334; }
+        .match-card.correct { border-color: var(--success-green); background: rgba(0,255,136,0.1); }
+        .match-card.wrong { border-color: var(--danger-red); background: rgba(255,68,68,0.1); }
+        .match-zone { transition: background 0.2s; }
+        .match-zone.drag-over { background: rgba(0,168,255,0.15) !important; border-style: solid !important; }
+
+        /* === MINI GAME: DRAG & DROP TOPOLOGI === */
+        .topo-item {
+            background: rgba(0,30,60,0.9); border: 2px solid var(--primary-blue);
+            border-radius: 8px; padding: 8px 12px; cursor: grab; user-select: none;
+            font-family: 'Rajdhani'; font-size: 0.85rem; color: white;
+            display: flex; align-items: center; gap: 8px;
+            transition: transform 0.15s; touch-action: none;
+        }
+        .topo-item:active { cursor: grabbing; transform: scale(1.05); }
+        .topo-item.used { opacity: 0.35; pointer-events: none; }
+        .topo-slot {
+            border: 2px dashed #334; border-radius: 8px; padding: 10px 14px;
+            min-height: 48px; display: flex; align-items: center; gap: 8px;
+            background: rgba(0,10,20,0.6); transition: background 0.2s, border-color 0.2s;
+            font-family: 'Rajdhani'; color: #556; font-size: 0.85rem;
+        }
+        .topo-slot.drag-over { background: rgba(0,168,255,0.1); border-color: var(--primary-blue); border-style: solid; }
+        .topo-slot.filled { border-color: var(--tech-cyan); border-style: solid; color: white; }
+        .topo-slot.correct { border-color: var(--success-green); background: rgba(0,255,136,0.08); }
+        .topo-slot.wrong { border-color: var(--danger-red); background: rgba(255,68,68,0.08); }
+        .topo-slot img { width: 28px; height: 28px; object-fit: contain; }
+        .topo-slot-label { color: #556; font-size: 0.75rem; font-family: 'Orbitron'; min-width: 70px; }
+
         #screen-quiz { 
             background-image: linear-gradient(rgba(5, 20, 40, 0.8), rgba(5, 20, 40, 0.9)), url('images/bg_monitor.png'); 
             background-size: cover; 
@@ -1001,7 +1032,7 @@
 #hud {
     position: absolute; top: 0; left: 0; width: 100%;
     padding: 20px; box-sizing: border-box;
-    display: flex; justify-content: space-between; align-items: flex-start;
+    display: none; justify-content: space-between; align-items: flex-start;
     pointer-events: none; z-index: 600;
 }
 
@@ -1610,6 +1641,9 @@
                 <div class="about-section">
                     <div class="about-section-label">🎮 Tentang Game</div>
                     <div class="about-desc-box">
+                        <div style="border-left: 3px solid var(--accent-gold); padding-left: 12px; margin-bottom: 14px; color: #FFE066; font-style: italic; line-height: 1.6;">
+                            Hei, teman-teman! Siap jadi Guardian dunia digital? Di sini kamu akan belajar konsep keamanan siber seperti <strong>phishing, malware, firewall,</strong> dan <strong>enkripsi</strong> — semua dikemas dalam petualangan seru bertema sci-fi! Sambil bermain, kamu bakal makin paham cara menjaga keamanan jaringan di dunia nyata. Yuk, buktikan kamu bisa jadi <strong>pelindung jaringan sejati!</strong>
+                        </div>
                         <strong>Toya Guardians: Tirtatelaga Defense</strong> adalah game edukasi berbasis <strong>Action RPG</strong> yang menggabungkan aksi pertempuran real-time dengan pembelajaran literasi digital dan kebersihan air.<br><br>
                         Pemain berperan sebagai <strong>Guardian</strong> yang bertugas melindungi sistem pengolahan air Tirtatelaga dari serangan virus siber bernama <strong>Genderuwo Malware</strong>. Melalui misi eksplorasi, kuis interaktif, dan boss battle epik, pemain diajak memahami pentingnya <strong>keamanan data, teknologi pengolahan air, dan kesadaran digital</strong> secara menyenangkan.
                     </div>
@@ -1632,6 +1666,7 @@
                 <div class="about-section">
                     <div class="about-section-label">🏫 Institusi</div>
                     <div class="about-school-box">
+                        <img src="images/logo_smk.png" alt="Logo SMK" style="width: 70px; height: 70px; object-fit: contain; margin-bottom: 10px; filter: drop-shadow(0 0 8px rgba(0,217,255,0.4));">
                         <p class="about-school-name">SMK Negeri 1 Brondong</p>
                         <p class="about-school-loc">Brondong, Lamongan, Jawa Timur</p>
                     </div>
@@ -1668,6 +1703,14 @@
 
                     </div>
                 </div>
+
+                <div class="about-section">
+                        <div class="about-section-label">📬 Kontak</div>
+                        <div style="background: rgba(0,168,255,0.05); border: 1px solid rgba(0,168,255,0.2); border-radius: 10px; padding: 12px 16px; text-align: center;">
+                            <p style="margin: 0 0 4px 0; color: #888; font-family: 'Rajdhani'; font-size: 0.78rem;">Ada pertanyaan, masukan, atau kolaborasi?</p>
+                            <a href="mailto:autharnailul2302@gmail.com" style="color: var(--tech-cyan); font-family: 'Orbitron'; font-size: 0.82rem; font-weight: bold; text-decoration: none; letter-spacing: 0.5px; text-shadow: 0 0 8px rgba(0,217,255,0.5);">✉ autharnailul2302@gmail.com</a>
+                        </div>
+                    </div>
 
                 <div class="about-footer-note">
                     © 2025 Tim Gelombang Utara · SMK Negeri 1 Brondong<br>
@@ -1870,6 +1913,50 @@
             <div style="background:rgba(255,215,0,0.1); border:1px solid var(--accent-gold); padding:8px 15px; border-radius:6px; color:var(--accent-gold); font-family:'Orbitron'; font-size:0.75rem;">⚡ SOC & SIEM</div>
         </div>
         <button class="btn-ml" style="width:220px; margin-top:20px; background:linear-gradient(180deg, #00aa55 0%, #006633 100%); border-color:var(--success-green);" onclick="app.startChapter4Intro()">MULAI MISI AKHIR</button>
+    </div>
+
+    <!-- MINI GAME: MENJODOHKAN (sebelum Quiz CH1) -->
+    <div id="screen-matching" class="ui-screen" style="background:#050A14; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+        <h2 style="color:var(--accent-gold); font-family:'Orbitron'; font-size:1.2rem; margin:0 0 5px 0; text-align:center;">⚡ SORTIR ANCAMAN SIBER</h2>
+        <p style="color:var(--tech-cyan); font-size:0.85rem; margin:0 0 15px 0; text-align:center;">Drag kartu ancaman ke kolom yang tepat!</p>
+        <div id="matching-progress" style="color:#aaa; font-family:'Orbitron'; font-size:0.8rem; margin-bottom:10px;">0 / 6 BENAR</div>
+        <div style="display:flex; gap:15px; width:100%; max-width:700px; justify-content:center; flex-wrap:wrap;">
+            <!-- Kartu ancaman -->
+            <div id="matching-cards" style="display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:360px;"></div>
+            <!-- Drop zones -->
+            <div style="display:flex; flex-direction:column; gap:10px; min-width:200px;">
+                <div id="zone-attack" class="match-zone" data-type="attack" style="border:2px dashed #FF4444; border-radius:10px; padding:10px; min-height:120px; background:rgba(255,68,68,0.05);">
+                    <div style="color:#FF4444; font-family:'Orbitron'; font-size:0.75rem; margin-bottom:8px;">🔴 SERANGAN SIBER</div>
+                    <div class="zone-drop-area" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+                </div>
+                <div id="zone-defense" class="match-zone" data-type="defense" style="border:2px dashed #00FF88; border-radius:10px; padding:10px; min-height:120px; background:rgba(0,255,136,0.05);">
+                    <div style="color:#00FF88; font-family:'Orbitron'; font-size:0.75rem; margin-bottom:8px;">🟢 PERTAHANAN</div>
+                    <div class="zone-drop-area" style="display:flex; flex-wrap:wrap; gap:5px;"></div>
+                </div>
+            </div>
+        </div>
+        <div id="matching-feedback" style="margin-top:12px; font-family:'Orbitron'; font-size:0.9rem; min-height:24px; text-align:center;"></div>
+        <button id="btn-matching-check" class="btn-ml" style="margin-top:12px; width:220px; display:none;" onclick="app.checkMatching()">✅ CECK JAWABAN</button>
+    </div>
+
+    <!-- MINI GAME: DRAG & DROP TOPOLOGI JARINGAN (sebelum Quiz CH2) -->
+    <div id="screen-topology" class="ui-screen" style="background:#050A14; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+        <h2 style="color:var(--accent-gold); font-family:'Orbitron'; font-size:1.2rem; margin:0 0 5px 0; text-align:center;">🌐 SUSUN TOPOLOGI JARINGAN</h2>
+        <p style="color:var(--tech-cyan); font-size:0.85rem; margin:0 0 10px 0; text-align:center;">Drag perangkat ke slot yang benar sesuai urutan jaringan yang aman!</p>
+        <div style="display:flex; gap:20px; width:100%; max-width:750px; align-items:flex-start; flex-wrap:wrap; justify-content:center;">
+            <!-- Panel perangkat -->
+            <div style="background:rgba(0,20,40,0.8); border:1px solid #334; border-radius:10px; padding:12px; min-width:160px;">
+                <div style="color:var(--tech-cyan); font-family:'Orbitron'; font-size:0.7rem; margin-bottom:8px;">📦 PERANGKAT TERSEDIA</div>
+                <div id="topo-items" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+            <!-- Slot topologi -->
+            <div style="flex:1; min-width:240px;">
+                <div style="color:#aaa; font-size:0.75rem; text-align:center; margin-bottom:8px;">Urutan: Internet → ? → ? → ? → Pengguna</div>
+                <div id="topo-slots" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+        </div>
+        <div id="topo-feedback" style="margin-top:12px; font-family:'Orbitron'; font-size:0.85rem; min-height:24px; text-align:center;"></div>
+        <button id="btn-topo-check" class="btn-ml" style="margin-top:12px; width:220px; display:none;" onclick="app.checkTopology()">✅ CEK SUSUNAN</button>
     </div>
 
     <!-- Quiz Screen -->
@@ -2242,8 +2329,7 @@ const DATA_INDONESIA = {
     "Kota Mojokerto": ["Magersari","Prajurit Kulon"],
     "Kota Pasuruan": ["Bugul Kidul","Gadingrejo","Pohjentrek","Purworejo"],
     "Kota Probolinggo": ["Kanigaran","Kedopok","Kademangan","Mayangan","Wonoasih"],
-    "Kota Surabaya": ["Asemrowo","Benowo","Bubutan","Bulak","Dukuh Pakis","Gayungan","Genteng","Gubeng","Gunung Anyar","Jambangan","Karang Pilang","Kenjeran","Krembangan","Lakarsantri","Mulyorejo","Pabean Cantikan","Pakal","Rungkut","Sambikerep","Sawahan","Semampir","Simokerto","Sukolilo","Sukomanunggal","Tambaksari","Tandes","Tegalsari","Tenggilis Mejoyo","Wiyung","Wonocolo","Wonokromo"],
-    "Kota Madiun": ["Kartoharjo","Mangunharjo","Taman"]
+    "Kota Surabaya": ["Asemrowo","Benowo","Bubutan","Bulak","Dukuh Pakis","Gayungan","Genteng","Gubeng","Gunung Anyar","Jambangan","Karang Pilang","Kenjeran","Krembangan","Lakarsantri","Mulyorejo","Pabean Cantikan","Pakal","Rungkut","Sambikerep","Sawahan","Semampir","Simokerto","Sukolilo","Sukomanunggal","Tambaksari","Tandes","Tegalsari","Tenggilis Mejoyo","Wiyung","Wonocolo","Wonokromo"]
     },
     "Bali": {
         "Denpasar": ["Denpasar Barat","Denpasar Selatan","Denpasar Timur","Denpasar Utara"],
@@ -3498,10 +3584,17 @@ const AudioMgr = {
     isMuted: false,
     currentTrack: 'bgm-player',
     contextInitialized: false,
+    preloadMain: function() {
+        // Preload hanya bgm-player (musik title) di background saat loading screen
+        // agar langsung siap saat user klik "Nyalakan Musik"
+        const el = document.getElementById('bgm-player');
+        if(el) { el.preload = 'auto'; el.load(); }
+    },
     initContext: function() {
         if(!this.contextInitialized) {
             this.contextInitialized = true;
-            ['bgm-player', 'bgm-shooter', 'bgm-bomber', 'bgm-boss', 'bgm-ending', 'bgm-opening', 'bgm-main'].forEach(id => {
+            // bgm-player sudah di-preload, load sisanya di background
+            ['bgm-shooter', 'bgm-bomber', 'bgm-boss', 'bgm-ending', 'bgm-opening', 'bgm-main'].forEach(id => {
                 const el = document.getElementById(id);
                 if(el) { el.load(); }
             });
@@ -3585,13 +3678,18 @@ function showMessage(title, body, onCloseCallback) {
 }
 
 function showRexMessage(title, body) {
-    document.getElementById('msg-title').innerText = title;
-    document.getElementById('msg-body').innerText = body;
+    const titleEl = document.getElementById('msg-title');
+    const bodyEl = document.getElementById('msg-body');
+    if (titleEl) titleEl.innerText = title;
+    if (bodyEl) bodyEl.innerText = body;
     const rexIcon = document.getElementById('msg-icon');
-    rexIcon.style.display = 'block'; 
-    rexIcon.src = ASSETS.rex; 
+    if (rexIcon) {
+        rexIcon.style.display = 'block';
+        if (ASSETS && ASSETS.rex) rexIcon.src = ASSETS.rex;
+    }
     
     const box = document.getElementById('custom-message-box');
+    if (!box) return;
     box.style.setProperty('display', 'flex', 'important');
     
     // Use simple close for hint
@@ -3873,9 +3971,7 @@ class GameApp {
         }
         this.resizeGame(); // Initial call
 		
-		 // PENTING: Panggil updatePurityDisplay di sini agar visual awal langsung merah
-        // (Tambahkan baris ini di akhir constructor)
-        setTimeout(() => this.updatePurityDisplay(this.player.toyaPurity), 100);
+		 // updatePurityDisplay dipanggil setelah masuk title screen (di runSplashTextAnimation)
     }
 
 
@@ -4250,6 +4346,7 @@ class GameApp {
                 
                 setTimeout(() => {
                     this.state = AppState.AUDIO_SETUP;
+                    AudioMgr.preloadMain(); // Preload bgm-player di background
                     this.switchScreen('screen-audio');
                     // Langsung load deferred & lazy assets di background tanpa tunggu
                     this.lazyLoadAssets();
@@ -4374,31 +4471,40 @@ class GameApp {
 
         const aboutBtn = document.getElementById('btn-about');
         const fsBtn = document.getElementById('btn-fullscreen');
+        const musicBtn = document.getElementById('btn-music');
         const hud = document.getElementById('hud');
-        
-        // Atur visibilitas tombol menu
-        if (id === 'screen-quiz') {
+
+        // Sembunyikan semua tombol dulu, tampilkan sesuai kebutuhan tiap screen
+        hud.style.display = 'none';
+        if(aboutBtn) aboutBtn.style.display = 'none';
+        if(fsBtn) fsBtn.style.display = 'none';
+        if(musicBtn) musicBtn.style.display = 'none';
+
+        // Atur visibilitas per screen
+        if (id === 'screen-splash' || id === 'screen-audio') {
+            // Loading & audio setup: semua UI tersembunyi total — tidak ada yang muncul
+        } else if (id === 'screen-quiz') {
             // QUIZ: HUD tetap tampil tapi tidak bisa menghalangi klik
             hud.style.display = 'flex';
             hud.style.pointerEvents = 'none'; // Seluruh HUD tidak blokir klik
-            aboutBtn.style.display = 'none';
-            if(fsBtn) fsBtn.style.display = 'none';
             if(window.stopTitleLightning) window.stopTitleLightning();
         } else if (id === 'screen-title') {
             hud.style.pointerEvents = '';
-            aboutBtn.style.display = 'flex';
+            if(aboutBtn) aboutBtn.style.display = 'flex';
             if(fsBtn) fsBtn.style.display = 'flex';
+            if(musicBtn) musicBtn.style.display = 'flex';
+            this.updatePurityDisplay(this.player.toyaPurity);
             AudioMgr.playMusic('bgm-player');
             setTimeout(() => { if(window.startTitleLightning) window.startTitleLightning(); }, 100);
         } else if (id === 'dummy') { // Gameplay mode
             hud.style.pointerEvents = '';
-            aboutBtn.style.display = 'none';
             if(fsBtn) fsBtn.style.display = 'flex';
+            if(musicBtn) musicBtn.style.display = 'flex';
             if(window.stopTitleLightning) window.stopTitleLightning();
         } else {
             hud.style.pointerEvents = '';
-            aboutBtn.style.display = 'none';
             if(fsBtn) fsBtn.style.display = 'flex';
+            if(musicBtn) musicBtn.style.display = 'flex';
             if(window.stopTitleLightning) window.stopTitleLightning();
         }
     }
@@ -4592,20 +4698,199 @@ class GameApp {
         AudioMgr.playSFX('sfx-click'); this.state = AppState.STORY; this.switchScreen('screen-story');
         story.start([
             { speaker: "MASTER REX", text: "Ini adalah pintu masuk Ruang Jaringan Lantai 1. Sistem keamanannya mengunci diri secara otomatis saat serangan terjadi.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Untuk membukanya, kamu harus membuktikan bahwa kamu paham dasar-dasar jaringan komputer. Jawab pertanyaannya dengan benar!", char: 'rex', bg: 'bg_server' }
+            { speaker: "MASTER REX", text: "Sebelum bisa masuk, kamu harus memilah mana yang merupakan serangan siber dan mana yang merupakan pertahanan. Buktikan pemahamanmu!", char: 'rex', bg: 'bg_server' }
         ], () => { 
-            this.switchScreen('screen-quiz');
-            // HUD tetap tampil tapi pointer-events:none (diatur di switchScreen)
-            document.getElementById('hud').style.display = 'flex';
-            document.getElementById('mission-overlay').style.display = 'block';
-            document.getElementById('current-mission-text').innerText = "PECAHKAN KODE AKSES";
-            this.state = AppState.GAME_CH1; 
-            
-            this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH1, () => {
-                showMessage("AKSES DITERIMA", "Pintu Ruang Jaringan terbuka! Pengetahuanmu tentang jaringan telah diverifikasi oleh sistem.");
-                setTimeout(() => this.triggerCablingNarrative(), 2000); 
-            }, null);
+            this.startMatchingGame();
         });
+    }
+
+    startMatchingGame() {
+        this.switchScreen('screen-matching');
+        document.getElementById('hud').style.display = 'flex';
+        document.getElementById('mission-overlay').style.display = 'block';
+        document.getElementById('current-mission-text').innerText = "SORTIR ANCAMAN SIBER";
+
+        const items = [
+            { id: 'phishing',  label: '🎣 Phishing',    type: 'attack',  emoji: '🎣' },
+            { id: 'malware',   label: '🦠 Malware',     type: 'attack',  emoji: '🦠' },
+            { id: 'ransomware',label: '💰 Ransomware',  type: 'attack',  emoji: '💰' },
+            { id: 'firewall',  label: '🧱 Firewall',    type: 'defense', emoji: '🧱' },
+            { id: 'antivirus', label: '🛡️ Antivirus',   type: 'defense', emoji: '🛡️' },
+            { id: 'enkripsi',  label: '🔐 Enkripsi',    type: 'defense', emoji: '🔐' },
+        ];
+        this._matchingItems = items;
+        this._matchingPlaced = {};
+
+        // Render kartu
+        const cardsEl = document.getElementById('matching-cards');
+        cardsEl.innerHTML = '';
+        // Acak urutan kartu
+        const shuffled = [...items].sort(() => Math.random() - 0.5);
+        shuffled.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.id = 'card-' + item.id;
+            card.draggable = true;
+            card.innerHTML = item.label;
+            card.dataset.id = item.id;
+            card.dataset.type = item.type;
+
+            // Desktop drag
+            card.addEventListener('dragstart', e => {
+                e.dataTransfer.setData('text/plain', item.id);
+                card.style.opacity = '0.5';
+            });
+            card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+
+            // Touch drag
+            card.addEventListener('touchstart', e => this._matchTouchStart(e, item.id), {passive:false});
+            card.addEventListener('touchmove', e => this._matchTouchMove(e), {passive:false});
+            card.addEventListener('touchend', e => this._matchTouchEnd(e), {passive:false});
+
+            cardsEl.appendChild(card);
+        });
+
+        // Reset drop zones
+        document.querySelectorAll('.zone-drop-area').forEach(z => z.innerHTML = '');
+        document.getElementById('matching-feedback').innerText = '';
+        document.getElementById('matching-progress').innerText = '0 / 6 BENAR';
+        document.getElementById('btn-matching-check').style.display = 'none';
+
+        // Setup drop zones
+        document.querySelectorAll('.match-zone').forEach(zone => {
+            zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+            zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const id = e.dataTransfer.getData('text/plain');
+                this._placeMatchCard(id, zone.dataset.type);
+            });
+        });
+
+        // Tutorial popup menjodohkan
+        setTimeout(() => {
+            showMessage(
+                "🎯 MINI GAME: SORTIR ANCAMAN SIBER",
+                `<div style='text-align:left; font-size:1rem; line-height:1.7;'>
+                Sebelum masuk gedung, kamu harus bisa membedakan mana <strong>serangan</strong> dan mana <strong>pertahanan</strong> siber!<br><br>
+                <strong>🎮 CARA BERMAIN:</strong><br>
+                🖱️ <strong>KLIK & TAHAN</strong> kartu ancaman<br>
+                👉 <strong>GESER</strong> ke kolom yang tepat:<br>
+                &nbsp;&nbsp;&nbsp;🔴 <strong>SERANGAN SIBER</strong> = ancaman berbahaya<br>
+                &nbsp;&nbsp;&nbsp;🟢 <strong>PERTAHANAN</strong> = alat perlindungan<br><br>
+                📱 <strong>HP:</strong> Sentuh & seret kartu ke zona yang sesuai<br><br>
+                <strong>🎯 Sortir semua 6 kartu dengan benar untuk lanjut!</strong>
+                </div>`,
+                () => {}
+            );
+        }, 400);
+    }
+
+    _matchTouchStart(e, id) {
+        e.preventDefault();
+        this._touchDragId = id;
+        const card = document.getElementById('card-' + id);
+        const rect = card.getBoundingClientRect();
+        // Buat ghost
+        const ghost = card.cloneNode(true);
+        ghost.id = 'match-ghost';
+        ghost.style.cssText = `position:fixed;pointer-events:none;z-index:99999;opacity:0.85;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;`;
+        document.body.appendChild(ghost);
+    }
+    _matchTouchMove(e) {
+        e.preventDefault();
+        const ghost = document.getElementById('match-ghost');
+        if(!ghost) return;
+        const t = e.touches[0];
+        ghost.style.left = (t.clientX - 60) + 'px';
+        ghost.style.top = (t.clientY - 20) + 'px';
+        // Highlight zone
+        document.querySelectorAll('.match-zone').forEach(z => {
+            const r = z.getBoundingClientRect();
+            if(t.clientX > r.left && t.clientX < r.right && t.clientY > r.top && t.clientY < r.bottom)
+                z.classList.add('drag-over');
+            else z.classList.remove('drag-over');
+        });
+    }
+    _matchTouchEnd(e) {
+        const ghost = document.getElementById('match-ghost');
+        if(ghost) ghost.remove();
+        const t = e.changedTouches[0];
+        let dropped = false;
+        document.querySelectorAll('.match-zone').forEach(z => {
+            z.classList.remove('drag-over');
+            const r = z.getBoundingClientRect();
+            if(t.clientX > r.left && t.clientX < r.right && t.clientY > r.top && t.clientY < r.bottom) {
+                this._placeMatchCard(this._touchDragId, z.dataset.type);
+                dropped = true;
+            }
+        });
+    }
+
+    _placeMatchCard(id, zoneType) {
+        if(this._matchingPlaced[id]) return; // sudah ditempatkan
+        const item = this._matchingItems.find(i => i.id === id);
+        if(!item) return;
+
+        this._matchingPlaced[id] = zoneType;
+
+        // Pindahkan kartu ke zona
+        const card = document.getElementById('card-' + id);
+        if(card) card.classList.add('placed');
+
+        const zone = document.querySelector(`.match-zone[data-type="${zoneType}"] .zone-drop-area`);
+        const mini = document.createElement('div');
+        mini.style.cssText = 'background:rgba(0,30,60,0.9);border:2px solid var(--primary-blue);border-radius:6px;padding:4px 8px;font-family:Rajdhani;font-size:0.8rem;color:white;';
+        mini.innerText = item.label;
+        mini.id = 'placed-' + id;
+        zone.appendChild(mini);
+
+        // Update progress
+        const total = Object.keys(this._matchingPlaced).length;
+        document.getElementById('matching-progress').innerText = `${total} / 6 DITEMPATKAN`;
+
+        if(total === this._matchingItems.length) {
+            document.getElementById('btn-matching-check').style.display = 'block';
+        }
+    }
+
+    checkMatching() {
+        AudioMgr.playSFX('sfx-click');
+        let benar = 0;
+        this._matchingItems.forEach(item => {
+            const placed = this._matchingPlaced[item.id];
+            const el = document.getElementById('placed-' + item.id);
+            if(placed === item.type) {
+                benar++;
+                if(el) el.style.borderColor = 'var(--success-green)';
+            } else {
+                if(el) el.style.borderColor = 'var(--danger-red)';
+            }
+        });
+
+        const fb = document.getElementById('matching-feedback');
+        if(benar === 6) {
+            AudioMgr.playSFX('sfx-correct');
+            fb.style.color = 'var(--success-green)';
+            fb.innerText = '✅ SEMPURNA! Semua ancaman berhasil disortir!';
+            setTimeout(() => {
+                this.switchScreen('screen-quiz');
+                document.getElementById('hud').style.display = 'flex';
+                document.getElementById('mission-overlay').style.display = 'block';
+                document.getElementById('current-mission-text').innerText = "PECAHKAN KODE AKSES";
+                this.state = AppState.GAME_CH1;
+                this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH1, () => {
+                    showMessage("AKSES DITERIMA", "Pintu Ruang Jaringan terbuka! Pengetahuanmu tentang jaringan telah diverifikasi oleh sistem.");
+                    setTimeout(() => this.triggerCablingNarrative(), 2000);
+                }, null);
+            }, 1500);
+        } else {
+            AudioMgr.playSFX('sfx-wrong');
+            fb.style.color = 'var(--danger-red)';
+            fb.innerText = `❌ ${benar}/6 benar. Coba ulangi!`;
+            setTimeout(() => this.startMatchingGame(), 2000);
+        }
     }
 
     triggerCablingNarrative() {
@@ -4716,31 +5001,216 @@ class GameApp {
 
     startChapter2Quiz() {
         AudioMgr.playSFX('sfx-click');
-        showMessage("VALIDASI FIREWALL", "Konfigurasi fisik selesai. Sekarang validasi pengetahuanmu tentang Firewall untuk mengunci sistem pertahanan secara permanen!");
-        this.switchScreen('screen-quiz');
+        showMessage("KONFIGURASI FIREWALL", "Bagus! Sebelum mengunci Firewall, kamu harus menyusun topologi jaringan yang benar terlebih dahulu!", () => {
+            this.startTopologyGame();
+        });
+    }
+
+    startTopologyGame() {
+        this.switchScreen('screen-topology');
         document.getElementById('hud').style.display = 'flex';
-        document.getElementById('hud-purity').style.width = this.player.toyaPurity + "%";
-        document.getElementById('quiz-title-text').innerText = "VALIDASI FIREWALL";
-        
-        const display = document.getElementById('quiz-code-display');
-        display.style.display = 'block'; 
-        display.innerHTML = ''; 
-        
-        for(let i=0; i<5; i++) {
-             const s = document.createElement('span');
-             s.id = `lock-${i}`;
-             s.innerText = '🔒'; 
-             s.style.margin = '0 10px';
-             s.style.color = '#FF4444'; 
-             s.style.fontSize = '2rem'; 
-             display.appendChild(s);
+        document.getElementById('mission-overlay').style.display = 'block';
+        document.getElementById('current-mission-text').innerText = "SUSUN TOPOLOGI JARINGAN";
+
+        // Definisi perangkat & urutan yang benar
+        const devices = [
+            { id: 'firewall', label: 'Firewall',  imgKey: 'item_firewall', correctSlot: 0 },
+            { id: 'switch',   label: 'Switch',    imgKey: 'item_switch',   correctSlot: 1 },
+            { id: 'server',   label: 'Server',    imgKey: 'item_server',   correctSlot: 2 },
+            { id: 'pc',       label: 'PC Client', imgKey: 'item_pc',       correctSlot: 3 },
+        ];
+        const slotLabels = [
+            { hint: 'Slot 1 — Penjaga Gerbang', correct: 'firewall' },
+            { hint: 'Slot 2 — Penghubung Perangkat', correct: 'switch' },
+            { hint: 'Slot 3 — Pusat Data', correct: 'server' },
+            { hint: 'Slot 4 — Pengguna Akhir', correct: 'pc' },
+        ];
+        this._topoDevices = devices;
+        this._topoSlots = slotLabels.map(() => null);
+
+        // Render perangkat (acak)
+        const itemsEl = document.getElementById('topo-items');
+        itemsEl.innerHTML = '';
+        const shuffled = [...devices].sort(() => Math.random() - 0.5);
+        shuffled.forEach(dev => {
+            const img = this.imgs[dev.imgKey];
+            const el = document.createElement('div');
+            el.className = 'topo-item';
+            el.id = 'topo-dev-' + dev.id;
+            el.draggable = true;
+            el.dataset.id = dev.id;
+            el.innerHTML = (img && img.complete ? `<img src="${img.src}" style="width:28px;height:28px;object-fit:contain;">` : '📦') + `<span>${dev.label}</span>`;
+
+            el.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', dev.id); el.style.opacity = '0.5'; });
+            el.addEventListener('dragend', () => { el.style.opacity = '1'; });
+            el.addEventListener('touchstart', e => this._topoTouchStart(e, dev.id), {passive:false});
+            el.addEventListener('touchmove', e => this._topoTouchMove(e), {passive:false});
+            el.addEventListener('touchend', e => this._topoTouchEnd(e), {passive:false});
+            itemsEl.appendChild(el);
+        });
+
+        // Render slots
+        const slotsEl = document.getElementById('topo-slots');
+        slotsEl.innerHTML = '';
+        slotLabels.forEach((s, i) => {
+            const slot = document.createElement('div');
+            slot.className = 'topo-slot';
+            slot.id = 'topo-slot-' + i;
+            slot.dataset.slot = i;
+            slot.innerHTML = `<span class="topo-slot-label">Slot ${i+1}</span><span class="slot-hint" style="color:#445;font-size:0.75rem;">${s.hint}</span>`;
+
+            slot.addEventListener('dragover', e => { e.preventDefault(); slot.classList.add('drag-over'); });
+            slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+            slot.addEventListener('drop', e => {
+                e.preventDefault(); slot.classList.remove('drag-over');
+                this._placeTopoDevice(e.dataTransfer.getData('text/plain'), i);
+            });
+            slotsEl.appendChild(slot);
+        });
+
+        document.getElementById('topo-feedback').innerText = '';
+        document.getElementById('btn-topo-check').style.display = 'none';
+
+        // Tutorial popup topologi
+        setTimeout(() => {
+            showMessage(
+                "🌐 MINI GAME: SUSUN TOPOLOGI JARINGAN",
+                `<div style='text-align:left; font-size:1rem; line-height:1.7;'>
+                Jaringan yang aman harus tersusun dengan urutan yang benar! Setiap perangkat punya peran berbeda.<br><br>
+                <strong>🎮 CARA BERMAIN:</strong><br>
+                🖱️ <strong>KLIK & TAHAN</strong> perangkat di panel kiri<br>
+                👉 <strong>GESER</strong> ke slot yang sesuai di kanan<br>
+                💡 Baca petunjuk tiap slot untuk menebak perangkatnya<br><br>
+                📱 <strong>HP:</strong> Sentuh & seret perangkat ke slot yang tepat<br><br>
+                <strong>Urutan aman:</strong> Internet → 🧱 Firewall → 🔀 Switch → 🖥️ Server → 💻 PC<br><br>
+                <strong>🎯 Susun 4 perangkat di posisi yang benar untuk lanjut!</strong>
+                </div>`,
+                () => {}
+            );
+        }, 400);
+    }
+
+    _topoTouchStart(e, id) {
+        e.preventDefault();
+        this._topoTouchId = id;
+        const el = document.getElementById('topo-dev-' + id);
+        const rect = el.getBoundingClientRect();
+        const ghost = el.cloneNode(true);
+        ghost.id = 'topo-ghost';
+        ghost.style.cssText = `position:fixed;pointer-events:none;z-index:99999;opacity:0.85;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;`;
+        document.body.appendChild(ghost);
+    }
+    _topoTouchMove(e) {
+        e.preventDefault();
+        const ghost = document.getElementById('topo-ghost');
+        if(!ghost) return;
+        const t = e.touches[0];
+        ghost.style.left = (t.clientX - 80) + 'px';
+        ghost.style.top = (t.clientY - 20) + 'px';
+        document.querySelectorAll('.topo-slot').forEach(s => {
+            const r = s.getBoundingClientRect();
+            if(t.clientX > r.left && t.clientX < r.right && t.clientY > r.top && t.clientY < r.bottom)
+                s.classList.add('drag-over');
+            else s.classList.remove('drag-over');
+        });
+    }
+    _topoTouchEnd(e) {
+        const ghost = document.getElementById('topo-ghost');
+        if(ghost) ghost.remove();
+        const t = e.changedTouches[0];
+        document.querySelectorAll('.topo-slot').forEach(s => {
+            s.classList.remove('drag-over');
+            const r = s.getBoundingClientRect();
+            if(t.clientX > r.left && t.clientX < r.right && t.clientY > r.top && t.clientY < r.bottom)
+                this._placeTopoDevice(this._topoTouchId, parseInt(s.dataset.slot));
+        });
+    }
+
+    _placeTopoDevice(devId, slotIdx) {
+        // Jika slot sudah terisi, kembalikan dulu yang lama
+        const prevId = this._topoSlots[slotIdx];
+        if(prevId) {
+            const prevEl = document.getElementById('topo-dev-' + prevId);
+            if(prevEl) prevEl.classList.remove('used');
+            this._topoSlots[slotIdx] = null;
         }
 
-        this.state = AppState.GAME_CH2_QUIZ;
-        this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH2, () => {
-            showMessage("FIREWALL TERKUNCI", "Semua aturan Firewall berhasil divalidasi dan dikunci. Sistem pertahanan Lantai 2 aktif 100%!");
-            setTimeout(() => this.startChapter2Bridge(), 2000); 
-        }, [1,1,1,1,1]);
+        // Jika device sudah di slot lain, kosongkan slot lama
+        this._topoSlots.forEach((s, i) => {
+            if(s === devId) {
+                this._topoSlots[i] = null;
+                const oldSlotEl = document.getElementById('topo-slot-' + i);
+                if(oldSlotEl) {
+                    oldSlotEl.className = 'topo-slot';
+                    oldSlotEl.innerHTML = `<span class="topo-slot-label">Slot ${i+1}</span><span class="slot-hint" style="color:#445;font-size:0.75rem;">${this._topoDevices.find(d=>d.id===devId)? '' : ''}</span>`;
+                }
+            }
+        });
+
+        this._topoSlots[slotIdx] = devId;
+        const dev = this._topoDevices.find(d => d.id === devId);
+        const img = this.imgs[dev.imgKey];
+        const slotEl = document.getElementById('topo-slot-' + slotIdx);
+        slotEl.className = 'topo-slot filled';
+        slotEl.innerHTML = (img && img.complete ? `<img src="${img.src}">` : '📦') + `<span>${dev.label}</span>`;
+
+        // Mark device as used
+        document.querySelectorAll('.topo-item').forEach(el => el.classList.remove('used'));
+        this._topoSlots.forEach(s => {
+            if(s) { const el = document.getElementById('topo-dev-' + s); if(el) el.classList.add('used'); }
+        });
+
+        // Tampilkan tombol cek jika semua slot terisi
+        const allFilled = this._topoSlots.every(s => s !== null);
+        document.getElementById('btn-topo-check').style.display = allFilled ? 'block' : 'none';
+    }
+
+    checkTopology() {
+        AudioMgr.playSFX('sfx-click');
+        const correct = ['firewall', 'switch', 'server', 'pc'];
+        let benar = 0;
+        this._topoSlots.forEach((devId, i) => {
+            const slotEl = document.getElementById('topo-slot-' + i);
+            if(devId === correct[i]) {
+                benar++;
+                slotEl.classList.add('correct');
+            } else {
+                slotEl.classList.add('wrong');
+            }
+        });
+
+        const fb = document.getElementById('topo-feedback');
+        if(benar === 4) {
+            AudioMgr.playSFX('sfx-correct');
+            fb.style.color = 'var(--success-green)';
+            fb.innerText = '✅ TOPOLOGI BENAR! Jaringan siap diamankan!';
+            setTimeout(() => {
+                // Lanjut ke Quiz CH2
+                showMessage("VALIDASI FIREWALL", "Konfigurasi fisik selesai. Sekarang validasi pengetahuanmu tentang Firewall!");
+                this.switchScreen('screen-quiz');
+                document.getElementById('hud').style.display = 'flex';
+                document.getElementById('hud-purity').style.width = this.player.toyaPurity + "%";
+                document.getElementById('quiz-title-text').innerText = "VALIDASI FIREWALL";
+                const display = document.getElementById('quiz-code-display');
+                display.style.display = 'block'; display.innerHTML = '';
+                for(let i=0; i<5; i++) {
+                    const s = document.createElement('span');
+                    s.id = `lock-${i}`; s.innerText = '🔒';
+                    s.style.cssText = 'margin:0 10px;color:#FF4444;font-size:2rem;';
+                    display.appendChild(s);
+                }
+                this.state = AppState.GAME_CH2_QUIZ;
+                this.currentChapter = new ChapterQuiz(this, BANK_SOAL_CH2, () => {
+                    showMessage("FIREWALL TERKUNCI", "Semua aturan Firewall berhasil divalidasi dan dikunci. Sistem pertahanan Lantai 2 aktif 100%!");
+                    setTimeout(() => this.startChapter2Bridge(), 2000);
+                }, [1,1,1,1,1]);
+            }, 1500);
+        } else {
+            AudioMgr.playSFX('sfx-wrong');
+            fb.style.color = 'var(--danger-red)';
+            fb.innerText = `❌ ${benar}/4 benar. Coba susun ulang!`;
+            setTimeout(() => this.startTopologyGame(), 2000);
+        }
     }
 
     startChapter2Bridge() {
@@ -7370,11 +7840,17 @@ class ChapterQuiz {
         // Mulai Tutorial
         setTimeout(() => {
             showMessage(
-                "TUTORIAL: KODE AKSES",
-                `<div style='text-align:left; font-size:1rem; line-height:1.5;'>
+                "🔐 KODE AKSES PINTU",
+                `<div style='text-align:left; font-size:1rem; line-height:1.7;'>
+                Pintu ini terkunci dengan 5 kode rahasia. Jawab pertanyaan dengan benar untuk membuka satu per satu!<br><br>
                 <strong>🎮 CARA BERMAIN:</strong><br>
-                ✅ PILIH JAWABAN YANG BENAR.<br>
-                🦖 GUNAKAN BANTUAN REX JIKA BUNTU.<br>
+                📋 Baca pertanyaan dengan cermat<br>
+                ✅ <strong>KETUK / KLIK</strong> salah satu dari 4 pilihan jawaban<br>
+                ⏱️ Perhatikan waktu — jangan sampai habis!<br>
+                🦖 Tekan tombol <strong>BANTUAN (REX)</strong> jika buntu<br><br>
+                💡 Jawaban benar = satu digit kode terbuka 🔓<br>
+                ❌ Jawaban salah = waktu berkurang!<br><br>
+                <strong>🎯 Buka semua 5 kode untuk membuka pintu!</strong>
                 </div>`,
                 () => {
                     this.isQuizActive = true;
