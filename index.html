@@ -4150,7 +4150,7 @@ class GameApp {
         const dataToSave = { ...this.player };
         if(this.state === AppState.GAME_SURVIVAL || this.currentChapter instanceof ChapterSurvival) {
             dataToSave.mode = 'survival';
-            dataToSave.wave = this.currentChapter ? this.currentChapter.wave : 0;
+            dataToSave.wave = this.player.lastWave || (this.currentChapter ? this.currentChapter.wave : 0);
         } else {
             dataToSave.mode = 'story';
         }
@@ -4269,9 +4269,6 @@ class GameApp {
     
 		this.state = AppState.ENDING;
 		this.switchScreen('screen-ending');
-        
-        this.state = AppState.ENDING;
-        this.switchScreen('screen-ending');
         
         const panel = document.getElementById('result-panel-container');
         panel.className = "result-panel result-loss";
@@ -6257,9 +6254,11 @@ ${statsHTML}
                 ctx.fillStyle='#050A14'; ctx.fillRect(0,0,800,600); 
             }
 
-            if(this.currentChapter) { 
-                this.currentChapter.update(dt); 
-                this.currentChapter.draw(ctx); 
+            if(this.currentChapter) {
+                if(this.state !== AppState.GAME_SURVIVAL_QUIZ) {
+                    this.currentChapter.update(dt); 
+                    this.currentChapter.draw(ctx); 
+                }
                 // Hanya update purity di gameplay
                 if(this.state < AppState.ENDING_CINEMATIC) {
                      document.getElementById('hud-purity').style.width = this.player.toyaPurity + "%"; 
@@ -6335,9 +6334,12 @@ class ChapterSurvival {
         canvas.addEventListener('mousemove', this.handleMove);
         canvas.addEventListener('mousedown', this.handleStart);
         canvas.addEventListener('mouseup', this.handleEnd);
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); this.handleMove(e.touches[0]); }, {passive: false});
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); this.handleStart(e.touches[0]); }, {passive: false});
-        canvas.addEventListener('touchend', (e) => { e.preventDefault(); this.handleEnd(e); }, {passive: false});
+        this.handleTouchMove  = (e) => { e.preventDefault(); this.handleMove(e.touches[0]); };
+        this.handleTouchStart = (e) => { e.preventDefault(); this.handleStart(e.touches[0]); };
+        this.handleTouchEnd   = (e) => { e.preventDefault(); this.handleEnd(e); };
+        canvas.addEventListener('touchmove',  this.handleTouchMove,  {passive: false});
+        canvas.addEventListener('touchstart', this.handleTouchStart, {passive: false});
+        canvas.addEventListener('touchend',   this.handleTouchEnd,   {passive: false});
 
         // Virtual joystick horizontal untuk survival shooter
         if (game.VirtualJoy) {
@@ -6451,6 +6453,7 @@ class ChapterSurvival {
     }
 
     triggerQuiz() {
+        if(this.game.state === AppState.GAME_SURVIVAL_QUIZ) return; // sudah dalam quiz
         this.active = false;
         this.isShooting = false;
         this.game.state = AppState.GAME_SURVIVAL_QUIZ;
@@ -6506,8 +6509,8 @@ class ChapterSurvival {
                     this.game.addScore(200);
                     const powerType = ['firewall_boost', 'encryption_shield', 'antivirus_nuke'][Math.floor(Math.random()*3)];
                     showMessage("🎉 JAWABAN BENAR! +200 Skor", `Pengetahuanmu mengaktifkan <strong>${powerType.replace('_',' ').toUpperCase()}</strong>! Pertahanan makin kuat!`, () => {
-                        this.activatePowerUp(powerType);
                         this.resumeGame();
+                        this.activatePowerUp(powerType);
                     });
                 } else {
                     AudioMgr.playSFX('sfx-wrong');
@@ -6530,6 +6533,8 @@ class ChapterSurvival {
     }
 
     resumeGame() {
+        this.spawnTimer = 0;
+        this.shootTimer = 0;
         this.game.switchScreen('dummy');
         document.getElementById('hud').style.display = 'flex';
         // Sembunyikan lagi elemen HUD timer/purity saat resume
@@ -6872,6 +6877,9 @@ class ChapterSurvival {
         canvas.removeEventListener('mousemove', this.handleMove);
         canvas.removeEventListener('mousedown', this.handleStart);
         canvas.removeEventListener('mouseup', this.handleEnd);
+        canvas.removeEventListener('touchmove',  this.handleTouchMove);
+        canvas.removeEventListener('touchstart', this.handleTouchStart);
+        canvas.removeEventListener('touchend',   this.handleTouchEnd);
         
         if (this.game.VirtualJoy) this.game.VirtualJoy.hide();
 
