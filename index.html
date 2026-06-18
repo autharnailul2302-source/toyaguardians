@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Keamanan Siber: Pertahanan Jaringan Digital</title>
+    <link rel="icon" type="image/png" href="images/logo_main.png">
     <meta name="description" content="Siap jadi Guardian dunia digital? Di sini kamu akan belajar konsep keamanan siber seperti phishing, malware, firewall, dan enkripsi — semua dikemas dalam petualangan seru bertema sci-fi! Sambil bermain, kamu bakal makin paham cara menjaga keamanan jaringan di dunia nyata. Yuk, buktikan kamu bisa jadi pelindung jaringan sejati!">
     <meta name="keywords" content="game edukasi, keamanan siber, cybersecurity, phishing, malware, firewall, enkripsi, Guardian, Toya Guardians">
     <meta property="og:title" content="Toya Guardians: Pertahanan Jaringan Digital">
@@ -16,7 +17,7 @@
         :root {
             --primary-blue: #00A8FF; --tech-cyan: #00D9FF; --accent-gold: #FFD700;
             --dark-base: #050A14; --danger-red: #FF4444; --success-green: #00FF88;
-            --glass-panel: rgba(5, 20, 40, 0.95);
+            --glass-panel: rgba(5, 20, 40, 0.75);
         }
         
         body { 
@@ -52,11 +53,28 @@
             width: 100%; 
             height: 100%; 
             image-rendering: auto;
+            pointer-events: none; /* Default OFF - diaktifkan JS saat game berjalan */
         }
         
         /* UI SCREENS */
         .ui-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
         .active { display: flex; animation: fadeIn 0.5s; }
+
+        /* Konten title (logo + tombol) disembunyikan saat overlay aktif */
+        #title-content { transition: opacity 0.3s; }
+        #title-content.hidden { opacity: 0; pointer-events: none; }
+
+        /* Title screen selalu jadi background — tidak pernah display:none */
+        #screen-title { 
+            display: flex !important; 
+            z-index: 5; /* Di bawah screen lain */
+        }
+        /* Screen overlay (leaderboard, about, guru, stats, sertifikat) tampil di atas title */
+        #screen-leaderboard, #screen-about, #screen-guru, #screen-stats, #screen-sertifikat {
+            z-index: 15;
+            background: rgba(0, 5, 20, 0.82); /* Overlay gelap transparan agar bg title tetap kelihatan */
+            backdrop-filter: blur(2px);
+        }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
         /* SCREEN SPLASH (LOADING BAR) */
@@ -710,7 +728,25 @@
             touch-action: none;
         }
         .match-card:active { cursor: grabbing; transform: scale(1.05); box-shadow: 0 0 15px var(--primary-blue); }
-        .match-card.placed { opacity: 0.5; pointer-events: none; border-color: #334; }
+        .match-card.placed { 
+            opacity: 0.35; 
+            border-color: #2a3a4a; 
+            background: rgba(0,10,20,0.6);
+            filter: grayscale(80%);
+            transform: scale(0.95);
+            box-shadow: none;
+            cursor: grab;
+        }
+        .match-card.placed::after {
+            content: '✓';
+            position: absolute;
+            right: 6px;
+            top: 4px;
+            font-size: 0.7rem;
+            color: var(--tech-cyan);
+            opacity: 0.7;
+        }
+        .match-card { position: relative; }
         .match-card.correct { border-color: var(--success-green); background: rgba(0,255,136,0.1); }
         .match-card.wrong { border-color: var(--danger-red); background: rgba(255,68,68,0.1); }
         .match-zone { transition: background 0.2s; }
@@ -1170,72 +1206,55 @@
     z-index: 70;               /* Pastikan di atas segalanya */
 }
 
+/* ===== ORIENTATION OVERLAY: PUTAR KE LANDSCAPE ===== */
+#orientation-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    height: 100dvh;
+    background: linear-gradient(135deg, rgba(5,10,20,0.97) 0%, rgba(0,5,15,0.99) 100%);
+    z-index: 999999;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+    padding: 30px;
+    box-sizing: border-box;
+}
+#orientation-overlay.active { display: flex; }
+#orientation-overlay .rotate-icon {
+    font-size: 4rem;
+    margin-bottom: 18px;
+    animation: rotateHint 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px var(--tech-cyan));
+}
+@keyframes rotateHint {
+    0%, 100% { transform: rotate(0deg); }
+    45%, 55% { transform: rotate(90deg); }
+}
+#orientation-overlay h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--tech-cyan);
+    font-size: 1.3rem;
+    letter-spacing: 2px;
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 15px rgba(0,217,255,0.6);
+    text-transform: uppercase;
+}
+#orientation-overlay p {
+    font-family: 'Rajdhani', sans-serif;
+    color: #aaa;
+    font-size: 0.95rem;
+    max-width: 320px;
+    line-height: 1.6;
+    margin: 0;
+}
 
-    /* ===== ROTATE SCREEN OVERLAY ===== */
-    #rotate-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: #000;
-        z-index: 99999;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 30px;
-        box-sizing: border-box;
-    }
-    #rotate-overlay.show {
-        display: flex;
-    }
-    .rotate-icon {
-        font-size: 4rem;
-        animation: rotatePhone 1.5s ease-in-out infinite;
-        margin-bottom: 20px;
-        display: block;
-    }
-    @keyframes rotatePhone {
-        0%   { transform: rotate(0deg); }
-        40%  { transform: rotate(90deg); }
-        60%  { transform: rotate(90deg); }
-        100% { transform: rotate(90deg); }
-    }
-    .rotate-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 1.2rem;
-        color: var(--tech-cyan);
-        text-shadow: 0 0 10px var(--tech-cyan);
-        margin-bottom: 10px;
-        letter-spacing: 1px;
-    }
-    .rotate-desc {
-        font-family: 'Rajdhani', sans-serif;
-        font-size: 1rem;
-        color: #aaa;
-        line-height: 1.6;
-        max-width: 280px;
-    }
-    .rotate-border {
-        border: 2px solid var(--primary-blue);
-        border-radius: 16px;
-        padding: 30px 25px;
-        box-shadow: 0 0 30px rgba(0,168,255,0.2);
-        max-width: 320px;
-        width: 100%;
-    }
     </style>
 </head>
 <body>
-
-<!-- ROTATE SCREEN OVERLAY -->
-<div id="rotate-overlay">
-    <div class="rotate-border">
-        <span class="rotate-icon">📱</span>
-        <p class="rotate-title">PUTAR PERANGKATMU</p>
-        <p class="rotate-desc">Game ini dimainkan dalam mode <strong style="color:var(--tech-cyan)">Landscape</strong>.<br>Silakan putar HP-mu ke posisi horizontal untuk pengalaman terbaik.</p>
-    </div>
-</div>
 
 <!-- AUDIO TRACKS: preload=none agar tidak didownload saat startup -->
 <audio id="bgm-player" loop preload="none"><source src="audio/ost.mp3" type="audio/mp3"></audio>
@@ -1250,6 +1269,12 @@
 <audio id="sfx-correct" preload="none"><source src="audio/correct.mp3" type="audio/mp3"></audio>
 <audio id="sfx-wrong" preload="none"><source src="audio/wrong.mp3" type="audio/mp3"></audio>
 
+<div id="orientation-overlay">
+    <div class="rotate-icon">🔄</div>
+    <h2>Putar Perangkatmu</h2>
+    <p>Toya Guardians dirancang untuk mode <strong>Landscape</strong> (mendatar). Putar HP/tablet kamu untuk melanjutkan misi.</p>
+</div>
+
 <div id="game-container">
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     
@@ -1257,7 +1282,7 @@
     <div class="btn-music-toggle" id="btn-music" onclick="app.toggleMusic()" title="Toggle Music">♪</div>
     
     <div class="btn-fullscreen-toggle" id="btn-fullscreen" onclick="app.toggleFullScreen()" title="Full Screen">⛶</div>
-    <div class="btn-about-toggle" id="btn-about" onclick="app.toggleAbout()" title="About">?</div>
+    <div class="btn-about-toggle" id="btn-about" onclick="app.toggleAbout()" title="About" style="display:none !important;">?</div>
     
     <!-- Lightning Effect Overlay -->
     <div id="lightning-overlay"></div>
@@ -1351,7 +1376,7 @@
                 <div class="mode-card-bg" id="bg-story-img"></div>
                 <div class="mode-content">
                     <h3 class="mode-title">STORY MODE</h3>
-                    <p class="mode-desc">Pelajari Topologi, Firewall, dan Forensik Digital, lalu hadapi Boss! (Direkomendasikan untuk pemula)</p>
+                    <p class="mode-desc">Pelajari Topologi, Firewall, Forensik Digital & hadapi Boss! (Disarankan untuk pemula)</p>
                 </div>
             </div>
 
@@ -1361,7 +1386,7 @@
                 <div class="mode-card-bg" id="bg-survival-img"></div>
                 <div class="mode-content">
                     <h3 class="mode-title">SURVIVAL</h3>
-                    <p class="mode-desc">Simulasi serangan siber tanpa henti — bertahan selama mungkin dan uji refleksmu!</p>
+                    <p class="mode-desc">Simulasi serangan siber tak henti — bertahan selama mungkin & uji refleksmu!</p>
                 </div>
             </div>
         </div>
@@ -1372,9 +1397,10 @@
     <!-- ABOUT SCREEN (REDESIGNED EPIC) -->
     <style>
         #screen-about {
-            z-index: 200;
-            background: rgba(0,0,0,0.92);
-            backdrop-filter: blur(8px);
+            z-index: 15;
+            background: rgba(0, 5, 20, 0.55);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             overflow: hidden;
         }
 
@@ -1386,7 +1412,9 @@
             -webkit-overflow-scrolling: touch;
             overscroll-behavior: contain;
             border-radius: 16px;
-            background: linear-gradient(145deg, rgba(5,15,35,0.98) 0%, rgba(2,8,20,0.99) 100%);
+            background: linear-gradient(145deg, rgba(5,15,35,0.75) 0%, rgba(2,8,20,0.80) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1.5px solid var(--tech-cyan);
             box-shadow: 0 0 60px rgba(0,217,255,0.18), 0 0 0 1px rgba(0,168,255,0.08);
             position: relative;
@@ -1714,6 +1742,27 @@
                 <!-- HACKATHON BADGE -->
                 <div class="about-section">
                     <div class="about-section-label">🏆 Pencapaian</div>
+
+                    <!-- LINKAR 2026 BADGE -->
+                    <div style="background: linear-gradient(135deg, #1565C0 0%, #0D47A1 60%, #1976D2 100%); border-radius: 12px; padding: 18px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px; position: relative; overflow: hidden;">
+                        <!-- Dekorasi lingkaran blur biru muda di pojok -->
+                        <div style="position:absolute; right:-18px; bottom:-18px; width:80px; height:80px; background:rgba(255,255,255,0.07); border-radius:50%;"></div>
+                        <div style="position:absolute; right:20px; top:-20px; width:50px; height:50px; background:rgba(255,255,255,0.05); border-radius:50%;"></div>
+                        <!-- Teks LINKAR -->
+                        <div style="flex-shrink:0; line-height:1;">
+                            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; font-weight:900; color:#fff; letter-spacing:1px; line-height:1;">LINKAR</div>
+                            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; font-weight:900; color:#fff; letter-spacing:1px; line-height:1.1;">2026</div>
+                        </div>
+                        <!-- Garis pemisah -->
+                        <div style="width:2px; height:48px; background:rgba(255,255,255,0.25); flex-shrink:0; border-radius:2px;"></div>
+                        <!-- Deskripsi -->
+                        <div>
+                            <div style="font-size:0.65rem; color:rgba(255,255,255,0.7); font-family:'Orbitron',monospace; letter-spacing:2px; margin-bottom:3px;">PESERTA SELEKSI</div>
+                            <div style="font-size:0.9rem; font-weight:bold; color:#fff; font-family:'Orbitron',monospace; line-height:1.3;">Lomba Inovasi Karya Guru</div>
+                            <div style="font-size:0.72rem; color:rgba(255,255,255,0.65); font-family:'Rajdhani',sans-serif; margin-top:3px;">Astra · Yayasan Astra · Ruangguru</div>
+                        </div>
+                    </div>
+
                     <div class="about-hackathon-badge">
                         <div class="hackathon-trophy">🏆</div>
                         <div class="hackathon-text-wrap">
@@ -1736,30 +1785,15 @@
 
                 <!-- TIM PENGEMBANG -->
                 <div class="about-section">
-                    <div class="about-section-label">👥 Tim Pengembang</div>
+                    <div class="about-section-label">👨‍💻 Pengembang</div>
                     <div class="about-team-grid">
 
-                        <div class="about-member-card">
-                            <div class="member-number">01</div>
+                        <div class="about-member-card" style="border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.04);">
+                            <div class="member-number" style="color: var(--accent-gold); font-size:1.6rem;">✦</div>
                             <div class="member-info">
-                                <p class="member-name">Nailul Authar</p>
-                                <p class="member-role">Lead Developer &amp; Game Designer</p>
-                            </div>
-                        </div>
-
-                        <div class="about-member-card">
-                            <div class="member-number">02</div>
-                            <div class="member-info">
-                                <p class="member-name">Andy K. P.</p>
-                                <p class="member-role">Developer &amp; Visual Artist</p>
-                            </div>
-                        </div>
-
-                        <div class="about-member-card">
-                            <div class="member-number">03</div>
-                            <div class="member-info">
-                                <p class="member-name">Ma'ruf Budi Utomo</p>
-                                <p class="member-role">Developer &amp; Content Creator</p>
+                                <p class="member-name" style="font-size:0.95rem; color:var(--accent-gold); text-shadow: 0 0 12px rgba(255,215,0,0.4);">Nailul Authar, S.Kom</p>
+                                <p class="member-role" style="color:#aaa; letter-spacing:1px;">Game Designer · Developer · Guru TKJ</p>
+                                <p style="font-size:0.68rem; color:#555; margin:3px 0 0; font-family:'Rajdhani';">SMK Negeri 1 Brondong, Lamongan</p>
                             </div>
                         </div>
 
@@ -1775,8 +1809,8 @@
                     </div>
 
                 <div class="about-footer-note">
-                    © 2025 Tim Gelombang Utara · SMK Negeri 1 Brondong<br>
-                    Assets by Gemini AI &amp; Custom Logic
+                    © 2026 Nailul Authar, S.Kom · SMK Negeri 1 Brondong<br>
+                    Karya Inovasi Pembelajaran LINKAR 2026
                 </div>
             </div>
 
@@ -1793,6 +1827,7 @@
         <!-- Flash kilat sesekali -->
         <div id="title-flash-overlay"></div>
 
+        <div id="title-content">
         <div id="logo-container">
             <!-- Ring energi berputar di sekitar logo -->
             <div id="energy-ring-container">
@@ -1807,12 +1842,34 @@
         </div>
         
         <!-- --- POSISI TOMBOL PRESISI (Reset margin negatif aneh-aneh) --- -->
-        <div class="panel" style="background:transparent; border:none; box-shadow:none; margin-top:10px; padding-top:0; position:relative; top:0;">
-            <button class="btn-ml btn-anim" onclick="app.goToRegister()">MULAI MISI BARU</button>
-            <button class="btn-ml btn-anim" style="background: #002244; border-color:#004488;" onclick="app.showLeaderboard()">HALL OF GUARDIANS (NASIONAL)</button>
+        <div style="margin-top:12px; padding: 0 16px; width:100%; max-width:480px; box-sizing:border-box;">
+
+            <!-- Tombol utama full width -->
+            <button class="btn-ml btn-anim" onclick="app.goToRegister()" style="margin-top:0; margin-bottom:8px; padding:13px 20px; font-size:1rem;">⚔ MULAI MISI BARU</button>
+            <button id="btn-menu-continue" class="btn-ml btn-anim" style="display:none; background:linear-gradient(180deg,#004400,#002200); border-color:#00FF88; color:#00FF88; margin-top:0; margin-bottom:8px; padding:13px 20px; font-size:1rem;" onclick="app.continueGame()">▶ LANJUTKAN MISI</button>
+
+            <!-- Grid 2 kolom untuk menu sekunder -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:0;">
+                <button onclick="app.showLeaderboard()" style="background:#001833; border:2px solid #004488; color:#00D9FF; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                    onmouseover="this.style.background='#002244'; this.style.borderColor='#00D9FF';" onmouseout="this.style.background='#001833'; this.style.borderColor='#004488';">
+                    🏆<br>HALL OF GUARDIANS<br><span style="font-size:0.55rem; opacity:0.7;">NASIONAL</span>
+                </button>
+                <button onclick="app.showStatistikSiswa()" style="background:#1a0a00; border:2px solid #664400; color:var(--accent-gold); padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                    onmouseover="this.style.background='#2a1500'; this.style.borderColor='var(--accent-gold)';" onmouseout="this.style.background='#1a0a00'; this.style.borderColor='#664400';">
+                    📈<br>STATISTIK SAYA<br><span style="font-size:0.55rem; opacity:0.7;">PROGRES GUARDIAN</span>
+                </button>
+                <button onclick="app.showGuruDashboard()" style="background:#001a0a; border:2px solid #005522; color:#00FF88; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                    onmouseover="this.style.background='#002a12'; this.style.borderColor='#00FF88';" onmouseout="this.style.background='#001a0a'; this.style.borderColor='#005522';">
+                    📊<br>DASHBOARD GURU<br><span style="font-size:0.55rem; opacity:0.7;">REKAP KELAS</span>
+                </button>
+                <button onclick="app.toggleAbout()" style="background:#0d0d1a; border:2px solid #333366; color:#9988FF; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                    onmouseover="this.style.background='#16162a'; this.style.borderColor='#9988FF';" onmouseout="this.style.background='#0d0d1a'; this.style.borderColor='#333366';">
+                    ℹ<br>TENTANG GAME<br><span style="font-size:0.55rem; opacity:0.7;">ABOUT</span>
+                </button>
+            </div>
         </div>
-        <p style="position:absolute; bottom:10px; color:var(--tech-cyan); font-size:0.8rem; text-shadow:0 0 5px black;">Ver. 20.0 (ARPG Matrix)</p>
-    </div>
+        </div><!-- end title-content -->
+    </div><!-- end screen-title (FIX: tag ini sebelumnya hilang, menyebabkan semua screen di bawah ikut "terjebak" di dalam screen-title sehingga tidak bisa diklik) -->
 
     <div id="screen-register" class="ui-screen">
         <div class="reg-illustration"><img src="images/hero_male.png" alt="Guardian"></div>
@@ -1941,6 +1998,120 @@
     </div>
 
     <!-- Chapter Title Screen 1 -->
+    <!-- ===== DASHBOARD GURU ===== -->
+    <div id="screen-guru" class="ui-screen">
+        <div class="panel" style="height:90vh; max-height:600px; display:flex; flex-direction:column; max-width:680px; width:96%; padding:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h2 style="color:var(--accent-gold); margin:0; font-size:1.1rem;">📊 DASHBOARD GURU</h2>
+                <div id="guru-status-badge" class="sync-badge status-loading">LOADING...</div>
+            </div>
+            <div style="display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap;">
+                <div style="flex:1; min-width:160px; position:relative;">
+                    <input id="guru-search" type="text" placeholder="Ketik nama sekolah..." autocomplete="off"
+                        style="width:100%; box-sizing:border-box; background:#001833; border:1px solid var(--tech-cyan); color:#fff; padding:8px 12px; font-family:'Rajdhani',sans-serif; font-size:0.9rem; border-radius:4px; outline:none;"
+                        oninput="app.guruAutoComplete(this.value)"
+                        onkeydown="app.guruSearchKeydown(event)">
+                    <div id="guru-autocomplete" style="display:none; position:absolute; top:100%; left:0; right:0; background:#001833; border:1px solid var(--tech-cyan); border-top:none; border-radius:0 0 6px 6px; z-index:100; max-height:200px; overflow-y:auto;"></div>
+                </div>
+                <button class="btn-ml" style="padding:8px 16px; font-size:0.85rem; margin:0;" onclick="app.searchGuruDashboard()">CARI</button>
+            </div>
+            <div id="guru-school-label" style="color:var(--tech-cyan); font-size:0.8rem; margin-bottom:6px; min-height:18px;"></div>
+            <!-- Ringkasan kartu -->
+            <div id="guru-summary-cards" style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:10px;"></div>
+            <!-- Grafik pemahaman materi -->
+            <div id="guru-materi-chart" style="background:#001020; border:1px solid #334; border-radius:6px; padding:10px; margin-bottom:8px; display:none;">
+                <div style="color:var(--tech-cyan); font-size:0.75rem; font-family:'Orbitron',monospace; margin-bottom:8px;">RATA-RATA NILAI PER MATERI</div>
+                <div id="guru-materi-bars"></div>
+            </div>
+            <!-- Tabel siswa -->
+            <div style="overflow-y:auto; flex:1; border:1px solid #334; border-radius:4px;">
+                <table id="guru-table" style="width:100%; border-collapse:collapse; color:#ccc; font-size:0.78rem;">
+                    <thead>
+                        <tr style="background:#001833; position:sticky; top:0; z-index:1;">
+                            <th style="padding:6px 8px; text-align:left; color:var(--tech-cyan); border-bottom:1px solid #334;">#</th>
+                            <th style="padding:6px 8px; text-align:left; color:var(--tech-cyan); border-bottom:1px solid #334;">NAMA SISWA</th>
+                            <th style="padding:6px 8px; text-align:center; color:var(--tech-cyan); border-bottom:1px solid #334;">SKOR</th>
+                            <th style="padding:6px 8px; text-align:center; color:var(--tech-cyan); border-bottom:1px solid #334;">CHAPTER</th>
+                            <th style="padding:6px 8px; text-align:center; color:var(--tech-cyan); border-bottom:1px solid #334;">Ch1</th>
+                            <th style="padding:6px 8px; text-align:center; color:var(--tech-cyan); border-bottom:1px solid #334;">Ch2</th>
+                            <th style="padding:6px 8px; text-align:center; color:var(--tech-cyan); border-bottom:1px solid #334;">Ch3</th>
+                            <th style="padding:6px 8px; text-align:center; color:var(--tech-cyan); border-bottom:1px solid #334;">STATUS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guru-table-body">
+                        <tr><td colspan="8" style="text-align:center; padding:20px; color:#555;">Ketik nama sekolah lalu klik CARI</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="display:flex; gap:8px; margin-top:8px;">
+                <button class="btn-ml btn-anim" style="background:#002244; flex:1; font-size:0.8rem; padding:8px;" onclick="app.switchScreen('screen-title')">KEMBALI</button>
+                <button class="btn-ml" style="background:linear-gradient(180deg,#005500,#003300); border-color:#00FF88; flex:1; font-size:0.8rem; padding:8px;" onclick="app.exportGuruReport()">⬇ EKSPOR LAPORAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SERTIFIKAT DIGITAL ===== -->
+    <div id="screen-sertifikat" class="ui-screen" style="background:rgba(0,5,20,0.55); backdrop-filter:blur(4px);">
+        <div id="cert-card" style="background:linear-gradient(135deg,#020d1f,#041528); border:2px solid var(--accent-gold); border-radius:12px; padding:30px 28px; max-width:500px; width:92%; text-align:center; position:relative;">
+            <div style="font-family:'Orbitron',monospace; font-size:0.55rem; letter-spacing:4px; color:var(--tech-cyan); margin-bottom:4px; opacity:0.7;">TOYA GUARDIANS — SERTIFIKAT KOMPETENSI</div>
+            <div style="font-family:'Orbitron',monospace; font-size:1.3rem; font-weight:900; color:var(--accent-gold); margin-bottom:2px; text-shadow:0 0 15px rgba(255,215,0,0.4);">SERTIFIKAT</div>
+            <div style="font-size:0.8rem; color:#aaa; margin-bottom:16px; font-family:'Orbitron',monospace;">KEAMANAN JARINGAN DIGITAL</div>
+            <div style="font-size:0.85rem; color:#aaa; margin-bottom:6px;">Diberikan kepada:</div>
+            <div id="cert-name" style="font-family:'Orbitron',monospace; font-size:1.5rem; font-weight:900; color:#fff; margin-bottom:4px;"></div>
+            <div id="cert-school" style="font-size:0.85rem; color:var(--tech-cyan); margin-bottom:16px;"></div>
+            <div id="cert-desc" style="font-size:0.82rem; color:#ccc; line-height:1.6; margin-bottom:16px; border-top:1px solid #334; border-bottom:1px solid #334; padding:12px 0;"></div>
+            <div style="display:flex; justify-content:space-around; margin-bottom:16px;">
+                <div style="text-align:center;">
+                    <div style="font-family:'Orbitron',monospace; font-size:1.4rem; font-weight:900; color:var(--accent-gold);" id="cert-score"></div>
+                    <div style="font-size:0.65rem; color:#888; letter-spacing:1px;">SKOR AKHIR</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-family:'Orbitron',monospace; font-size:1.4rem; font-weight:900;" id="cert-rank" style="color:#fff;"></div>
+                    <div style="font-size:0.65rem; color:#888; letter-spacing:1px;">RANK</div>
+                </div>
+                <div style="text-align:center;">
+                    <div style="font-size:1.4rem; font-weight:900; color:var(--success-green);" id="cert-level"></div>
+                    <div style="font-size:0.65rem; color:#888; letter-spacing:1px;">LEVEL</div>
+                </div>
+            </div>
+            <div id="cert-date" style="font-size:0.7rem; color:#555; margin-bottom:14px;"></div>
+            <div style="display:flex; gap:8px; justify-content:center;">
+                <button class="btn-ml btn-anim" style="background:#002244; font-size:0.8rem; padding:10px 16px;" onclick="app.switchScreen('screen-title')">🏠 MENU UTAMA</button>
+                <button class="btn-ml" style="background:linear-gradient(180deg,#5500aa,#330066); border-color:#BB88FF; font-size:0.8rem; padding:10px 16px;" onclick="app.shareSertifikat()">📤 BAGIKAN</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== STATISTIK PRIBADI SISWA ===== -->
+    <div id="screen-stats" class="ui-screen">
+        <div class="panel" style="max-width:520px; width:94%; padding:16px; max-height:90vh; overflow-y:auto;">
+            <h2 style="color:var(--accent-gold); margin:0 0 4px; font-size:1.1rem; text-align:center;">📈 STATISTIK GUARDIAN</h2>
+            <div id="stats-name" style="color:var(--tech-cyan); font-size:0.85rem; text-align:center; margin-bottom:12px;"></div>
+            <!-- Skor & Rank -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px;">
+                <div style="background:#001020; border:1px solid #334; border-radius:6px; padding:12px; text-align:center;">
+                    <div id="stats-score" style="font-family:'Orbitron',monospace; font-size:1.6rem; font-weight:900; color:var(--accent-gold);"></div>
+                    <div style="font-size:0.7rem; color:#888; letter-spacing:1px; margin-top:2px;">SKOR TOTAL</div>
+                </div>
+                <div style="background:#001020; border:1px solid #334; border-radius:6px; padding:12px; text-align:center;">
+                    <div id="stats-rank" style="font-family:'Orbitron',monospace; font-size:1.6rem; font-weight:900;"></div>
+                    <div id="stats-rank-label" style="font-size:0.7rem; color:#888; letter-spacing:1px; margin-top:2px;">PERINGKAT NASIONAL</div>
+                </div>
+            </div>
+            <!-- Penguasaan materi per chapter -->
+            <div style="background:#001020; border:1px solid #334; border-radius:6px; padding:12px; margin-bottom:10px;">
+                <div style="color:var(--tech-cyan); font-size:0.75rem; font-family:'Orbitron',monospace; margin-bottom:10px;">PENGUASAAN MATERI PER TOPIK</div>
+                <div id="stats-materi-bars"></div>
+            </div>
+            <!-- Rekomendasi belajar -->
+            <div id="stats-rekomendasi" style="background:#001020; border:1px solid #334; border-radius:6px; padding:12px; margin-bottom:12px;">
+                <div style="color:var(--accent-gold); font-size:0.75rem; font-family:'Orbitron',monospace; margin-bottom:8px;">💡 REKOMENDASI BELAJAR</div>
+                <div id="stats-rekom-content" style="font-size:0.82rem; color:#ccc; line-height:1.7;"></div>
+            </div>
+            <button class="btn-ml btn-anim" style="background:#002244; width:100%; font-size:0.85rem;" onclick="app.switchScreen('screen-title')">KEMBALI KE MENU</button>
+        </div>
+    </div>
+
     <div id="screen-title-ch1" class="ui-screen">
         <h1 style="color:var(--primary-blue); font-family:'Orbitron'; font-size:3rem; text-shadow:0 0 10px rgba(0, 168, 255, 0.5);">CHAPTER 1</h1>
         <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">DASAR KEAMANAN JARINGAN</h2>
@@ -1968,7 +2139,7 @@
     <div id="screen-title-ch4" class="ui-screen" style="background: linear-gradient(135deg, #050A14 0%, #0a1a0a 100%);">
         <h1 style="color:var(--success-green); font-family:'Orbitron'; font-size:3rem; text-shadow:0 0 10px rgba(0, 255, 136, 0.6);">CHAPTER 4</h1>
         <h2 style="color:var(--tech-cyan); font-size:1.5rem; text-shadow:0 0 5px rgba(0, 217, 255, 0.5);">INCIDENT RESPONSE &amp; PEMULIHAN</h2>
-        <p style="color:#aaa; max-width:400px; text-align:center; line-height:1.6;">Sebelum konfrontasi akhir, Guardian harus menunjukkan pemahaman tentang respons insiden, enkripsi, dan pemulihan sistem agar Tirtatelaga benar-benar aman!</p>
+        <p style="color:#aaa; max-width:400px; text-align:center; line-height:1.6;">Sebelum konfrontasi akhir, Guardian harus membuktikan pemahaman tentang respons insiden, enkripsi, dan pemulihan sistem agar Tirtatelaga benar-benar aman!</p>
         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:5px;">
             <div style="background:rgba(0,255,136,0.1); border:1px solid var(--success-green); padding:8px 15px; border-radius:6px; color:var(--success-green); font-family:'Orbitron'; font-size:0.75rem;">🛡️ INCIDENT RESPONSE</div>
             <div style="background:rgba(0,168,255,0.1); border:1px solid var(--primary-blue); padding:8px 15px; border-radius:6px; color:var(--primary-blue); font-family:'Orbitron'; font-size:0.75rem;">🔐 ENKRIPSI & VPN</div>
@@ -1978,7 +2149,7 @@
     </div>
 
     <!-- MINI GAME: MENJODOHKAN (sebelum Quiz CH1) -->
-    <div id="screen-matching" class="ui-screen" style="background:#050A14; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
+    <div id="screen-matching" class="ui-screen" style="background: linear-gradient(rgba(5,20,40,0.75), rgba(5,20,40,0.85)), url('images/bg_monitor.png') center/cover no-repeat; flex-direction:column; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;">
         <h2 style="color:var(--accent-gold); font-family:'Orbitron'; font-size:1.2rem; margin:0 0 5px 0; text-align:center;">⚡ SORTIR ANCAMAN SIBER</h2>
         <p style="color:var(--tech-cyan); font-size:0.85rem; margin:0 0 15px 0; text-align:center;">Drag kartu ancaman ke kolom yang tepat!</p>
         <div id="matching-progress" style="color:#aaa; font-family:'Orbitron'; font-size:0.8rem; margin-bottom:10px;">0 / 6 BENAR</div>
@@ -2153,7 +2324,7 @@ const ASSETS_DEFERRED = {
     bg_story: 'images/bg_story.png',
     bg_siap: 'images/bg_siap.png',
     bg_tutorend: 'images/bg_tutorend.png',
-    bg_rtraining: 'images/bg_rtraining.png', bg_rtraining1: 'images/bg_rtraining1.png',
+    bg_rtraining: 'images/bg_rtraining.png', bg_rtraining1: 'images/bg_rtraining.png',
     bg_jaringan: 'images/bg_jaringan.png',
     bg_masuklt1: 'images/bg_masuklt1.png', bg_masuklt1nyala: 'images/bg_masuklt1nyala.png',
     bg_menujulift: 'images/bg_menujulift.png',
@@ -2164,7 +2335,7 @@ const ASSETS_DEFERRED = {
     bg_firewall1: 'images/bg_firewall1.png', bg_firewall2: 'images/bg_firewall2.png', bg_firewall3: 'images/bg_firewall3.png',
     bg_server: 'images/bg_server.png',
     bg_monitor: 'images/bg_monitor.png',
-    bg_victory: 'images/bg_victory.png',
+    bg_victory: 'images/bg_open5.png',
     bg_survival: 'images/bg_survival.png',
 
     // Items & Icons Chapter 1
@@ -2585,7 +2756,7 @@ const BANK_SOAL_CH1 = [
         options: [
             {text:"Mencuri Data Pribadi", correct:true},
             {text:"Memancing Ikan", correct:false, explanation:"Phishing memang plesetan dari 'Fishing', tapi targetnya data user, bukan ikan."},
-            {text:"Mengedit Foto", correct:false, explanation:"Mengedit foto adalah fungsi Photoshop. Phishing adalah penipuan daring untuk mencuri kata sandi."},
+            {text:"Mengedit Foto", correct:false, explanation:"Itu Photoshop. Phishing adalah penipuan untuk mencuri password."},
             {text:"Memperbaiki Jaringan", correct:false, explanation:"Phishing adalah serangan, bukan perbaikan (Maintenance)."}
         ], 
         hint:"Penipuan online", 
@@ -2607,7 +2778,7 @@ const BANK_SOAL_CH1 = [
         options: [
             {text:"Malicious Software", correct:true},
             {text:"Male Software", correct:false, explanation:"'Male' artinya Pria. Malware singkatan dari **Malicious** (Jahat)."},
-            {text:"Mail Software", correct:false, explanation:"Mail Software adalah aplikasi surel (email). Malware adalah perangkat lunak perusak."},
+            {text:"Mail Software", correct:false, explanation:"Mail Software itu aplikasi Email. Malware adalah perangkat lunak perusak."},
             {text:"Mall Ware", correct:false, explanation:"Bukan barang Mall. Malware adalah program berbahaya."}
         ], 
         hint:"Perangkat lunak jahat", 
@@ -2672,9 +2843,9 @@ const BANK_SOAL_CH1 = [
         q: "Password yang kuat mengandung...", 
         options: [
             {text:"Huruf, Angka, & Simbol", correct:true},
-            {text:"Tanggal Lahir", correct:false, explanation:"Tanggal lahir sangat mudah ditebak oleh peretas melalui media sosial (Social Engineering)."},
-            {text:"Nama Pacar", correct:false, explanation:"Nama orang-orang terdekat termasuk dalam daftar kata sandi terburuk karena sangat mudah ditebak."},
-            {text:"Urutan 123456", correct:false, explanation:"Urutan angka 123456 adalah kata sandi paling tidak aman di dunia."}
+            {text:"Tanggal Lahir", correct:false, explanation:"Tanggal lahir sangat mudah ditebak hacker lewat media sosial (Social Engineering)."},
+            {text:"Nama Pacar", correct:false, explanation:"Nama orang dekat masuk daftar password terburuk karena mudah ditebak."},
+            {text:"Urutan 123456", correct:false, explanation:"123456 adalah password paling tidak aman sedunia."}
         ], 
         hint:"Sulit ditebak", 
         explanation:"Kombinasi karakter membuat password sulit dibobol dengan metode Brute Force." 
@@ -2696,7 +2867,7 @@ const BANK_SOAL_CH1 = [
             {text:"Manipulasi Psikologis Manusia", correct:true},
             {text:"Hack Satelit", correct:false, explanation:"Itu serangan teknis tingkat tinggi. Social Engineering menyerang kelemahan manusia (human error)."},
             {text:"Mengirim Spam", correct:false, explanation:"Spam adalah iklan sampah. Social Engineering adalah tipuan terarah dan personal."},
-            {text:"Membobol ATM", correct:false, explanation:"Itu kejahatan fisik (skimming). Social Engineering dilakukan melalui komunikasi dan bujukan."}
+            {text:"Membobol ATM", correct:false, explanation:"Itu kejahatan fisik/skimming. Social Engineering dilakukan lewat komunikasi/bujukan."}
         ], 
         hint:"Menipu orangnya, bukan mesin", 
         explanation:"Social Engineering (Rekayasa Sosial) menipu korban agar memberikan data rahasia secara sukarela." 
@@ -2783,7 +2954,7 @@ const BANK_SOAL_CH1 = [
         options: [
             {text:"Mengacak data agar rahasia", correct:true},
             {text:"Menghapus Data", correct:false, explanation:"Enkripsi mengacak data, bukan menghapusnya. Data masih ada tapi tak terbaca."},
-            {text:"Menyalin Data", correct:false, explanation:"Menyalin itu Backup. Enkripsi itu menyandikan data menjadi kode acak."},
+            {text:"Mengopi Data", correct:false, explanation:"Copy itu menyalin (Backup). Enkripsi itu menyandikan menjadi kode acak."},
             {text:"Mengirim Email", correct:false, explanation:"Email adalah media pengiriman. Enkripsi adalah cara mengamankan isi emailnya."}
         ], 
         hint:"Kode rahasia", 
@@ -3003,7 +3174,7 @@ const BANK_SOAL_CH2 = [
         explanation:"Outbound Rule penting untuk mencegah malware di komputer kita mengirim data rahasia ke luar (Command & Control)." 
     },
     { 
-        q: "Analisis Log Firewall berguna untuk...", 
+        q: "Analisa Log Firewall berguna untuk...", 
         options: [
             {text:"Melacak jejak serangan", correct:true},
             {text:"Menambah RAM", correct:false, explanation:"Analisa log tidak menambah hardware."},
@@ -3023,7 +3194,7 @@ const BANK_SOAL_CH3 = [
             {text:"Sniffing / Analisa Paket", correct:true},
             {text:"Edit Video", correct:false, explanation:"Wireshark bukan editor video. Ia adalah 'mikroskop' paket jaringan."},
             {text:"Membuat Virus", correct:false, explanation:"Wireshark adalah alat diagnosa, bukan pembuat virus."},
-            {text:"Chatting", correct:false, explanation:"Wireshark dapat menyadap pesan yang tidak terenkripsi, tetapi bukan aplikasi chatting."}
+            {text:"Chatting", correct:false, explanation:"Wireshark bisa menyadap chat tidak aman, tapi bukan aplikasi chat."}
         ], 
         hint:"Lihat lalu lintas data", 
         explanation:"Wireshark menangkap paket data yang lewat di kabel/WiFi untuk dianalisa isinya." 
@@ -3033,7 +3204,7 @@ const BANK_SOAL_CH3 = [
         options: [
             {text:"Menjaga Integritas Data", correct:true},
             {text:"Mengompres Data", correct:false, explanation:"Hashing tidak mengecilkan ukuran file (Zip), tapi membuat sidik jari unik."},
-            {text:"Enkripsi Balik", correct:false, explanation:"Hash bersifat satu arah (tidak dapat dibalik). Enkripsi dapat dibalik melalui proses dekripsi."},
+            {text:"Enkripsi Balik", correct:false, explanation:"Hash satu arah (tidak bisa dibalik). Enkripsi bisa dibalik (Dekripsi)."},
             {text:"Memperbaiki File", correct:false, explanation:"Hash hanya memberi tahu kalau file rusak, tidak bisa memperbaikinya."}
         ], 
         hint:"Sidik jari file", 
@@ -3142,7 +3313,7 @@ const BANK_SOAL_CH3 = [
         q: "Tools 'dd' di Linux digunakan untuk...", 
         options: [
             {text:"Membuat Disk Image (Cloning)", correct:true},
-            {text:"Chatting", correct:false, explanation:"'dd' adalah perintah terminal yang sangat andal untuk menyalin data mentah (raw data), bukan untuk chatting."},
+            {text:"Chatting", correct:false, explanation:"'dd' adalah perintah terminal powerful untuk copy raw data, bukan chat."},
             {text:"Download Lagu", correct:false, explanation:"Gunakan wget atau curl untuk download. dd untuk operasi disk level rendah."},
             {text:"Hapus Virus", correct:false, explanation:"dd menyalin apa adanya (termasuk virus jika ada), bukan membersihkannya."}
         ], 
@@ -3161,11 +3332,11 @@ const BANK_SOAL_CH3 = [
         explanation:"Saat Empty Recycle Bin, sistem hanya menghapus pointer file. Isi data fisiknya masih ada di harddisk sampai tertimpa file baru." 
     },
     { 
-        q: "Analisis Timeline bertujuan untuk...", 
+        q: "Analisa Timeline bertujuan untuk...", 
         options: [
             {text:"Merekonstruksi urutan kejadian", correct:true},
             {text:"Mengatur Jam Komputer", correct:false, explanation:"Timeline adalah analisa waktu kejadian kriminal, bukan setting jam."},
-            {text:"Membuat Jadwal Pelajaran", correct:false, explanation:"Ini adalah analisis investigasi kriminal digital, bukan jadwal sekolah."},
+            {text:"Membuat Jadwal Pelajaran", correct:false, explanation:"Ini investigasi kasus, bukan jadwal sekolah."},
             {text:"Menghapus Sejarah", correct:false, explanation:"Justru Timeline berusaha mengungkap sejarah kejadian yang disembunyikan."}
         ], 
         hint:"Kronologi", 
@@ -3191,7 +3362,7 @@ const BANK_SOAL_CH3 = [
             {text:"Warna Ikon", correct:false, explanation:"Ikon tidak menjamin keaslian isi file."}
         ], 
         hint:"Cek keaslian", 
-        explanation:"Sebelum dan sesudah analisis, nilai Hash bukti harus sama. Jika berbeda, berarti bukti sudah cacat secara hukum." 
+        explanation:"Sebelum dan sesudah analisa, nilai Hash bukti harus sama. Jika beda, berarti bukti sudah cacat hukum." 
     },
     { 
         q: "Live Response dilakukan pada...", 
@@ -3219,7 +3390,7 @@ const BANK_SOAL_CH3 = [
         q: "Rainbow Table digunakan untuk...", 
         options: [
             {text:"Cracking Password Hash", correct:true},
-            {text:"Desain Grafis", correct:false, explanation:"Ini bukan palet warna. Rainbow Table adalah basis data yang berisi hash dari jutaan kata sandi."},
+            {text:"Desain Grafis", correct:false, explanation:"Bukan palet warna pelangi. Ini tabel database hash password."},
             {text:"Meja Makan", correct:false, explanation:"Rainbow Table adalah file database raksasa untuk meretas password."},
             {text:"Mewarnai Folder", correct:false, explanation:"Tidak ada hubungannya dengan warna folder."}
         ], 
@@ -3722,6 +3893,11 @@ function showMessage(title, body, onCloseCallback) {
     box.style.zIndex = '20000'; // Super high Z-Index
     box.style.opacity = '1';
 
+    // Blokir klik ke canvas selama popup tampil (saat game aktif)
+    const gameCanvas = document.getElementById('gameCanvas');
+    const wasCanvasActive = gameCanvas && gameCanvas.style.pointerEvents === 'auto';
+    if(wasCanvasActive) gameCanvas.style.pointerEvents = 'none';
+
     const btn = box.querySelector('.btn-msg-ok');
     
     // 3. Clear existing listeners (Clone element approach is safest against old events)
@@ -3733,6 +3909,8 @@ function showMessage(title, body, onCloseCallback) {
         e.preventDefault(); // Prevent accidental propagation
         box.style.display = 'none';
         AudioMgr.playSFX('sfx-click');
+        // Kembalikan pointer events ke canvas hanya jika sebelumnya aktif
+        if(wasCanvasActive && gameCanvas) gameCanvas.style.pointerEvents = 'auto';
         if(onCloseCallback) onCloseCallback();
     };
 
@@ -3966,14 +4144,17 @@ class GameApp {
         this.player.toyaPurity = 10; // Kembali ke 10% (Merah)
         this.player.score = 0;       // Kembali ke 0
         this.player.lastWave = 0;
-        // Reset tracking quiz per chapter
-        this.player.quizStats = { 
-            ch1: {benar:0, total:0}, 
-            ch2: {benar:0, total:0}, 
-            ch3: {benar:0, total:0},
-            ch4: {benar:0, total:0},
-            survival: {benar:0, total:0}
-        };
+        // PERBAIKAN: Pertahankan quizStats dari sesi sebelumnya jika ada,
+        // hanya inisialisasi kalau belum pernah ada sama sekali
+        if (!this.player.quizStats) {
+            this.player.quizStats = { 
+                ch1: {benar:0, total:0}, 
+                ch2: {benar:0, total:0}, 
+                ch3: {benar:0, total:0},
+                ch4: {benar:0, total:0},
+                survival: {benar:0, total:0}
+            };
+        }
         // ----------------------------------
 		
         // NEW STATS TRACKING
@@ -4016,7 +4197,9 @@ class GameApp {
                 }
             };
             this.imgs[k].onerror = () => { 
-                if(k.includes('_w')) { let id = k.split('_')[0]+'_idle'; if(this.imgs[id]) this.imgs[k].src = this.imgs[id].src; } else if(k==='narrator') this.imgs[k].src = this.imgs['rex']?this.imgs['rex'].src:''; 
+                // FIX: jangan set ulang .src (itu memicu request/onload baru lagi -> loadedCount bisa dihitung dobel).
+                // Cukup alihkan referensi imgs[k] ke gambar fallback yang sudah ada.
+                if(k.includes('_w')) { let id = k.split('_')[0]+'_idle'; if(this.imgs[id]) this.imgs[k] = this.imgs[id]; } else if(k==='narrator' && this.imgs['rex']) { this.imgs[k] = this.imgs['rex']; }
                 loadedCount++;
                 if (loadedCount === totalAssets) this.runSplashTextAnimation();
             };
@@ -4064,6 +4247,24 @@ class GameApp {
         
         this.switchScreen('screen-title');
         this.state = 0; // TITLE
+        AudioMgr.playMusic('bgm-player');
+    }
+
+    continueGame() {
+        AudioMgr.playSFX('sfx-click');
+        // Reset score & purity tapi PERTAHANKAN chapter
+        this.player.score = 0;
+        this.player.toyaPurity = 10;
+        this.gameStats = { totalKills: 0, maxCombo: 0, damageTaken: 0, startTime: Date.now() };
+        this.updatePurityDisplay(10);
+        document.getElementById('hud-score').innerText = "0";
+
+        const ch = this.player.chapter || 0;
+        if(ch >= 4)      { this.switchScreen('screen-title-ch4'); this.state = AppState.GAME_CH4; }
+        else if(ch >= 3) { this.switchScreen('screen-title-ch3'); this.state = AppState.GAME_CH3; }
+        else if(ch >= 2) { this.switchScreen('screen-title-ch2'); this.state = AppState.GAME_CH2; }
+        else             { this.switchScreen('screen-title-ch1'); this.state = AppState.GAME_CH1; }
+
         AudioMgr.playMusic('bgm-player');
     }
 
@@ -4375,8 +4576,42 @@ class GameApp {
          // Reset button action: KE HOME (bukan reload)
         const btn = document.querySelector('#screen-ending button');
         if(btn) {
-            btn.innerText = "KEMBALI KE MARKAS"; // Ganti teks biar sesuai
-            btn.onclick = () => this.resetGame(); // Panggil fungsi reset
+            btn.innerText = "KEMBALI KE MARKAS";
+            btn.onclick = () => this.resetGame();
+        }
+
+        // Tambahkan tombol LANJUTKAN MISI untuk story mode
+        if(!isSurvival && (this.player.chapter||0) >= 1) {
+            setTimeout(() => {
+                if(!document.getElementById('btn-continue-story')) {
+                    const ch = this.player.chapter || 0;
+                    const chLabel = ch >= 4 ? 'Chapter 4' : ch >= 3 ? 'Chapter 3' : ch >= 2 ? 'Chapter 2' : 'Chapter 1';
+                    const contBtn = document.createElement('button');
+                    contBtn.id = 'btn-continue-story';
+                    contBtn.className = 'btn-ml btn-anim';
+                    contBtn.style.cssText = 'width:100%; margin-top:8px; background:linear-gradient(180deg,#004400,#002200); border-color:#00FF88; color:#00FF88;';
+                    contBtn.innerText = '▶ LANJUTKAN DARI ' + chLabel;
+                    contBtn.onclick = () => this.continueGame();
+                    const panel = document.getElementById('result-panel-container');
+                    if(panel) panel.appendChild(contBtn);
+                }
+            }, 300);
+        }
+        
+        // Tambahkan tombol sertifikat untuk Survival
+        if(isSurvival) {
+            setTimeout(() => {
+                if(!document.getElementById('btn-cert-survival')) {
+                    const certBtn = document.createElement('button');
+                    certBtn.id = 'btn-cert-survival';
+                    certBtn.className = 'btn-ml btn-anim';
+                    certBtn.style.cssText = 'width:100%; margin-top:8px; background:linear-gradient(180deg,#330000,#1a0000); border-color:#FF4444; color:#FF4444;';
+                    certBtn.innerText = '🏅 AMBIL SERTIFIKAT SURVIVAL';
+                    certBtn.onclick = () => this.showSertifikat(true);
+                    const endingPanel = document.getElementById('result-panel-container');
+                    if(endingPanel) endingPanel.appendChild(certBtn);
+                }
+            }, 400);
         }
         
         AudioMgr.stopAll(); 
@@ -4505,6 +4740,47 @@ class GameApp {
         const s = document.getElementById(id); if(s) s.classList.add('active');
         document.getElementById('hud').style.display = 'none';
         document.getElementById('mission-overlay').style.display = 'none';
+
+        // Tampilkan/sembunyikan konten title (logo+tombol) berdasarkan screen aktif
+        const titleContent = document.getElementById('title-content');
+        const overlayScreens = ['screen-leaderboard','screen-about','screen-guru','screen-stats','screen-sertifikat'];
+        if(titleContent) {
+            if(overlayScreens.includes(id)) {
+                titleContent.classList.add('hidden');
+            } else {
+                titleContent.classList.remove('hidden');
+            }
+        }
+
+        // FIX: Pastikan screen-title bisa tampil kembali sebagai backdrop
+        // Sembunyikan HANYA saat game/tutorial aktif (dummy = tutorial, atau state game)
+        const titleScreen = document.getElementById('screen-title');
+        const gameCanvas = document.getElementById('gameCanvas');
+        if(id === 'dummy') {
+            // Masuk game: hide title, aktifkan canvas input
+            if(titleScreen) { titleScreen.style.setProperty('display', 'none', 'important'); titleScreen.style.pointerEvents = 'none'; }
+            if(gameCanvas) gameCanvas.style.pointerEvents = 'auto';
+        } else {
+            // Keluar game / di menu: restore title backdrop, matikan canvas input
+            if(titleScreen) { titleScreen.style.removeProperty('display'); titleScreen.style.pointerEvents = (id === 'screen-title') ? 'auto' : 'none'; }
+            if(gameCanvas) gameCanvas.style.pointerEvents = 'none';
+        }
+
+        // Tampilkan/sembunyikan tombol LANJUTKAN di menu utama
+        if(id === 'screen-title') {
+            const contBtn = document.getElementById('btn-menu-continue');
+            if(contBtn) {
+                const ch = this.player && this.player.chapter || 0;
+                const hasName = this.player && this.player.name;
+                if(ch >= 1 && hasName) {
+                    const chLabel = ch >= 4 ? 'Chapter 4' : ch >= 3 ? 'Chapter 3' : ch >= 2 ? 'Chapter 2' : 'Chapter 1';
+                    contBtn.innerText = '▶ LANJUTKAN DARI ' + chLabel;
+                    contBtn.style.display = '';
+                } else {
+                    contBtn.style.display = 'none';
+                }
+            }
+        }
         
         document.getElementById('rpg-controls').style.display = 'none';
         const joystick = document.getElementById('boss-joystick');
@@ -4515,18 +4791,6 @@ class GameApp {
         }
         // Hide universal joystick
         if(this.VirtualJoy) this.VirtualJoy.hide();
-
-        // FIX: Blokir klik canvas saat quiz/UI screen aktif, aktifkan saat gameplay
-        const gameCanvas = document.getElementById('gameCanvas');
-        if(gameCanvas) {
-            if(id === 'dummy') {
-                // dummy = gameplay aktif, canvas harus bisa diklik
-                gameCanvas.style.pointerEvents = 'auto';
-            } else {
-                // Semua UI screen lain: canvas tidak boleh memblokir klik
-                gameCanvas.style.pointerEvents = 'none';
-            }
-        }
 
         const aboutBtn = document.getElementById('btn-about');
         const fsBtn = document.getElementById('btn-fullscreen');
@@ -4549,7 +4813,7 @@ class GameApp {
             if(window.stopTitleLightning) window.stopTitleLightning();
         } else if (id === 'screen-title') {
             hud.style.pointerEvents = '';
-            if(aboutBtn) aboutBtn.style.display = 'flex';
+            if(aboutBtn) aboutBtn.style.display = 'none'; // Tombol ? disembunyikan, sudah ada di menu utama
             if(fsBtn) fsBtn.style.display = 'flex';
             if(musicBtn) musicBtn.style.display = 'flex';
             this.updatePurityDisplay(this.player.toyaPurity);
@@ -4652,6 +4916,8 @@ class GameApp {
         this.player.score = 0; 
         this.player.toyaPurity = 10; // Ini kuncinya: Reset ke 10%
         this.gameStats.startTime = Date.now(); 
+        // Reset quizStats untuk misi baru
+        this.player.quizStats = { ch1:{benar:0,total:0}, ch2:{benar:0,total:0}, ch3:{benar:0,total:0}, ch4:{benar:0,total:0}, survival:{benar:0,total:0} };
         
         // Update tampilan bar HUD segera agar visualnya merah
         this.updatePurityDisplay(10); 
@@ -4734,11 +5000,11 @@ class GameApp {
             // SCENE 7 — Penjelasan malware
             { speaker: "DEWI AIR", text: "Genderuwo Malware adalah program jahat yang menyusup melalui celah keamanan jaringan. Ia merusak, mencuri, dan memanipulasi data — seperti racun yang mengotori sumber air bersih.", char: 'narrator', bg: 'bg_open3' },
             // SCENE 8 — Situasi gawat + koneksi teori
-            { speaker: "DEWI AIR", text: "Firewall yang seharusnya menjadi tembok pelindung... telah ditembus. Para Guardian senior tidak sempat mengonfigurasi ulang sistem pertahanan sebelum kota ini lumpuh.", char: 'narrator', bg: 'bg_open4' },
+            { speaker: "DEWI AIR", text: "Firewall yang seharusnya menjadi tembok pelindung... telah ditembus. Para Guardian senior tidak sempat mengkonfigurasi ulang sistem pertahanan sebelum kota ini lumpuh.", char: 'narrator', bg: 'bg_open4' },
             // SCENE 9 — ⚠ ALERT: Server kritis
             { mode: 'caption', text: "[ STATUS SERVER UTAMA ]  KRITIS — SHUTDOWN DALAM 00:59", bg: 'bg_open4', delay: 3000, alert: true },
             // SCENE 10 — Panggilan aksi
-            { speaker: "DEWI AIR", text: "Kamu adalah Guardian yang masih bisa bergerak. Kamu harus belajar cara kerja jaringan, mengonfigurasi Firewall, dan mengusir Malware ini. Masa depan kota ada di tanganmu!", char: 'narrator', bg: 'bg_open4' },
+            { speaker: "DEWI AIR", text: "Kamu adalah Guardian yang masih bisa bergerak. Kamu harus belajar cara kerja jaringan, mengkonfigurasi Firewall, dan mengusir Malware ini. Masa depan kota ada di tanganmu!", char: 'narrator', bg: 'bg_open4' },
             // SCENE 11 — Rex muncul sebagai mentor/guru
             { speaker: "MASTER REX", text: "Aku Rex, Network Administrator senior yang tersisa. Aku akan membimbingmu — dari memasang kabel jaringan, mengatur Firewall, hingga menghadapi Genderuwo langsung. Siapkah kamu?", char: 'rex', bg: 'bg_open5', sound: 'dramatic' },
             // SCENE 12 — Caption misi penutup
@@ -4746,10 +5012,18 @@ class GameApp {
         ], () => { AudioMgr.playMusic('bgm-main'); this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
     }
 
-    startTutorial() { this.switchScreen('dummy'); document.getElementById('hud').style.display = 'flex'; this.state = AppState.TUTORIAL; this.currentChapter = new ChapterTutorial(this); }
+    startTutorial() {
+        this.switchScreen('dummy'); // FIX: switchScreen('dummy') sekarang otomatis hide screen-title
+        document.getElementById('hud').style.display = 'flex';
+        this.state = AppState.TUTORIAL;
+        // FIX: bersihkan chapter sebelumnya (listener canvas, joystick) sebelum bikin instance baru,
+        // agar tidak ada event listener dobel kalau startTutorial() ke-panggil lebih dari sekali.
+        if (this.currentChapter && typeof this.currentChapter.cleanup === 'function') this.currentChapter.cleanup();
+        this.currentChapter = new ChapterTutorial(this);
+    }
     finishTutorial() {
         this.switchScreen('screen-story'); this.state = AppState.STORY;
-        story.start([ { speaker: "MASTER REX", text: "Bagus! Kamu sudah memahami cara bergerak. Sekarang saatnya masuk ke Gedung Server. Lantai pertama adalah pusat jaringan fisik — kita mulai dari sana.", char: 'rex', bg: 'bg_siap' } ], () => { this.startChapter1(); });
+        story.start([ { speaker: "MASTER REX", text: "Bagus! Kamu sudah paham cara bergerak. Sekarang saatnya masuk ke Gedung Server. Lantai pertama adalah pusat jaringan fisik — kita mulai dari sana.", char: 'rex', bg: 'bg_siap' } ], () => { this.startChapter1(); });
     }
     
     startChapter1() { AudioMgr.playSFX('sfx-click'); this.player.chapter = Math.max(this.player.chapter||0, 1); this.switchScreen('screen-title-ch1'); }
@@ -4797,9 +5071,14 @@ class GameApp {
             // Desktop drag
             card.addEventListener('dragstart', e => {
                 e.dataTransfer.setData('text/plain', item.id);
+                card.classList.remove('placed'); // sementara tampak normal saat di-drag
                 card.style.opacity = '0.5';
             });
-            card.addEventListener('dragend', () => { card.style.opacity = '1'; });
+            card.addEventListener('dragend', () => { 
+                card.style.opacity = '1';
+                // Kembalikan tampilan placed jika masih ada di zona
+                if(this._matchingPlaced[item.id]) card.classList.add('placed');
+            });
 
             // Touch drag
             card.addEventListener('touchstart', e => this._matchTouchStart(e, item.id), {passive:false});
@@ -4888,9 +5167,14 @@ class GameApp {
     }
 
     _placeMatchCard(id, zoneType) {
-        if(this._matchingPlaced[id]) return; // sudah ditempatkan
         const item = this._matchingItems.find(i => i.id === id);
         if(!item) return;
+
+        // Jika kartu sudah ditempatkan sebelumnya, hapus dari zona lama dulu
+        if(this._matchingPlaced[id]) {
+            const oldPlaced = document.getElementById('placed-' + id);
+            if(oldPlaced) oldPlaced.remove();
+        }
 
         this._matchingPlaced[id] = zoneType;
 
@@ -4900,9 +5184,20 @@ class GameApp {
 
         const zone = document.querySelector(`.match-zone[data-type="${zoneType}"] .zone-drop-area`);
         const mini = document.createElement('div');
-        mini.style.cssText = 'background:rgba(0,30,60,0.9);border:2px solid var(--primary-blue);border-radius:6px;padding:4px 8px;font-family:Rajdhani;font-size:0.8rem;color:white;';
+        mini.style.cssText = 'background:rgba(0,30,60,0.9);border:2px solid var(--primary-blue);border-radius:6px;padding:4px 8px;font-family:Rajdhani;font-size:0.8rem;color:white;cursor:grab;';
         mini.innerText = item.label;
         mini.id = 'placed-' + id;
+        // Mini card di zona juga bisa di-drag ke zona lain
+        mini.draggable = true;
+        mini.addEventListener('dragstart', e => {
+            e.dataTransfer.setData('text/plain', id);
+            mini.style.opacity = '0.5';
+        });
+        mini.addEventListener('dragend', () => { mini.style.opacity = '1'; });
+        // Touch support untuk mini card
+        mini.addEventListener('touchstart', e => this._matchTouchStart(e, id), {passive:false});
+        mini.addEventListener('touchmove', e => this._matchTouchMove(e), {passive:false});
+        mini.addEventListener('touchend', e => this._matchTouchEnd(e), {passive:false});
         zone.appendChild(mini);
 
         // Update progress
@@ -5035,7 +5330,7 @@ class GameApp {
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
         story.start([
-            { speaker: "MASTER REX", text: "Gelombang serangan pertama berhasil diblokir! Tetapi itu baru serangan luar. Sekarang kita perlu mengonfigurasi Firewall secara manual agar sistem bisa menolak ancaman serupa di masa depan.", char: 'rex', bg: 'bg_firewall2' },
+            { speaker: "MASTER REX", text: "Gelombang serangan pertama berhasil diblokir! Tapi itu baru serangan luar. Sekarang kita perlu mengkonfigurasi Firewall secara manual agar sistem bisa menolak ancaman serupa di masa depan.", char: 'rex', bg: 'bg_firewall2' },
             { speaker: "System AI", text: "Memulai Protokol Konfigurasi Firewall. Pilih paket aturan keamanan yang tepat sesuai kebutuhan sistem. Ingat: konfigurasi yang salah bisa membuka celah bagi penyerang!", char: 'androidtoya', bg: 'bg_firewall3' }
         ], () => {
             this.startChapter2Config(); // Masuk ke Pemilihan Paket
@@ -5289,7 +5584,7 @@ class GameApp {
         this.switchScreen('screen-story');
         story.start([
             { speaker: "MASTER REX", text: "Kita sudah di lantai paling atas — Ruang Server Utama. Di sinilah Genderuwo Malware bersembunyi dan mengendalikan seluruh serangan.", char: 'rex', bg: 'bg_server' },
-            { speaker: "MASTER REX", text: "Malware ini memasang 'Keylogger', yaitu program yang merekam dan mencuri setiap data yang diketik. Temukan dan netralkan semua Keylogger itu agar kita dapat membuka akses ke Core Server!", char: 'rex', bg: 'bg_server' },
+            { speaker: "MASTER REX", text: "Malware ini memasang 'Keylogger' — program yang merekam dan mencuri setiap data yang diketik. Temukan dan netralkan semua Keylogger itu agar kita bisa membuka akses ke Core Server!", char: 'rex', bg: 'bg_server' },
             { speaker: "MASTER REX", text: "Hati-hati. Labirin ini dijaga virus-virus kecil. Gunakan pengetahuan jaringanmu untuk menavigasi dengan aman!", char: 'rex', bg: 'bg_server' }
         ], () => {
              this.switchScreen('screen-title-ch3');
@@ -5372,7 +5667,7 @@ class GameApp {
         this.switchScreen('screen-story');
         story.start([
             { speaker: "MASTER REX", text: "Luar biasa Guardian! Forensik selesai — kita tahu di mana Genderuwo bersembunyi. Tapi sebelum kita menyerangnya, ada satu tahap kritis yang tidak boleh dilewati.", char: 'rex', bg: 'bg_monitor' },
-            { speaker: "MASTER REX", text: "Incident Response Protocol! Kita harus memastikan semua sistem yang terinfeksi terisolasi, jalur komunikasi aman melalui VPN, dan ada rencana pemulihan jika serangan terakhir ini menghancurkan server.", char: 'rex', bg: 'bg_monitor' },
+            { speaker: "MASTER REX", text: "Incident Response Protocol! Kita harus memastikan semua sistem yang terinfeksi terisolasi, jalur komunikasi aman lewat VPN, dan ada rencana pemulihan jika serangan terakhir ini menghancurkan server.", char: 'rex', bg: 'bg_monitor' },
             { speaker: "System AI Gedung Server", text: "Peringatan: Sistem pemulihan darurat membutuhkan protokol autentikasi berlapis. Guardian harus membuktikan penguasaan materi Incident Response untuk mengaktifkan backup server.", char: 'androidtoya', bg: 'bg_firewall2' },
             { speaker: "MASTER REX", text: "Ini bukan hanya pertempuran fisik — ini pertempuran pengetahuan. Seorang Guardian sejati tahu tidak hanya cara menyerang, tapi juga cara memulihkan dan melindungi sistem setelah badai berlalu.", char: 'rex', bg: 'bg_firewall2', sound: 'dramatic' },
             { mode: 'caption', text: "AKTIVASI PROTOKOL: INCIDENT RESPONSE & SYSTEM RECOVERY", bg: 'bg_firewall3', delay: 3000, sound: 'dramatic' }
@@ -5450,7 +5745,7 @@ class GameApp {
         this.switchScreen('screen-story');
         story.start([
             { speaker: "System AI Gedung Server", text: "ALERT KRITIS! Anomali energi masif terdeteksi di Core Server! Ini bukan serangan biasa — ini adalah entitas Malware tingkat tertinggi yang mengendalikan semua ancaman sebelumnya.", char: 'androidtoya', bg: 'bg_open4' },
-            { speaker: "GENDERUWO", text: "GRRR... SIAPA YANG BERANI MEMULIHKAN FIREWALL DAN MENETRALKAN PASUKANKU?!", char: 'virus', bg: 'bg_open4' },
+            { speaker: "GENDERUWO", text: "GRRR... SIAPA YANG BERANI MEMULIHKAN FIREWALL DAN MENETRALISIR PASUKANKU?!", char: 'virus', bg: 'bg_open4' },
             { speaker: "MASTER REX", text: "Itulah Genderuwo — Boss dari semua Malware yang menyerang kota ini. Ia marah karena semua celah keamanan yang ia buka sudah kita tutup satu per satu!", char: 'rex', bg: 'bg_open4' },
             { speaker: "MASTER REX", text: "Guardian! Gunakan semua yang sudah kamu pelajari. Serang dengan ATK, gunakan SKILL saat terdesak, dan selalu bergerak menghindari serangannya. Ini saat menentukan — selamatkan Tirtatelaga!", char: 'rex', bg: 'bg_open4' }
         ], () => {
@@ -5523,7 +5818,7 @@ class GameApp {
         rank.style.color = rankColor;
 
         document.getElementById('end-score').innerText = Math.floor(this.player.score); 
-        document.getElementById('end-msg').innerText = "Toya telah dimurnikan kembali! Kamu telah membuktikan bahwa pemahaman tentang jaringan dan keamanan siber adalah kunci untuk menyelamatkan sistem digital.";
+        document.getElementById('end-msg').innerText = "Toya telah dimurnikan kembali! Kamu telah membuktikan bahwa pemahaman tentang jaringan & keamanan siber adalah kunci menyelamatkan sistem digital.";
         this.populateResultInfo();
 
         // --- PERBAIKAN: Panggil update stats ---
@@ -6564,6 +6859,8 @@ class ChapterSurvival {
                 if(!qs.survival) qs.survival = {benar:0, total:0};
                 qs.survival.total++;
                 if(opt.correct) qs.survival.benar++;
+                // PERBAIKAN: Simpan quizStats agar tidak hilang saat refresh
+                SaveSystem.saveProfile(this.game.player);
 
                 if(opt.correct) {
                     AudioMgr.playSFX('sfx-correct');
@@ -7306,10 +7603,10 @@ class ChapterCredits {
             { t: "Generated by Gemini AI", size: "16px", color: "#888" },
             { t: "", size: "30px" },
             { t: "AUDIO", size: "24px", color: "#00A8FF" },
-            { t: "BGM & SFX Library- PIXABAY", size: "20px", color: "white" },
+            { t: "BGM & SFX Library - PIXABAY", size: "20px", color: "white" },
             { t: "", size: "30px" },
             { t: "SPECIAL THANKS", size: "24px", color: "#FF4444" },
-            { t: "Bapak Sepala Sekolah SMK Negeri 1 Brondong", size: "20px", color: "white" },
+            { t: "Bapak Kepala Sekolah SMK Negeri 1 Brondong", size: "20px", color: "white" },
             { t: "Teman-teman SMKN 1 Brondong", size: "20px", color: "white" },
             { t: "Seluruh Player Toya Guardians", size: "20px", color: "white" },
             { t: "", size: "50px" },
@@ -7403,9 +7700,13 @@ class ChapterCredits {
 const story = {
     data: [], idx: 0, cb: null,
     _typeTimer: null, _autoTimer: null, _typing: false, _fullText: '',
+    _finished: false, // guard: cegah cb() terpanggil lebih dari sekali per story.start()
+    _ready: false,    // guard: cegah tap sebelum render() pertama berjalan
 
     start: function(data, cb) {
         this.data = data; this.idx = 0; this.cb = cb;
+        this._finished = false;
+        this._ready = false; // belum siap sampai render() pertama selesai
         this._buildDots();
         this._openLetterbox();
         setTimeout(() => this.render(), 700);
@@ -7547,8 +7848,11 @@ const story = {
     },
 
     render: function() {
+        this._ready = true; // render pertama sudah jalan, tap sekarang boleh diproses
         if(this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
         if(this.idx >= this.data.length) {
+            if(this._finished) return; // sudah pernah selesai, jangan panggil cb() lagi
+            this._finished = true;
             this._closeLetterbox();
             const db = document.getElementById('dialogue-box');
             const cap = document.getElementById('cinematic-caption');
@@ -7639,6 +7943,8 @@ const story = {
     },
 
     handleTap: function() {
+        if(!this._ready) return;  // FIX: abaikan tap sebelum render() pertama berjalan
+        if(this._finished) return; // cerita sudah selesai/sedang menutup, abaikan tap susulan
         if(this._typing) {
             // Jika masih mengetik: langsung tampilkan teks penuh
             if(this._typeTimer) clearInterval(this._typeTimer);
@@ -7660,6 +7966,7 @@ const story = {
     },
 
     next: function() {
+        if(this._finished) return;
         if(this._autoTimer) { clearTimeout(this._autoTimer); this._autoTimer = null; }
         AudioMgr.playSFX('sfx-click');
         this._flash();
@@ -7668,6 +7975,9 @@ const story = {
     },
 
     skip: function() {
+        if(!this._ready) return;  // FIX: abaikan skip sebelum render() pertama berjalan
+        if(this._finished) return; // sudah selesai/sedang menutup, jangan proses skip lagi
+        this._finished = true;
         if(this._typeTimer) clearInterval(this._typeTimer);
         if(this._autoTimer) clearTimeout(this._autoTimer);
         this._typing = false;
@@ -8027,6 +8337,8 @@ class ChapterQuiz {
             if(!qs[this.chapterKey]) qs[this.chapterKey] = {benar:0, total:0};
             qs[this.chapterKey].total++;
             if(isCorrect) qs[this.chapterKey].benar++;
+            // PERBAIKAN: Simpan quizStats ke profile agar tidak hilang saat refresh
+            SaveSystem.saveProfile(this.game.player);
         }
         
         const feedback = document.getElementById('quiz-feedback');
@@ -8194,7 +8506,15 @@ class ChapterCabling {
 
         this.dragged = null; this.mx = 0; this.my = 0;
         this.evDown = (e) => this.input(e, 'down');
-        this.evMove = (e) => this.input(e, 'move');
+        this.evMove = (e) => {
+            this.input(e, 'move');
+            // Cursor berubah jadi pointer saat hover di atas device
+            if(this.active) {
+                const {mx, my} = this.getCanvasCoords(e);
+                const hovering = this.tasks.some(t => !t.completed && Math.hypot(mx - (t.sX + 40), my - (t.sY + 40)) < 55);
+                canvas.style.cursor = hovering ? 'grab' : (this.dragged !== null ? 'grabbing' : 'default');
+            }
+        };
         this.evUp   = (e) => this.input(e, 'up');
 
         this.evTouchStart = (e) => { e.preventDefault(); this.input(e.touches[0], 'down'); };
@@ -8237,6 +8557,7 @@ class ChapterCabling {
 
     cleanup() {
         clearInterval(this.timerInterval);
+        canvas.style.cursor = 'default';
         canvas.removeEventListener('mousedown',  this.evDown);
         canvas.removeEventListener('mousemove',  this.evMove);
         canvas.removeEventListener('mouseup',    this.evUp);
@@ -10360,6 +10681,357 @@ class ChapterBossBattle {
 }
 
 const app = new GameApp();
+
+// ============================================================
+// FITUR BARU 1: DASHBOARD GURU
+// ============================================================
+GameApp.prototype.showGuruDashboard = function() {
+    AudioMgr.playSFX('sfx-click');
+    document.getElementById('guru-table-body').innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#555;">Ketik nama sekolah lalu klik CARI</td></tr>';
+    document.getElementById('guru-summary-cards').innerHTML = '';
+    document.getElementById('guru-materi-chart').style.display = 'none';
+    document.getElementById('guru-school-label').innerText = '';
+    document.getElementById('guru-status-badge').className = 'sync-badge status-loading';
+    document.getElementById('guru-status-badge').innerText = 'READY';
+    document.getElementById('guru-autocomplete').style.display = 'none';
+    document.getElementById('guru-search').value = '';
+    this._guruAllData = null; // reset cache data
+    this.switchScreen('screen-guru');
+    // Pre-load data di background
+    this._loadGuruData();
+};
+
+GameApp.prototype._loadGuruData = async function() {
+    const badge = document.getElementById('guru-status-badge');
+    badge.className = 'sync-badge status-loading'; badge.innerText = 'LOADING...';
+
+    const cached = JSON.parse(localStorage.getItem('toya_lb_cache') || '[]');
+    const local  = JSON.parse(localStorage.getItem('toya_lb') || '[]');
+    const mock   = SaveSystem.getMockData();
+    const map = new Map();
+    [...mock, ...cached, ...local].forEach(d => {
+        const k = d.name+'_'+(d.school||'');
+        if(!map.has(k) || d.score > map.get(k).score) map.set(k, d);
+    });
+
+    // Fetch cloud kalau cache kosong
+    if(cached.length === 0) {
+        const cloud = await SaveSystem.fetchLeaderboard();
+        if(cloud && cloud.status === 'success') {
+            localStorage.setItem('toya_lb_cache', JSON.stringify(cloud.data));
+            cloud.data.forEach(d => { const k=d.name+'_'+(d.school||''); if(!map.has(k)||d.score>map.get(k).score) map.set(k,d); });
+            badge.className = 'sync-badge status-online'; badge.innerText = 'ONLINE';
+        } else {
+            badge.className = 'sync-badge status-offline'; badge.innerText = 'OFFLINE';
+        }
+    } else {
+        badge.className = 'sync-badge status-online'; badge.innerText = 'CACHE';
+    }
+
+    this._guruAllData = Array.from(map.values());
+
+    // Bangun daftar unik nama sekolah
+    const schools = new Map();
+    this._guruAllData.forEach(d => {
+        if(!d.school) return;
+        const key = d.school.trim().toUpperCase();
+        if(!schools.has(key)) schools.set(key, { display: d.school.trim(), count: 0 });
+        schools.get(key).count++;
+    });
+    this._guruSchoolList = Array.from(schools.values()).sort((a,b) => a.display.localeCompare(b.display));
+};
+
+GameApp.prototype.guruAutoComplete = function(val) {
+    const ac = document.getElementById('guru-autocomplete');
+    if(!val || val.length < 2) { ac.style.display = 'none'; return; }
+    if(!this._guruSchoolList || this._guruSchoolList.length === 0) { ac.style.display = 'none'; return; }
+
+    const q = val.trim().toUpperCase();
+    const matches = this._guruSchoolList.filter(s => s.display.toUpperCase().includes(q)).slice(0, 10);
+
+    if(matches.length === 0) { ac.style.display = 'none'; return; }
+
+    ac.innerHTML = matches.map((s, i) =>
+        `<div class="guru-ac-item" data-idx="${i}" data-val="${s.display}"
+            style="padding:9px 14px; cursor:pointer; font-size:0.88rem; color:#ccc; border-bottom:1px solid #112233; display:flex; justify-content:space-between; align-items:center;"
+            onmousedown="app.guruSelectSchool('${s.display.replace(/'/g,"\\'")}')"
+            onmouseover="this.style.background='#002a4a'; this.style.color='#fff';"
+            onmouseout="this.style.background=''; this.style.color='#ccc';">
+            <span>🏫 ${s.display}</span>
+            <span style="font-size:0.72rem; color:#00D9FF; background:#001a33; padding:2px 7px; border-radius:10px;">${s.count} siswa</span>
+        </div>`
+    ).join('');
+    ac.style.display = 'block';
+};
+
+GameApp.prototype.guruSelectSchool = function(schoolName) {
+    document.getElementById('guru-search').value = schoolName;
+    document.getElementById('guru-autocomplete').style.display = 'none';
+    this.searchGuruDashboard();
+};
+
+GameApp.prototype.guruSearchKeydown = function(e) {
+    if(e.key === 'Enter') {
+        document.getElementById('guru-autocomplete').style.display = 'none';
+        this.searchGuruDashboard();
+    } else if(e.key === 'Escape') {
+        document.getElementById('guru-autocomplete').style.display = 'none';
+    }
+};
+
+GameApp.prototype.searchGuruDashboard = async function() {
+    AudioMgr.playSFX('sfx-click');
+    document.getElementById('guru-autocomplete').style.display = 'none';
+    const query = document.getElementById('guru-search').value.trim().toUpperCase();
+    if(!query || query.length < 2) { alert('Ketik minimal 2 karakter nama sekolah!'); return; }
+
+    const badge = document.getElementById('guru-status-badge');
+
+    // Gunakan data yang sudah di-load, atau load sekarang
+    if(!this._guruAllData) {
+        await this._loadGuruData();
+    }
+    const allData = this._guruAllData || [];
+
+    const students = allData.filter(d => (d.school||'').toUpperCase().includes(query));
+    if(students.length === 0) {
+        document.getElementById('guru-table-body').innerHTML = '<tr><td colspan="8" style="text-align:center; padding:20px; color:#FF4444;">Sekolah tidak ditemukan. Coba nama lain.</td></tr>';
+        document.getElementById('guru-summary-cards').innerHTML = '';
+        document.getElementById('guru-materi-chart').style.display = 'none';
+        document.getElementById('guru-school-label').innerText = '';
+        return;
+    }
+
+    const schoolNames = [...new Set(students.map(d => d.school))].join(' / ');
+    document.getElementById('guru-school-label').innerText = '🏫 ' + schoolNames + ' — ' + students.length + ' siswa ditemukan';
+
+    // Summary cards
+    const avgScore = Math.round(students.reduce((a,b)=>a+(b.score||0),0)/students.length);
+    const selesai  = students.filter(d=>(d.chapter||0)>=3).length;
+    const survival = students.filter(d=>d.mode==='survival').length;
+    const top = students.slice().sort((a,b)=>b.score-a.score)[0];
+    document.getElementById('guru-summary-cards').innerHTML = `
+        <div style="background:#001833; border:1px solid #334; border-radius:6px; padding:10px; text-align:center;">
+            <div style="font-family:'Orbitron',monospace; font-size:1.3rem; font-weight:900; color:var(--tech-cyan);">${students.length}</div>
+            <div style="font-size:0.65rem; color:#888; letter-spacing:1px; margin-top:2px;">SISWA</div>
+        </div>
+        <div style="background:#001833; border:1px solid #334; border-radius:6px; padding:10px; text-align:center;">
+            <div style="font-family:'Orbitron',monospace; font-size:1.3rem; font-weight:900; color:var(--accent-gold);">${avgScore.toLocaleString()}</div>
+            <div style="font-size:0.65rem; color:#888; letter-spacing:1px; margin-top:2px;">RATA SKOR</div>
+        </div>
+        <div style="background:#001833; border:1px solid #334; border-radius:6px; padding:10px; text-align:center;">
+            <div style="font-family:'Orbitron',monospace; font-size:1.3rem; font-weight:900; color:var(--success-green);">${selesai}</div>
+            <div style="font-size:0.65rem; color:#888; letter-spacing:1px; margin-top:2px;">SELESAI</div>
+        </div>
+        <div style="background:#001833; border:1px solid #334; border-radius:6px; padding:10px; text-align:center;">
+            <div style="font-family:'Orbitron',monospace; font-size:1.3rem; font-weight:900; color:#FF4444;">${survival}</div>
+            <div style="font-size:0.65rem; color:#888; letter-spacing:1px; margin-top:2px;">SURVIVAL</div>
+        </div>`;
+
+    // Materi bars
+    const materiKeys = [{k:'ch1',l:'Ch1: Dasar Keamanan Jaringan',c:'#00D9FF'},{k:'ch2',l:'Ch2: Pertahanan Firewall',c:'#00A8FF'},{k:'ch3',l:'Ch3: Forensik Digital',c:'#BB88FF'},{k:'ch4',l:'Ch4: Incident Response',c:'#00FF88'}];
+    let barsHtml = '';
+    materiKeys.forEach(m => {
+        const withData = students.filter(d=>d.quizStats&&d.quizStats[m.k]&&d.quizStats[m.k].total>0);
+        if(withData.length===0) return;
+        const avg = Math.round(withData.reduce((a,d)=>a+Math.round(d.quizStats[m.k].benar/d.quizStats[m.k].total*100),0)/withData.length);
+        const barColor = avg>=80?'#00FF88':avg>=60?'#00A8FF':avg>=40?'#FFD700':'#FF4444';
+        barsHtml += `<div style="display:flex; align-items:center; gap:8px; margin-bottom:7px;">
+            <div style="font-size:0.75rem; color:#aaa; width:175px; flex-shrink:0;">${m.l}</div>
+            <div style="flex:1; background:rgba(255,255,255,0.05); border-radius:4px; height:10px; overflow:hidden;">
+                <div style="width:${avg}%; height:100%; background:${barColor}; border-radius:4px;"></div>
+            </div>
+            <div style="font-size:0.75rem; color:${barColor}; width:35px; text-align:right;">${avg}%</div>
+        </div>`;
+    });
+    document.getElementById('guru-materi-bars').innerHTML = barsHtml || '<div style="color:#555; font-size:0.8rem;">Belum ada data quiz materi.</div>';
+    document.getElementById('guru-materi-chart').style.display = barsHtml ? 'block' : 'none';
+
+    // Tabel siswa
+    const sorted = students.slice().sort((a,b)=>b.score-a.score);
+    const chLbl = (d) => {const c=d.chapter||0; if(c>=4)return'✅ Ch4';if(c>=3)return'📘 Ch3';if(c>=2)return'📗 Ch2';if(c>=1)return'📕 Ch1';return'⬜ Belum';};
+    const pctQ = (d,k) => { const s=d.quizStats&&d.quizStats[k]; if(!s||!s.total)return'—'; const p=Math.round(s.benar/s.total*100); const c=p>=70?'#00FF88':p>=50?'#FFD700':'#FF4444'; return `<span style="color:${c}">${p}%</span>`; };
+    const statusBadge = (d) => { if(d.mode==='survival') return '<span style="color:#FF4444;font-size:0.7rem;background:#330000;border:1px solid #FF4444;border-radius:3px;padding:1px 5px;">SURV</span>'; const c=d.chapter||0; if(c>=4)return'<span style="color:#FFD700;font-size:0.7rem;background:#332200;border:1px solid #FFD700;border-radius:3px;padding:1px 5px;">SELESAI</span>'; if(c>=1)return`<span style="color:#00A8FF;font-size:0.7rem;background:#001a33;border:1px solid #00A8FF;border-radius:3px;padding:1px 5px;">Ch${c}</span>`; return'<span style="color:#555;font-size:0.7rem;">BARU</span>'; };
+    document.getElementById('guru-table-body').innerHTML = sorted.map((d,i)=>`
+        <tr style="border-bottom:1px solid #1a2a3a; ${i===0?'background:rgba(255,215,0,0.05);':''}">
+            <td style="padding:5px 8px; color:#888;">${i+1}</td>
+            <td style="padding:5px 8px; font-weight:bold; color:#fff;">${d.name||'?'}</td>
+            <td style="padding:5px 8px; text-align:center; color:var(--accent-gold); font-weight:bold;">${(d.score||0).toLocaleString()}</td>
+            <td style="padding:5px 8px; text-align:center;">${chLbl(d)}</td>
+            <td style="padding:5px 8px; text-align:center;">${pctQ(d,'ch1')}</td>
+            <td style="padding:5px 8px; text-align:center;">${pctQ(d,'ch2')}</td>
+            <td style="padding:5px 8px; text-align:center;">${pctQ(d,'ch3')}</td>
+            <td style="padding:5px 8px; text-align:center;">${statusBadge(d)}</td>
+        </tr>`).join('');
+
+    this._guruCurrentData = { students: sorted, schoolNames };
+};
+
+GameApp.prototype.exportGuruReport = function() {
+    if(!this._guruCurrentData) { alert('Cari sekolah dulu!'); return; }
+    AudioMgr.playSFX('sfx-click');
+    // Gunakan fungsi exportLeaderboard existing tapi filter per sekolah
+    const query = document.getElementById('guru-search').value.trim().toUpperCase();
+    document.getElementById('lb-filter').value = 'school';
+    this.leaderboardMode = 'story';
+    setTimeout(() => { this.exportLeaderboard(); }, 100);
+};
+
+// ============================================================
+// FITUR BARU 2: SERTIFIKAT DIGITAL
+// ============================================================
+GameApp.prototype.showSertifikat = function(isSurvival) {
+    const p = this.player;
+    const score = p.score || 0;
+    const wave  = p.lastWave || 0;
+
+    let rankChar='C', rankColor='white';
+    if(score>=9000){rankChar='S';rankColor='var(--accent-gold)';}
+    else if(score>=7000){rankChar='A';rankColor='#00D9FF';}
+    else if(score>=5000){rankChar='B';rankColor='#00FF88';}
+    else if(score>=4000){rankChar='C';rankColor='white';}
+    else{rankChar='D';rankColor='#aaa';}
+
+    let level, desc;
+    if(isSurvival) {
+        level = wave>=20?'GUARDIAN ELITE':wave>=10?'GUARDIAN SENIOR':wave>=5?'GUARDIAN':'GUARDIAN MUDA';
+        desc = `Telah menyelesaikan <strong>Survival Mode</strong> Toya Guardians hingga <strong>Wave ${wave}</strong>, membuktikan ketahanan dan pemahaman mendalam tentang keamanan jaringan dalam menghadapi ancaman siber tanpa henti.`;
+    } else {
+        level = score>=9000?'GUARDIAN ELITE':score>=7000?'GUARDIAN SENIOR':score>=5000?'GUARDIAN':'GUARDIAN MUDA';
+        desc = `Telah menyelesaikan <strong>Story Mode</strong> Toya Guardians dan berhasil mengalahkan Genderuwo Malware, membuktikan kompetensi dalam bidang <strong>Keamanan Jaringan Digital</strong> meliputi Firewall, Enkripsi, Forensik Digital, dan Incident Response.`;
+    }
+
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+    document.getElementById('cert-name').innerText = p.name || 'GUARDIAN';
+    document.getElementById('cert-school').innerText = (p.school||'') + (p.city ? ' — '+p.city : '');
+    document.getElementById('cert-desc').innerHTML = desc;
+    document.getElementById('cert-score').innerText = score.toLocaleString();
+    document.getElementById('cert-rank').innerText = rankChar;
+    document.getElementById('cert-rank').style.color = rankColor;
+    document.getElementById('cert-level').innerText = level;
+    document.getElementById('cert-date').innerText = 'Diterbitkan: ' + dateStr;
+
+    AudioMgr.playSFX('sfx-levelup');
+    this.switchScreen('screen-sertifikat');
+};
+
+GameApp.prototype.shareSertifikat = function() {
+    AudioMgr.playSFX('sfx-click');
+    const p = this.player;
+    const score = (p.score||0).toLocaleString();
+    const text = `🏆 Saya telah menyelesaikan Toya Guardians!\n\nNama: ${p.name}\nSekolah: ${p.school||''}\nSkor: ${score}\n\nGame edukasi keamanan jaringan terbaik untuk SMK TKJ Indonesia! 🛡️\n\n#ToyaGuardians #LINKAR2026 #KeamananJaringan #SMK`;
+    if(navigator.share) {
+        navigator.share({title:'Sertifikat Toya Guardians', text}).catch(()=>{});
+    } else {
+        navigator.clipboard.writeText(text).then(()=>{ alert('Teks disalin! Tempelkan di Instagram/WhatsApp kamu 📋'); }).catch(()=>{ alert(text); });
+    }
+};
+
+// ============================================================
+// FITUR BARU 3: STATISTIK PRIBADI SISWA
+// ============================================================
+GameApp.prototype.showStatistikSiswa = async function() {
+    AudioMgr.playSFX('sfx-click');
+    const p = this.player;
+    if(!p.name) { alert('Kamu belum mendaftar! Klik MULAI MISI BARU dulu.'); return; }
+
+    // Ambil data player dari leaderboard untuk peringkat
+    const cached = JSON.parse(localStorage.getItem('toya_lb_cache') || '[]');
+    const local  = JSON.parse(localStorage.getItem('toya_lb') || '[]');
+    const mock   = SaveSystem.getMockData();
+    const map = new Map();
+    [...mock, ...cached, ...local].forEach(d => { const k=d.name+'_'+(d.school||''); if(!map.has(k)||d.score>map.get(k).score) map.set(k,d); });
+    const allStory = Array.from(map.values()).filter(d=>!d.mode||d.mode==='story').sort((a,b)=>b.score-a.score);
+    const rank = allStory.findIndex(d=>d.name===p.name&&(d.school||'').toUpperCase()===(p.school||'').toUpperCase());
+    const rankDisplay = rank>=0 ? '#'+(rank+1)+' / '+allStory.length : '—';
+    const rankColor = rank===0?'var(--accent-gold)':rank<3?'#00D9FF':rank<10?'#00FF88':'var(--tech-cyan)';
+
+    document.getElementById('stats-name').innerText = p.name + ' · ' + (p.school||'') + (p.city?' · '+p.city:'');
+    document.getElementById('stats-score').innerText = (p.score||0).toLocaleString();
+    document.getElementById('stats-rank').innerText = rankDisplay;
+    document.getElementById('stats-rank').style.color = rankColor;
+
+    // Bars materi dari quizStats
+    const qs = p.quizStats || {};
+    const topics = [
+        {k:'ch1', label:'Dasar Keamanan Jaringan', desc:'Phishing, Malware, DDoS, Firewall dasar'},
+        {k:'ch2', label:'Pertahanan Firewall', desc:'Konfigurasi firewall, IDS, DMZ, Topologi'},
+        {k:'ch3', label:'Forensik Digital', desc:'Keylogger, Hash, Write Blocker, Bukti Digital'},
+        {k:'ch4', label:'Incident Response', desc:'CSIRT, SIEM, VPN, SOC, Pemulihan sistem'},
+    ];
+    let barsHtml = '';
+    let rekoms = [];
+    topics.forEach(t => {
+        const s = qs[t.k];
+        if(!s || !s.total) {
+            barsHtml += `<div style="margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                    <span style="font-size:0.78rem;color:#555;">${t.label}</span>
+                    <span style="font-size:0.75rem;color:#444;">Belum dimainkan</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="flex:1;background:rgba(255,255,255,0.04);border-radius:4px;height:12px;overflow:hidden;border:1px dashed #333;">
+                        <div style="width:0%;height:100%;"></div>
+                    </div>
+                    <div style="font-size:0.75rem;color:#444;width:40px;text-align:right;">—</div>
+                </div>
+                <div style="font-size:0.68rem;color:#444;margin-top:2px;">Selesaikan chapter ini untuk melihat nilaimu</div>
+            </div>`;
+            return;
+        }
+        const pct = Math.round(s.benar/s.total*100);
+        const barColor = pct>=80?'#00FF88':pct>=60?'#00A8FF':pct>=40?'#FFD700':'#FF4444';
+        const label = pct>=80?'Dikuasai ✅':pct>=60?'Cukup Baik 👍':pct>=40?'Perlu Latihan ⚠️':'Perlu Bimbingan ❗';
+        if(pct<70) rekoms.push('📌 '+t.label+': '+t.desc);
+        barsHtml += `<div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+                <span style="font-size:0.78rem;color:#ccc;">${t.label}</span>
+                <span style="font-size:0.75rem;color:${barColor};">${label}</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:12px;overflow:hidden;">
+                    <div style="width:${pct}%;height:100%;background:${barColor};border-radius:4px;"></div>
+                </div>
+                <div style="font-size:0.75rem;color:${barColor};width:40px;text-align:right;font-weight:bold;">${pct}%</div>
+            </div>
+            <div style="font-size:0.68rem;color:#555;margin-top:2px;">${s.benar} benar dari ${s.total} soal</div>
+        </div>`;
+    });
+    document.getElementById('stats-materi-bars').innerHTML = barsHtml || '<div style="color:#555;font-size:0.8rem;">Belum ada data — selesaikan minimal Chapter 1 dulu!</div>';
+
+    // Rekomendasi
+    let rekHTML = rekoms.length>0
+        ? rekoms.map(r=>`<div style="margin-bottom:5px;">${r}</div>`).join('')
+        : '<div style="color:#00FF88;">✅ Semua materi yang sudah dimainkan dikuasai dengan baik! Lanjutkan ke chapter berikutnya.</div>';
+    if((p.chapter||0)<4) rekHTML += `<div style="margin-top:8px;color:#aaa;">🎯 Lanjutkan ke <strong style="color:#00D9FF;">Chapter ${(p.chapter||0)+1}</strong> untuk membuka materi baru!</div>`;
+    document.getElementById('stats-rekom-content').innerHTML = rekHTML;
+
+    this.switchScreen('screen-stats');
+};
+
+// ============================================================
+// PATCH: Tampilkan sertifikat setelah game selesai/survival end
+// ============================================================
+const _origShowVictory = GameApp.prototype.showVictoryScreen;
+GameApp.prototype.showVictoryScreen = function() {
+    _origShowVictory.call(this);
+    // Tambahkan tombol sertifikat di layar ending
+    setTimeout(() => {
+        const btn = document.getElementById('btn-victory-action');
+        if(btn && !document.getElementById('btn-cert-victory')) {
+            const certBtn = document.createElement('button');
+            certBtn.id = 'btn-cert-victory';
+            certBtn.className = 'btn-ml btn-anim';
+            certBtn.style.cssText = 'width:100%; margin-top:8px; background:linear-gradient(180deg,#332200,#1a1100); border-color:var(--accent-gold); color:var(--accent-gold);';
+            certBtn.innerText = '🏆 AMBIL SERTIFIKAT';
+            certBtn.onclick = () => this.showSertifikat(false);
+            btn.parentNode.insertBefore(certBtn, btn.nextSibling);
+        }
+    }, 300);
+};
+
 </script>
 
 <!-- FIX: Pastikan quiz screen dan tombolnya selalu bisa diklik -->
@@ -10411,33 +11083,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
-<!-- ROTATE SCREEN SCRIPT -->
-<script>
-(function() {
-    var overlay = document.getElementById('rotate-overlay');
 
-    function checkOrientation() {
-        // Cek apakah perangkat adalah mobile/tablet
-        var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || 
-                       (navigator.maxTouchPoints > 1 && window.innerWidth < 1024);
-        if (!isMobile) {
-            overlay.classList.remove('show');
-            return;
-        }
-        // Tampilkan overlay jika portrait (tinggi > lebar)
-        if (window.innerHeight > window.innerWidth) {
-            overlay.classList.add('show');
+<script>
+// ===== ORIENTATION GUARD: PUTAR KE LANDSCAPE =====
+(function(){
+    const overlay = document.getElementById('orientation-overlay');
+    if(!overlay) return;
+
+    function isTouchDevice(){
+        return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0);
+    }
+
+    function checkOrientation(){
+        const isPortrait = window.innerHeight > window.innerWidth;
+        const isSmallScreen = Math.min(window.innerWidth, window.innerHeight) <= 900;
+        if(isPortrait && isTouchDevice() && isSmallScreen){
+            overlay.classList.add('active');
         } else {
-            overlay.classList.remove('show');
+            overlay.classList.remove('active');
         }
     }
 
-    // Cek saat load dan saat orientasi berubah
-    window.addEventListener('load', checkOrientation);
     window.addEventListener('resize', checkOrientation);
-    window.addEventListener('orientationchange', function() {
-        setTimeout(checkOrientation, 300);
-    });
+    window.addEventListener('orientationchange', checkOrientation);
+    document.addEventListener('DOMContentLoaded', checkOrientation);
+    checkOrientation();
 })();
 </script>
 </body>
