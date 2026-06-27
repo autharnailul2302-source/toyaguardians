@@ -4,6 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Keamanan Siber: Pertahanan Jaringan Digital</title>
+    <script>
+        /* === FIX: TINGGI VIEWPORT ASLI UNTUK HP ===
+           100vh/100dvh sering meleset di browser mobile (address bar, in-app browser
+           WhatsApp/Instagram, dll) sehingga elemen bottom:0 (joystick, dpad, tombol)
+           jatuh di luar area yang kelihatan. Solusinya hitung tinggi asli pakai JS
+           dan simpan sebagai CSS variable --app-vh, dipanggil ulang setiap resize. */
+        (function(){
+            function setAppVH(){
+                var h = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+                document.documentElement.style.setProperty('--app-vh', h + 'px');
+            }
+            setAppVH();
+            window.addEventListener('resize', setAppVH);
+            window.addEventListener('orientationchange', function(){
+                setAppVH();
+                setTimeout(setAppVH, 100);
+                setTimeout(setAppVH, 400); // jaga-jaga address bar HP lambat menyesuaikan
+            });
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', setAppVH);
+            }
+            document.addEventListener('DOMContentLoaded', setAppVH);
+        })();
+    </script>
     <link rel="icon" type="image/png" href="images/logo_main.png">
     <meta name="description" content="Siap jadi Guardian dunia digital? Di sini kamu akan belajar konsep keamanan siber seperti phishing, malware, firewall, dan enkripsi — semua dikemas dalam petualangan seru bertema sci-fi! Sambil bermain, kamu bakal makin paham cara menjaga keamanan jaringan di dunia nyata. Yuk, buktikan kamu bisa jadi pelindung jaringan sejati!">
     <meta name="keywords" content="game edukasi, keamanan siber, cybersecurity, phishing, malware, firewall, enkripsi, Guardian, Toya Guardians">
@@ -44,6 +68,7 @@
             width: 100vw; 
             height: 100vh;
             height: 100dvh;
+            height: var(--app-vh, 100dvh); /* FIX: tinggi asli viewport HP, override vh/dvh */
             background: #000; 
             overflow: hidden; 
         }
@@ -289,11 +314,11 @@
         .btn-ml:disabled { background: #333; color: #777; border-color: #555; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(100%); }
         
         /* --- MENU BUTTONS FIXED POSITIONING --- */
-        .btn-music-toggle { position: absolute; top: 20px; right: 20px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; }
+        .btn-music-toggle { position: absolute; top: max(20px, env(safe-area-inset-top)); right: max(20px, env(safe-area-inset-right)); background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; }
         
-        .btn-fullscreen-toggle { position: absolute; top: 20px; right: 70px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; z-index: 100; transition: 0.3s; }
+        .btn-fullscreen-toggle { position: absolute; top: max(20px, env(safe-area-inset-top)); right: calc(max(20px, env(safe-area-inset-right)) + 50px); background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.5rem; z-index: 100; transition: 0.3s; }
         
-        .btn-about-toggle { position: absolute; top: 20px; right: 120px; background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; font-family: 'Orbitron'; font-weight: bold; }
+        .btn-about-toggle { position: absolute; top: max(20px, env(safe-area-inset-top)); right: calc(max(20px, env(safe-area-inset-right)) + 100px); background: rgba(0, 0, 0, 0.5); border: 1px solid var(--tech-cyan); color: var(--tech-cyan); width: 40px; height: 40px; border-radius: 50%; display: none; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; z-index: 100; transition: 0.3s; font-family: 'Orbitron'; font-weight: bold; }
         
         .btn-about-toggle:hover, .btn-fullscreen-toggle:hover, .btn-music-toggle:hover { background: var(--primary-blue); color: #000; box-shadow: 0 0 10px var(--tech-cyan); }
 
@@ -567,13 +592,13 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; z-index: 20;
         }
 
-        #rpg-controls { position: absolute; bottom: 20px; right: 20px; display: none; gap: 15px; z-index: 50; }
-        #dpad-controls { position: absolute; bottom: 20px; left: 20px; width: 150px; height: 150px; display: none; z-index: 50; pointer-events: auto; }
+        #rpg-controls { position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); right: max(20px, env(safe-area-inset-right)); display: none; gap: 15px; z-index: 50; }
+        #dpad-controls { position: absolute; bottom: max(20px, env(safe-area-inset-bottom)); left: max(20px, env(safe-area-inset-left)); width: 150px; height: 150px; display: none; z-index: 50; pointer-events: auto; }
 
         /* ===== UNIVERSAL VIRTUAL JOYSTICK ===== */
         #virtual-joystick { 
             position: absolute; 
-            bottom: 18px; left: 18px; 
+            bottom: max(18px, env(safe-area-inset-bottom)); left: max(18px, env(safe-area-inset-left)); 
             width: 160px; height: 160px; 
             display: none; 
             z-index: 60; 
@@ -626,7 +651,7 @@
         }
 
         /* JOYSTICK VIRTUAL BOSS BATTLE (legacy - kept for compatibility) */
-        #boss-joystick { position: absolute; bottom: 15px; left: 15px; width: 150px; height: 150px; display: none; z-index: 50; touch-action: none; }
+        #boss-joystick { position: absolute; bottom: max(15px, env(safe-area-inset-bottom)); left: max(15px, env(safe-area-inset-left)); width: 150px; height: 150px; display: none; z-index: 50; touch-action: none; }
         .joy-base { position: absolute; width: 140px; height: 140px; left: 5px; top: 5px; background: rgba(0,168,255,0.12); border: 2px solid rgba(0,168,255,0.4); border-radius: 50%; }
         .joy-knob { position: absolute; width: 54px; height: 54px; left: 48px; top: 48px; background: radial-gradient(circle, rgba(0,217,255,0.9), rgba(0,56,140,0.85)); border: 2px solid var(--tech-cyan); border-radius: 50%; box-shadow: 0 0 14px rgba(0,217,255,0.7); transition: left 0.04s, top 0.04s; }
         .dpad-btn { position: absolute; width: 45px; height: 45px; background: rgba(0, 168, 255, 0.3); border: 2px solid var(--tech-cyan); border-radius: 8px; color: white; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; user-select: none; cursor: pointer; backdrop-filter: blur(2px); touch-action: manipulation; }
@@ -1213,6 +1238,7 @@
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     height: 100dvh;
+    height: var(--app-vh, 100dvh); /* FIX: tinggi asli viewport HP */
     background: linear-gradient(135deg, rgba(5,10,20,0.97) 0%, rgba(0,5,15,0.99) 100%);
     z-index: 999999;
     flex-direction: column;
