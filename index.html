@@ -82,7 +82,11 @@
         }
         
         /* UI SCREENS */
-        .ui-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; overflow-y: auto; touch-action: pan-y; -webkit-overflow-scrolling: touch; box-sizing: border-box; }
+        .ui-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; overflow-y: auto; overflow-x: hidden; touch-action: pan-y; -webkit-overflow-scrolling: touch; box-sizing: border-box; scrollbar-width: thin; scrollbar-color: rgba(0,217,255,0.25) transparent; }
+        /* Scrollbar tipis & senada tema (cuma muncul kalau memang konten kepanjangan, jadi jaring pengaman saja) */
+        .ui-screen::-webkit-scrollbar { width: 5px; height: 0; }
+        .ui-screen::-webkit-scrollbar-track { background: transparent; }
+        .ui-screen::-webkit-scrollbar-thumb { background: rgba(0,217,255,0.25); border-radius: 3px; }
         .active { display: flex; animation: fadeIn 0.5s; }
 
         /* Konten title (logo + tombol) disembunyikan saat overlay aktif */
@@ -173,15 +177,15 @@
             #title-menu-wrapper { margin-top: 4px !important; }
             #btn-mulai-misi-baru, #btn-menu-continue { padding: 6px 14px !important; font-size: 0.75rem !important; margin-bottom: 4px !important; }
             #title-menu-grid { gap: 4px !important; }
-            .title-menu-btn { padding: 4px 6px !important; font-size: 0.5rem !important; line-height: 1.15 !important; }
+            .title-menu-btn { padding: 4px 6px !important; font-size: 0.62rem !important; line-height: 1.15 !important; }
         }
         
         /* --- RESPONSIVE LOGO: tidak pernah terpotong di layar sempit --- */
         #logo-img { 
-            width: min(450px, 90vw);
-            height: min(450px, 90vw);
-            max-width: min(450px, 90vw);
-            max-height: min(450px, 90vw);
+            width: min(450px, 90vw, 42vh);
+            height: min(450px, 90vw, 42vh);
+            max-width: min(450px, 90vw, 42vh);
+            max-height: min(450px, 90vw, 42vh);
             display: block; 
             object-fit: contain; 
             animation: glitchLogo 3s ease-in-out infinite !important;
@@ -352,6 +356,48 @@
         }
         .reg-illustration { width: 250px; height: 400px; background: rgba(0,0,0,0.3); border: 1px solid var(--primary-blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; display: none; }
         @media (min-width: 800px) { .reg-illustration { display: flex; } }
+
+        /* ===== IFP / LARGE SCREEN (≥1400px) =====
+           Di IFP kelas (65-86"), layar besar tapi ditampilkan jarak 2-4m.
+           Semua font, tombol, dan elemen UI diperbesar agar terbaca dari jauh. */
+        @media (min-width: 1400px) {
+            /* Font dasar lebih besar */
+            body { font-size: 18px; }
+            
+            /* Logo tidak terlalu besar di IFP — sudah ada vh constraint */
+            #logo-img { 
+                width: min(520px, 90vw, 40vh) !important;
+                height: min(520px, 90vw, 40vh) !important;
+                max-width: min(520px, 90vw, 40vh) !important;
+                max-height: min(520px, 90vw, 40vh) !important;
+            }
+            
+            /* Tombol utama lebih besar */
+            .btn-ml { font-size: 1.3rem !important; padding: 16px 40px !important; }
+            #btn-mulai-misi-baru, #btn-menu-continue { font-size: 1.2rem !important; padding: 14px 30px !important; }
+            .title-menu-btn { font-size: 0.85rem !important; padding: 8px 12px !important; }
+            
+            /* HUD lebih besar */
+            .hud-val { font-size: 1.8rem !important; }
+            .hud-panel span:first-child { font-size: 0.95rem !important; }
+            #hud-center { font-size: 1rem !important; }
+            
+            /* Message box lebih besar */
+            #msg-title { font-size: 2rem !important; }
+            #msg-body { font-size: 1.2rem !important; }
+            .btn-msg-ok { font-size: 1.3rem !important; padding: 12px 28px !important; width: 140px !important; }
+            
+            /* Quiz panel lebih lebar */
+            #screen-quiz .panel { max-width: 680px !important; }
+            
+            /* Dialogue story lebih besar */
+            .dialogue-text p { font-size: 1.3rem !important; }
+            .dialogue-text h3 { font-size: 1.2rem !important; }
+            #cinematic-caption p { font-size: 1.4rem !important; }
+            
+            /* Canvas labels (HUD center text) */
+            #hud { padding: 25px !important; }
+        }
         @keyframes breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03) translateY(-5px); } }
         .reg-illustration img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: grayscale(50%); animation: breathe 4s infinite ease-in-out; }
 
@@ -371,7 +417,7 @@
         .char-card.selected { border-color: var(--tech-cyan); background: linear-gradient(135deg, rgba(0, 168, 255, 0.1), rgba(0, 86, 179, 0.3)); transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 168, 255, 0.4); }
 
         /* ===== CINEMATIC STORY SCREEN ===== */
-        #screen-story { justify-content: flex-end; background-color: #000; cursor: pointer; }
+        #screen-story { justify-content: flex-end; background-color: #000; cursor: pointer; overflow: hidden; }
 
         /* Background cinematic dengan efek pan/zoom */
         #story-bg {
@@ -517,7 +563,7 @@
 
         /* Progress dots */
         #story-progress {
-            position: absolute; bottom: 165px; left: 50%;
+            position: absolute; bottom: max(160px, 22vh); left: 50%;
             transform: translateX(-50%);
             display: flex; gap: 8px; z-index: 11;
         }
@@ -698,11 +744,12 @@
         #custom-message-box { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             background: linear-gradient(135deg, rgba(5, 20, 40, 0.98), rgba(10, 30, 60, 0.98)); 
-            border: 3px solid var(--accent-gold); border-radius: 10px; padding: 25px; 
-            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); /* Intensified Shadow */
-            z-index: 20000 !important; /* EXTREMELY HIGH Z-INDEX */
-            max-width: 450px; width: 90%; text-align: center; 
-            display: none; /* Controlled by JS */
+            border: 3px solid var(--accent-gold); border-radius: 10px; padding: 20px 25px; 
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.8);
+            z-index: 20000 !important;
+            max-width: 450px; width: 92%; max-height: 90vh; overflow-y: auto;
+            text-align: center; 
+            display: none;
             flex-direction: column; align-items: center; 
         }
         #msg-icon { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--primary-blue); margin-bottom: 10px; object-fit: cover; object-position: top center; background: #000; display: none; }
@@ -1314,6 +1361,7 @@
 <audio id="sfx-click" preload="none"><source src="audio/click.mp3" type="audio/mp3"></audio>
 <audio id="sfx-correct" preload="none"><source src="audio/correct.mp3" type="audio/mp3"></audio>
 <audio id="sfx-wrong" preload="none"><source src="audio/wrong.mp3" type="audio/mp3"></audio>
+<audio id="sfx-levelup" preload="none"><source src="audio/levelup.mp3" type="audio/mp3"></audio>
 
 <div id="orientation-overlay">
     <div class="rotate-icon">🔄</div>
@@ -4318,12 +4366,22 @@ class GameApp {
     resizeGame() {
         const w = window.visualViewport ? window.visualViewport.width : window.innerWidth;
         const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        const newW = Math.round(w);
+        const newH = Math.round(h);
+
+        // FIX: BLANK SAAT SCREENSHOT — mengubah canvas.width/height SELALU
+        // mengosongkan isi canvas (browser behavior), bahkan kalau ukurannya
+        // sama saja. Banyak HP (apalagi pas ambil screenshot, animasi status
+        // bar, atau notifikasi singkat muncul) memicu event resize palsu
+        // walau ukuran asli gak berubah — ini yang bikin layar kelihatan
+        // blank sesaat. Solusinya: skip resize kalau ukurannya memang sama.
+        if (canvas.width === newW && canvas.height === newH) return;
 
         // Set canvas internal resolution = CSS size (CSS pixels)
         // Loop akan scale ctx dari game space 800×600 ke canvas.width/height
         // getGamePos pakai getBoundingClientRect() yang return CSS px → konsisten
-        canvas.width  = Math.round(w);
-        canvas.height = Math.round(h);
+        canvas.width  = newW;
+        canvas.height = newH;
     }
 
     // ===== UNIVERSAL VIRTUAL JOYSTICK MANAGER =====
@@ -5040,7 +5098,7 @@ class GameApp {
             // SCENE 4 — Penjelasan jaringan
             { speaker: "DEWI AIR", text: "Kota Tirtatelaga terhubung oleh ribuan kabel dan perangkat jaringan. Router, Switch, dan Server bekerja bersama seperti jantung yang memompa darah — tanpanya, kota ini berhenti berdetak.", char: 'narrator', bg: 'bg_open2' },
             // SCENE 5 — ⚠ ALERT MERAH: Malware terdeteksi
-            { mode: 'caption', text: "[ PERINGATAN SISTEM ]  MALWARE 'GENDERUWO' MENEROBOS FIREWALL!", bg: 'bg_open3', delay: 3200, alert: true },
+            { mode: 'caption', text: "[ PERINGATAN SISTEM ]  MALWARE 'GENDERUWO' MENEROBOS FIREWALL!", bg: 'bg_open3', delay: 3200, alert: true, music: 'bgm-boss' },
             // SCENE 6 — ⚠ ALERT MERAH: Kontaminasi
             { mode: 'caption', text: "KONTAMINASI DATA : 47% ... 61% ... 78%", bg: 'bg_open3', delay: 3000, alert: true },
             // SCENE 7 — Penjelasan malware
@@ -5052,7 +5110,7 @@ class GameApp {
             // SCENE 10 — Panggilan aksi
             { speaker: "DEWI AIR", text: "Kamu adalah Guardian yang masih bisa bergerak. Kamu harus belajar cara kerja jaringan, mengkonfigurasi Firewall, dan mengusir Malware ini. Masa depan kota ada di tanganmu!", char: 'narrator', bg: 'bg_open4' },
             // SCENE 11 — Rex muncul sebagai mentor/guru
-            { speaker: "MASTER REX", text: "Aku Rex, Network Administrator senior yang tersisa. Aku akan membimbingmu — dari memasang kabel jaringan, mengatur Firewall, hingga menghadapi Genderuwo langsung. Siapkah kamu?", char: 'rex', bg: 'bg_open5', sound: 'dramatic' },
+            { speaker: "MASTER REX", text: "Aku Rex, Network Administrator senior yang tersisa. Aku akan membimbingmu — dari memasang kabel jaringan, mengatur Firewall, hingga menghadapi Genderuwo langsung. Siapkah kamu?", char: 'rex', bg: 'bg_open5', sound: 'dramatic', music: 'bgm-opening' },
             // SCENE 12 — Caption misi penutup
             { mode: 'caption', text: "MISI: Pelajari Jaringan — Konfigurasi Firewall — Selamatkan Tirtatelaga", bg: 'bg_open5', delay: 3500, sound: 'dramatic' },
         ], () => { AudioMgr.playMusic('bgm-main'); this.switchScreen('screen-loading'); setTimeout(() => this.startTutorial(), 2000); });
@@ -5350,6 +5408,7 @@ class GameApp {
         this.player.chapter = Math.max(this.player.chapter||0, 2);
         this.state = AppState.STORY;
         this.switchScreen('screen-story');
+        AudioMgr.playMusic('bgm-boss');
         story.start([
             { speaker: "System AI Gedung Server", text: "PERINGATAN! Ratusan paket data mencurigakan terdeteksi menghantam lapisan Firewall! Ini serangan DDoS — penyerang mencoba membanjiri sistem agar Firewall kolaps.", char: 'androidtoya', bg: 'bg_firewall' },
             { speaker: "MASTER REX", text: "Guardian! Setiap paket yang melayang itu adalah ancaman nyata. Hancurkan sebelum mereka menembus pertahanan kita! Bayangkan dirimu sebagai Firewall itu sendiri!", char: 'rex', bg: 'bg_firewall' }
@@ -7931,6 +7990,9 @@ const story = {
             }
         }
 
+        // --- Handle per-scene music change ---
+        if(d.music) AudioMgr.playMusic(d.music);
+
         // --- Decide mode: cinematic caption (no portrait) or dialogue box ---
         const db  = document.getElementById('dialogue-box');
         const cap = document.getElementById('cinematic-caption');
@@ -8997,7 +9059,8 @@ class ChapterFirewallConfig {
         this.active = false; // Start paused
         this.draggedPacket = null;
 
-        // Zones
+        // Zones — posisi dihitung dinamis di draw() berdasarkan HUD height
+        // Simpan sebagai referensi awal, akan diupdate di getZones()
         this.zoneAllow = { x: 50, y: 150, w: 200, h: 300, color: 'rgba(0, 255, 0, 0.2)', label: "ALLOW (Aman)" };
         this.zoneBlock = { x: 550, y: 150, w: 200, h: 300, color: 'rgba(255, 0, 0, 0.2)', label: "BLOCK (Virus)" };
 
@@ -9013,6 +9076,7 @@ class ChapterFirewallConfig {
                 const p = this.packets[i];
                 if(Math.hypot(pos.x - p.x, pos.y - p.y) < 50) { // Hit radius diperbesar untuk HP
                     this.draggedPacket = p;
+                    canvas.style.cursor = 'grabbing'; // FIX: langsung ubah kursor begitu paket dipegang
                     AudioMgr.playSFX('sfx-click');
                     return;
                 }
@@ -9020,22 +9084,32 @@ class ChapterFirewallConfig {
         };
         
         this.evMove = (e) => {
+            const pos = getPos(e);
             if(this.draggedPacket) {
-                const pos = getPos(e);
                 this.draggedPacket.x = pos.x;
                 this.draggedPacket.y = pos.y;
+                canvas.style.cursor = 'grabbing'; // FIX: kursor jadi "menggenggam" saat aktif digeser
+            } else {
+                // FIX: cek hover supaya kursor berubah jadi tangan (grab) saat di atas paket yang bisa digeser
+                let hovering = false;
+                for(let i=this.packets.length-1; i>=0; i--) {
+                    const p = this.packets[i];
+                    if(Math.hypot(pos.x - p.x, pos.y - p.y) < 50) { hovering = true; break; }
+                }
+                canvas.style.cursor = hovering ? 'grab' : 'default';
             }
         };
         
         this.evUp = (e) => {
             if(this.draggedPacket) {
-                // Check Drop Zones
+                // Check Drop Zones — pakai getZones() agar konsisten dengan draw()
                 const p = this.draggedPacket;
                 let processed = false;
+                const zones = this.getZones();
                 
                 // Check Allow Zone
-                if(p.x > this.zoneAllow.x && p.x < this.zoneAllow.x + this.zoneAllow.w &&
-                   p.y > this.zoneAllow.y && p.y < this.zoneAllow.y + this.zoneAllow.h) {
+                if(p.x > zones.allow.x && p.x < zones.allow.x + zones.allow.w &&
+                   p.y > zones.allow.y && p.y < zones.allow.y + zones.allow.h) {
                     if(p.type === 'good') {
                         this.score++; this.game.addScore(50); AudioMgr.playSFX('sfx-correct'); spawnFloatingScore("ALLOWED!");
                     } else {
@@ -9044,8 +9118,8 @@ class ChapterFirewallConfig {
                     processed = true;
                 }
                 // Check Block Zone
-                else if(p.x > this.zoneBlock.x && p.x < this.zoneBlock.x + this.zoneBlock.w &&
-                        p.y > this.zoneBlock.y && p.y < this.zoneBlock.y + this.zoneBlock.h) {
+                else if(p.x > zones.block.x && p.x < zones.block.x + zones.block.w &&
+                        p.y > zones.block.y && p.y < zones.block.y + zones.block.h) {
                     if(p.type === 'bad') {
                         this.score++; this.game.addScore(50); AudioMgr.playSFX('sfx-correct'); spawnFloatingScore("BLOCKED!");
                     } else {
@@ -9103,6 +9177,27 @@ class ChapterFirewallConfig {
         }, 500);
     }
 
+    getZones() {
+        // Hitung HUD height dalam game-space (800x600)
+        // HUD di layar nyata ~90-110px, convert ke game space Y
+        const hud = document.getElementById('hud');
+        const canvas = document.getElementById('gameCanvas');
+        let hudBottom = 110; // default game-space px
+        if(hud && canvas) {
+            const hudRect = hud.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
+            const scaleY = 600 / canvasRect.height;
+            hudBottom = Math.max(110, (hudRect.height + 10) * scaleY);
+        }
+        const topY = Math.min(hudBottom + 10, 160);
+        const availH = 560 - topY; // 560 = batas bawah (sisakan ruang label bawah)
+        const zoneH = Math.min(300, availH * 0.85);
+        return {
+            allow: { x: 30, y: topY, w: 200, h: zoneH, label: "ALLOW (Aman)" },
+            block: { x: 570, y: topY, w: 200, h: zoneH, label: "BLOCK (Virus)" }
+        };
+    }
+
     spawnPacket() {
         const isGood = Math.random() > 0.4;
         
@@ -9114,8 +9209,10 @@ class ChapterFirewallConfig {
             ? goodIcons[Math.floor(Math.random() * goodIcons.length)] 
             : badIcons[Math.floor(Math.random() * badIcons.length)];
 
+        // Spawn di posisi X random di area tengah (antara dua zona), Y dari atas canvas
+        const spawnX = 280 + Math.random() * 240; // 280–520, antara kedua zona
         this.packets.push({
-            x: 400,
+            x: spawnX,
             y: -50,
             type: isGood ? 'good' : 'bad',
             imgKey: iconKey, // Simpan key gambar untuk dirender nanti
@@ -9136,8 +9233,8 @@ class ChapterFirewallConfig {
             if(p !== this.draggedPacket) {
                 p.y += p.vy;
                 // Reset if falls off screen
-                if(p.y > 650) {
-                    p.y = -50; p.x = 400;
+                if(p.y > 580) {
+                    p.y = -50; p.x = 280 + Math.random() * 240;
                 }
             }
         });
@@ -9147,37 +9244,37 @@ class ChapterFirewallConfig {
         // --- PERBAIKAN: LOGIKA RENDER GAMBAR ---
         const imgAllow = this.game.imgs.zone_allow;
         const imgBlock = this.game.imgs.zone_block;
+        const zones = this.getZones(); // Hitung zona dinamis setiap frame
+        const pulse = 0.2 + (Math.sin(Date.now() / 500) * 0.05);
 
         // Draw Allow Zone
         if(imgAllow && imgAllow.complete) {
-             ctx.drawImage(imgAllow, this.zoneAllow.x, this.zoneAllow.y, this.zoneAllow.w, this.zoneAllow.h);
+             ctx.drawImage(imgAllow, zones.allow.x, zones.allow.y, zones.allow.w, zones.allow.h);
         } else {
              // Fallback jika gambar gagal load
-             const pulse = 0.2 + (Math.sin(Date.now() / 500) * 0.05);
              ctx.fillStyle = `rgba(0, 255, 0, ${pulse})`;
-             ctx.fillRect(this.zoneAllow.x, this.zoneAllow.y, this.zoneAllow.w, this.zoneAllow.h);
-             ctx.strokeStyle = "#0F0"; ctx.lineWidth = 2; ctx.strokeRect(this.zoneAllow.x, this.zoneAllow.y, this.zoneAllow.w, this.zoneAllow.h);
+             ctx.fillRect(zones.allow.x, zones.allow.y, zones.allow.w, zones.allow.h);
+             ctx.strokeStyle = "#0F0"; ctx.lineWidth = 2; ctx.strokeRect(zones.allow.x, zones.allow.y, zones.allow.w, zones.allow.h);
         }
         // Label selalu di atas gambar
         ctx.fillStyle = "#0F0"; ctx.font = "bold 20px Orbitron"; 
-        ctx.fillText(this.zoneAllow.label, this.zoneAllow.x + 20, this.zoneAllow.y + 30);
+        ctx.fillText(zones.allow.label, zones.allow.x + 20, zones.allow.y + 28);
         
         // Draw Block Zone
         if(imgBlock && imgBlock.complete) {
-             ctx.drawImage(imgBlock, this.zoneBlock.x, this.zoneBlock.y, this.zoneBlock.w, this.zoneBlock.h);
+             ctx.drawImage(imgBlock, zones.block.x, zones.block.y, zones.block.w, zones.block.h);
         } else {
              // Fallback
-             const pulse = 0.2 + (Math.sin(Date.now() / 500) * 0.05);
              ctx.fillStyle = `rgba(255, 0, 0, ${pulse})`;
-             ctx.fillRect(this.zoneBlock.x, this.zoneBlock.y, this.zoneBlock.w, this.zoneBlock.h);
-             ctx.strokeStyle = "#F00"; ctx.strokeRect(this.zoneBlock.x, this.zoneBlock.y, this.zoneBlock.w, this.zoneBlock.h);
+             ctx.fillRect(zones.block.x, zones.block.y, zones.block.w, zones.block.h);
+             ctx.strokeStyle = "#F00"; ctx.lineWidth = 2; ctx.strokeRect(zones.block.x, zones.block.y, zones.block.w, zones.block.h);
         }
         // Label selalu di atas gambar
-        ctx.fillStyle = "#F00"; 
-        ctx.fillText(this.zoneBlock.label, this.zoneBlock.x + 20, this.zoneBlock.y + 30);
+        ctx.fillStyle = "#F00"; ctx.font = "bold 20px Orbitron";
+        ctx.fillText(zones.block.label, zones.block.x + 20, zones.block.y + 28);
 
         // Draw Packets dengan Animasi Pulse & Label
-        const pulse = 1 + Math.sin(Date.now() / 200) * 0.1; // Efek denyut
+        const pulsePacket = 1 + Math.sin(Date.now() / 200) * 0.1; // Efek denyut
 
         this.packets.forEach(p => {
             const img = this.game.imgs[p.imgKey]; // Ambil gambar sesuai key
@@ -9185,7 +9282,7 @@ class ChapterFirewallConfig {
             // Simpan state context untuk transformasi animasi
             ctx.save();
             ctx.translate(p.x, p.y);
-            ctx.scale(pulse, pulse); // Terapkan animasi denyut
+            ctx.scale(pulsePacket, pulsePacket); // Terapkan animasi denyut
 
             if(img && img.complete) {
                 // Render Gambar Icon
@@ -9228,6 +9325,7 @@ class ChapterFirewallConfig {
     }
 
     cleanup() {
+        canvas.style.cursor = 'default'; // FIX: reset kursor saat keluar dari mini-game ini
         // Remove Mouse Listeners
         canvas.removeEventListener('mousedown', this.evDown);
         canvas.removeEventListener('mousemove', this.evMove);
