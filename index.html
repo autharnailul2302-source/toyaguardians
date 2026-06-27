@@ -82,7 +82,7 @@
         }
         
         /* UI SCREENS */
-        .ui-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; }
+        .ui-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 10; overflow-y: auto; touch-action: pan-y; -webkit-overflow-scrolling: touch; box-sizing: border-box; }
         .active { display: flex; animation: fadeIn 0.5s; }
 
         /* Konten title (logo + tombol) disembunyikan saat overlay aktif */
@@ -154,6 +154,26 @@
             .energy-ring-3 { width: min(156px, 44vw) !important; height: min(156px, 44vw) !important; }
             #logo-img { width: min(360px, 88vw) !important; height: min(360px, 88vw) !important; max-width: min(360px, 88vw) !important; max-height: min(360px, 88vw) !important; }
             #subtitle-img { max-height: 90px !important; }
+        }
+
+        /* === FIX KEPOTONG DI HP LANDSCAPE ===
+           Logo selama ini dibesarkan pakai vw (lebar layar), tapi pas HP landscape
+           lebar layar jauh lebih besar dari tingginya, sehingga logo dan tombol
+           jadi kepanjangan dan kepotong di atas/bawah. Breakpoint ini berbasis
+           TINGGI layar (max-height), bukan lebar, dan mengecilkan semuanya secara
+           agresif khusus saat tinggi layar sempit (HP landscape). */
+        @media (max-height: 480px) {
+            #logo-container { margin-bottom: 0 !important; }
+            #energy-ring-container { width: 90px !important; height: 90px !important; margin-bottom: -6px !important; }
+            .energy-ring-1 { width: 90px !important; height: 90px !important; }
+            .energy-ring-2 { width: 80px !important; height: 80px !important; }
+            .energy-ring-3 { width: 70px !important; height: 70px !important; }
+            #logo-img { width: 150px !important; height: 150px !important; max-width: 150px !important; max-height: 150px !important; }
+            #subtitle-img { max-height: 32px !important; margin-top: -6px !important; margin-bottom: 4px !important; }
+            #title-menu-wrapper { margin-top: 4px !important; }
+            #btn-mulai-misi-baru, #btn-menu-continue { padding: 6px 14px !important; font-size: 0.75rem !important; margin-bottom: 4px !important; }
+            #title-menu-grid { gap: 4px !important; }
+            .title-menu-btn { padding: 4px 6px !important; font-size: 0.5rem !important; line-height: 1.15 !important; }
         }
         
         /* --- RESPONSIVE LOGO: tidak pernah terpotong di layar sempit --- */
@@ -1868,27 +1888,27 @@
         </div>
         
         <!-- --- POSISI TOMBOL PRESISI (Reset margin negatif aneh-aneh) --- -->
-        <div style="margin-top:12px; padding: 0 16px; width:100%; max-width:480px; box-sizing:border-box;">
+        <div id="title-menu-wrapper" style="margin-top:12px; padding: 0 16px; width:100%; max-width:480px; box-sizing:border-box;">
 
             <!-- Tombol utama full width -->
-            <button class="btn-ml btn-anim" onclick="app.goToRegister()" style="margin-top:0; margin-bottom:8px; padding:13px 20px; font-size:1rem;">⚔ MULAI MISI BARU</button>
+            <button id="btn-mulai-misi-baru" class="btn-ml btn-anim" onclick="app.goToRegister()" style="margin-top:0; margin-bottom:8px; padding:13px 20px; font-size:1rem;">⚔ MULAI MISI BARU</button>
             <button id="btn-menu-continue" class="btn-ml btn-anim" style="display:none; background:linear-gradient(180deg,#004400,#002200); border-color:#00FF88; color:#00FF88; margin-top:0; margin-bottom:8px; padding:13px 20px; font-size:1rem;" onclick="app.continueGame()">▶ LANJUTKAN MISI</button>
 
             <!-- Grid 2 kolom untuk menu sekunder -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:0;">
-                <button onclick="app.showLeaderboard()" style="background:#001833; border:2px solid #004488; color:#00D9FF; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+            <div id="title-menu-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:0;">
+                <button class="title-menu-btn" onclick="app.showLeaderboard()" style="background:#001833; border:2px solid #004488; color:#00D9FF; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
                     onmouseover="this.style.background='#002244'; this.style.borderColor='#00D9FF';" onmouseout="this.style.background='#001833'; this.style.borderColor='#004488';">
                     🏆<br>HALL OF GUARDIANS<br><span style="font-size:0.55rem; opacity:0.7;">NASIONAL</span>
                 </button>
-                <button onclick="app.showStatistikSiswa()" style="background:#1a0a00; border:2px solid #664400; color:var(--accent-gold); padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                <button class="title-menu-btn" onclick="app.showStatistikSiswa()" style="background:#1a0a00; border:2px solid #664400; color:var(--accent-gold); padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
                     onmouseover="this.style.background='#2a1500'; this.style.borderColor='var(--accent-gold)';" onmouseout="this.style.background='#1a0a00'; this.style.borderColor='#664400';">
                     📈<br>STATISTIK SAYA<br><span style="font-size:0.55rem; opacity:0.7;">PROGRES GUARDIAN</span>
                 </button>
-                <button onclick="app.showGuruDashboard()" style="background:#001a0a; border:2px solid #005522; color:#00FF88; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                <button class="title-menu-btn" onclick="app.showGuruDashboard()" style="background:#001a0a; border:2px solid #005522; color:#00FF88; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
                     onmouseover="this.style.background='#002a12'; this.style.borderColor='#00FF88';" onmouseout="this.style.background='#001a0a'; this.style.borderColor='#005522';">
                     📊<br>DASHBOARD GURU<br><span style="font-size:0.55rem; opacity:0.7;">REKAP KELAS</span>
                 </button>
-                <button onclick="app.toggleAbout()" style="background:#0d0d1a; border:2px solid #333366; color:#9988FF; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
+                <button class="title-menu-btn" onclick="app.toggleAbout()" style="background:#0d0d1a; border:2px solid #333366; color:#9988FF; padding:10px 8px; font-family:'Orbitron',sans-serif; font-size:0.62rem; font-weight:700; border-radius:6px; cursor:pointer; text-transform:uppercase; transition:0.15s; letter-spacing:0.5px; line-height:1.4;"
                     onmouseover="this.style.background='#16162a'; this.style.borderColor='#9988FF';" onmouseout="this.style.background='#0d0d1a'; this.style.borderColor='#333366';">
                     ℹ<br>TENTANG GAME<br><span style="font-size:0.55rem; opacity:0.7;">ABOUT</span>
                 </button>
